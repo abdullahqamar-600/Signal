@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Leadership Summit 2026 — Signal</title>
+  <meta name="description" content="Signal Leadership Summit 2026 — three days for franchise leaders. October 6–8, 2026, Omaha, NE." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Montserrat:wght@400;500;600;700&display=swap" />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <script>
+    /* Apply pre-animation state only if JS will run, to avoid FOUC if JS is off */
+    document.documentElement.classList.add('js-anim');
+  </script>
+</head>
+<body data-version="v1">
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="nav__logo" href="/" aria-label="Signal — home">
+        <img src="assets/signal-logo.png" alt="Signal" class="nav__logo-img" />
+      </a>
+
+      <nav class="nav__links" aria-label="Primary">
+        <a href="/" class="nav__link nav__link--active">Home</a>
+        <a href="/agenda" class="nav__link">Agenda</a>
+        <a href="/travel" class="nav__link">Travel &amp; Hotel</a>
+        <a href="/faqs" class="nav__link">FAQs</a>
+      </nav>
+
+      <a href="#register" class="btn nav__cta">Register Now</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" data-version-show="v1">
+      <div class="hero__top">
+        <div class="hero__container">
+          <p class="hero__pill">Leadership Summit · 2026</p>
+
+          <div class="hero__row">
+            <h1 class="hero__title">
+              <span class="hero__title-line">Bringing Franchise</span>
+              <span class="hero__title-line">Leaders Together</span>
+            </h1>
+
+            <div class="hero__details">
+              <div class="hero__detail">
+                <p class="hero__detail-value">October 6–8, 2026</p>
+                <p class="hero__detail-sub">Three days · Monday–Wednesday</p>
+              </div>
+              <div class="hero__detail">
+                <p class="hero__detail-value">Signal Home Office</p>
+                <p class="hero__detail-sub">3880 S. 149th St., Ste. 106 · Omaha, NE 68144</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero__ribbon" aria-hidden="true">
+        <svg class="ribbon-svg" viewBox="0 0 1801 225" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <!-- Atmospheric back glow: deep blue to orange -->
+            <linearGradient id="rg-glow" x1="0" y1="87.5" x2="1801" y2="87.5" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stop-color="#D85B0A" stop-opacity="0.20" />
+              <stop offset="35%"  stop-color="#FF9332" stop-opacity="0.6" />
+              <stop offset="70%"  stop-color="#FFB37A" stop-opacity="0.7" />
+              <stop offset="100%" stop-color="#FFD9B8" stop-opacity="0.4" />
+            </linearGradient>
+
+            <!-- Mid: orange to white wash -->
+            <linearGradient id="rg-mid" x1="0" y1="0" x2="1801" y2="175" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stop-color="#FF9332" stop-opacity="0.0" />
+              <stop offset="55%"  stop-color="#FF9332" stop-opacity="0.85" />
+              <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.95" />
+            </linearGradient>
+
+            <!-- Hero ribbon: richer multi-stop gradient — deeper orange on the
+                 left, signal orange in the middle, hot peachy highlight on the right -->
+            <linearGradient id="rg-hero" x1="0" y1="0" x2="1801" y2="175" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stop-color="#E5751A" />
+              <stop offset="22%"  stop-color="#FF9332" />
+              <stop offset="55%"  stop-color="#FFB37A" />
+              <stop offset="82%"  stop-color="#FFD9B8" />
+              <stop offset="100%" stop-color="#FFE8D2" />
+            </linearGradient>
+
+            <!-- Top-edge specular highlight — bright at the top, fades fast -->
+            <linearGradient id="rg-specular" x1="0" y1="0" x2="0" y2="175" gradientUnits="userSpaceOnUse">
+              <stop offset="0%"   stop-color="#FFFFFF" stop-opacity="0.55" />
+              <stop offset="10%"  stop-color="#FFFFFF" stop-opacity="0.22" />
+              <stop offset="30%"  stop-color="#FFFFFF" stop-opacity="0" />
+            </linearGradient>
+
+            <!-- Bottom-edge depth — subtle warm shadow for grounding -->
+            <linearGradient id="rg-depth" x1="0" y1="0" x2="0" y2="175" gradientUnits="userSpaceOnUse">
+              <stop offset="60%"  stop-color="#7A2A00" stop-opacity="0" />
+              <stop offset="100%" stop-color="#7A2A00" stop-opacity="0.35" />
+            </linearGradient>
+
+            <!-- Shine band — a narrow soft-white gradient that gets translated
+                 across the ribbon to create a left-to-right light sweep. -->
+            <linearGradient id="rg-shine" x1="0" y1="87.5" x2="700" y2="87.5"
+                            gradientUnits="userSpaceOnUse"
+                            gradientTransform="translate(-1400 0)">
+              <stop offset="0%"   stop-color="#FFFFFF" stop-opacity="0" />
+              <stop offset="50%"  stop-color="#FFFFFF" stop-opacity="0.85" />
+              <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+            </linearGradient>
+
+            <filter id="rg-blur" x="-15%" y="-50%" width="130%" height="200%">
+              <feGaussianBlur stdDeviation="14" />
+            </filter>
+
+            <filter id="rg-soft" x="-5%" y="-25%" width="110%" height="150%">
+              <feGaussianBlur stdDeviation="4" />
+            </filter>
+          </defs>
+
+          <!-- L0: Blue fill below the ribbon's lower contour.
+               Above this path everything stays transparent so the white
+               background of .hero__ribbon shows through. Below the contour,
+               this paints solid Signal Blue, which seamlessly meets the
+               .hero__logos blue band that follows the SVG. -->
+          <path class="ribbon-bg-below"
+            d="M0 174.5 H1001.77 C1029.04 174.5 1053.83 158.656 1065.29 133.903 L1078.67 105.006 C1083.75 94.03 1094.75 87.0109 1106.84 87.0278 L1800.5 88 V225 H0 Z"
+            fill="#0032A0" />
+
+          <!-- L1: blurred glow halo -->
+          <g class="ribbon-layer ribbon-layer--glow" filter="url(#rg-blur)">
+            <path
+              d="M0 174.5V87.5H1039.83C1055.21 87.5 1069.23 78.6778 1075.89 64.8092L1087.94 39.7088C1099.59 15.4387 1124.13 0 1151.05 0H1800.5V88L1106.84 87.0278C1094.75 87.0109 1083.75 94.03 1078.67 105.006L1065.29 133.903C1053.83 158.656 1029.04 174.5 1001.77 174.5H0Z"
+              fill="url(#rg-glow)" />
+          </g>
+
+          <!-- L2: soft mid wash -->
+          <g class="ribbon-layer ribbon-layer--mid" filter="url(#rg-soft)" style="mix-blend-mode: screen;">
+            <path
+              d="M0 174.5V87.5H1039.83C1055.21 87.5 1069.23 78.6778 1075.89 64.8092L1087.94 39.7088C1099.59 15.4387 1124.13 0 1151.05 0H1800.5V88L1106.84 87.0278C1094.75 87.0109 1083.75 94.03 1078.67 105.006L1065.29 133.903C1053.83 158.656 1029.04 174.5 1001.77 174.5H0Z"
+              fill="url(#rg-mid)" />
+          </g>
+
+          <!-- L3: hero ribbon (the main shape) -->
+          <g class="ribbon-layer ribbon-layer--hero">
+            <path
+              d="M0 174.5V87.5H1039.83C1055.21 87.5 1069.23 78.6778 1075.89 64.8092L1087.94 39.7088C1099.59 15.4387 1124.13 0 1151.05 0H1800.5V88L1106.84 87.0278C1094.75 87.0109 1083.75 94.03 1078.67 105.006L1065.29 133.903C1053.83 158.656 1029.04 174.5 1001.77 174.5H0Z"
+              fill="url(#rg-hero)" />
+          </g>
+
+          <!-- L3b: bottom-edge depth — warm shadow that grounds the ribbon -->
+          <g class="ribbon-layer ribbon-layer--depth" style="mix-blend-mode: multiply;">
+            <path
+              d="M0 174.5V87.5H1039.83C1055.21 87.5 1069.23 78.6778 1075.89 64.8092L1087.94 39.7088C1099.59 15.4387 1124.13 0 1151.05 0H1800.5V88L1106.84 87.0278C1094.75 87.0109 1083.75 94.03 1078.67 105.006L1065.29 133.903C1053.83 158.656 1029.04 174.5 1001.77 174.5H0Z"
+              fill="url(#rg-depth)" />
+          </g>
+
+          <!-- L3c: top-edge specular highlight — gives the ribbon a glossy edge -->
+          <g class="ribbon-layer ribbon-layer--specular" style="mix-blend-mode: screen;">
+            <path
+              d="M0 174.5V87.5H1039.83C1055.21 87.5 1069.23 78.6778 1075.89 64.8092L1087.94 39.7088C1099.59 15.4387 1124.13 0 1151.05 0H1800.5V88L1106.84 87.0278C1094.75 87.0109 1083.75 94.03 1078.67 105.006L1065.29 133.903C1053.83 158.656 1029.04 174.5 1001.77 174.5H0Z"
+              fill="url(#rg-specular)" />
+          </g>
+
+          <!-- L4: light sweep — narrow white band that animates across the ribbon -->
+          <g class="ribbon-layer ribbon-layer--shine" style="mix-blend-mode: screen;">
+            <path
+              d="M0 174.5V87.5H1039.83C1055.21 87.5 1069.23 78.6778 1075.89 64.8092L1087.94 39.7088C1099.59 15.4387 1124.13 0 1151.05 0H1800.5V88L1106.84 87.0278C1094.75 87.0109 1083.75 94.03 1078.67 105.006L1065.29 133.903C1053.83 158.656 1029.04 174.5 1001.77 174.5H0Z"
+              fill="url(#rg-shine)" />
+          </g>
+
+        </svg>
+      </div>
+
+    </section>
+
+    <section class="invite" id="about" data-version-show="v1">
+      <div class="invite__container">
+        <h2 class="invite__heading">
+          Three days of company updates, owner-led breakouts, and conversations on leadership, sales, operations, and the next stage of franchise growth.
+        </h2>
+
+        <div class="invite__bottom">
+          <div class="invite__row">
+            <p class="invite__caption">
+              Open to all Signal franchise owners and key employees.<br />
+              Seating is limited — register early to confirm your place.
+            </p>
+
+            <div class="invite__meta">
+              <p class="invite__meta-value">October 6–8, 2026</p>
+              <p class="invite__meta-sub">Three days · Monday–Wednesday</p>
+            </div>
+
+            <div class="invite__meta">
+              <p class="invite__meta-value">Signal Home Office</p>
+              <p class="invite__meta-sub">3880 S. 149th St., Ste. 106<br />Omaha, NE 68144</p>
+            </div>
+          </div>
+
+          <div class="invite__cta-stack">
+            <a href="#register" class="btn btn--block btn--white">Register</a>
+            <a href="#agenda"   class="btn btn--block btn--dark">View Agenda</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="logos-strip" data-version-show="v1" aria-label="Signal partners">
+      <div class="logos-strip__container">
+        <div class="logos__viewport">
+          <div class="logos__track">
+            <div class="logos__group">
+              <img class="logos__item" src="assets/logo-team-signal.png" alt="Signal" />
+              <img class="logos__item" src="assets/logo-framebrand.svg" alt="Framebrand" />
+              <img class="logos__item" src="assets/logo-wordmark.svg" alt="Wordmark partner" />
+              <img class="logos__item" src="assets/logo-team-signal.png" alt="Signal" />
+              <img class="logos__item" src="assets/logo-framebrand.svg" alt="Framebrand" />
+              <img class="logos__item" src="assets/logo-wordmark.svg" alt="Wordmark partner" />
+            </div>
+            <div class="logos__group" aria-hidden="true">
+              <img class="logos__item" src="assets/logo-team-signal.png" alt="" />
+              <img class="logos__item" src="assets/logo-framebrand.svg" alt="" />
+              <img class="logos__item" src="assets/logo-wordmark.svg" alt="" />
+              <img class="logos__item" src="assets/logo-team-signal.png" alt="" />
+              <img class="logos__item" src="assets/logo-framebrand.svg" alt="" />
+              <img class="logos__item" src="assets/logo-wordmark.svg" alt="" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="video-section" aria-label="Highlights" data-version-show="v1">
+      <div class="video-section__container">
+        <a class="video-card" href="#video" aria-label="Watch Signal Leadership Summit highlights">
+          <span class="video-card__media">
+            <img class="video-card__thumb" src="assets/video-thumbnail.jpeg" alt="" />
+          </span>
+          <span class="video-card__play" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 5.5v13l11-6.5-11-6.5z" fill="currentColor"/>
+            </svg>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <section class="message-section" id="message" aria-label="Message from leadership" data-version-show="v1">
+      <div class="message-section__container">
+        <header class="message-section__head">
+          <h2 class="message-section__heading">A word from our leadership</h2>
+        </header>
+
+        <div class="message-section__layout">
+          <figure class="message-section__photo">
+            <img src="assets/section-4-image.png" alt="Signal leader speaking at Leadership Summit" loading="lazy" />
+            <figcaption class="message-section__photo-caption">
+              <span class="message-section__photo-name">Jordan Bauer</span>
+              <span class="message-section__photo-role">CEO, Signal</span>
+            </figcaption>
+          </figure>
+
+          <article class="message-section__content">
+            <blockquote class="message-section__quote">
+              The strongest franchises grow because their leaders show up — for their owners, their teams, and each other.
+            </blockquote>
+
+            <div class="audio-player audio-player--compact" data-duration="83">
+              <button class="audio-player__btn" type="button" aria-label="Play audio message">
+                <svg class="audio-player__icon audio-player__icon--play" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M3 9v6h4l5 4V5L7 9H3zM16 8.5c1.2 0.8 2 2.1 2 3.5s-0.8 2.7-2 3.5M19 5.5c2.4 1.4 4 4 4 6.5s-1.6 5.1-4 6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <svg class="audio-player__icon audio-player__icon--pause" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="7" y="5.5" width="3.5" height="13" rx="0.5" fill="currentColor"/>
+                  <rect x="13.5" y="5.5" width="3.5" height="13" rx="0.5" fill="currentColor"/>
+                </svg>
+              </button>
+              <div class="audio-player__meta">
+                <p class="audio-player__title">Listen to the full message</p>
+                <p class="audio-player__sub"><span class="audio-player__duration">1:23</span> · audio</p>
+              </div>
+            </div>
+
+            <div class="message-section__body">
+              <p>Leadership Summit isn't a status update. It's the room where we decide what the next chapter of Signal looks like — together. Three days of honest conversations, owner-led breakouts, and the operational depth that turns ambition into results.</p>
+              <p>If you've ever felt your network was stronger than your strategy, this is the trip. Bring your owners. Bring your key employees. We'll do the rest.</p>
+            </div>
+
+            <button class="message-section__expand" type="button" aria-expanded="false" aria-controls="message-overlay">
+              Read full message
+              <svg class="message-section__expand-icon message-section__expand-icon--expand" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 9V5a1 1 0 0 1 1-1h4M20 9V5a1 1 0 0 0-1-1h-4M4 15v4a1 1 0 0 0 1 1h4M20 15v4a1 1 0 0 1-1 1h-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <svg class="message-section__expand-icon message-section__expand-icon--collapse" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 4v4a1 1 0 0 1-1 1H4M15 4v4a1 1 0 0 0 1 1h4M9 20v-4a1 1 0 0 0-1-1H4M15 20v-4a1 1 0 0 1 1-1h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="story" aria-label="Summit agenda by day" data-version-show="v1">
+      <div class="story__layout">
+        <aside class="story__sidebar">
+          <nav class="story__nav" aria-label="Summit days">
+            <a href="#story-1" class="story__nav-link is-active" data-target="story-1">
+              <span class="story__nav-day">Day 01</span>
+              <span class="story__nav-date">October 6 · Monday</span>
+            </a>
+            <a href="#story-2" class="story__nav-link" data-target="story-2">
+              <span class="story__nav-day">Day 02</span>
+              <span class="story__nav-date">October 7 · Tuesday</span>
+            </a>
+            <a href="#story-3" class="story__nav-link" data-target="story-3">
+              <span class="story__nav-day">Day 03</span>
+              <span class="story__nav-date">October 8 · Wednesday</span>
+            </a>
+          </nav>
+        </aside>
+
+        <div class="story__panels">
+          <article class="story__panel" id="story-1">
+            <header class="story__panel-head">
+              <h3 class="story__panel-title">Set the tone. Align the room.</h3>
+              <p class="story__panel-body">Day one centers on shared context — where Signal is today, the bets for the year ahead, and the conversations that build the foundation for the next two days.</p>
+            </header>
+            <ol class="story__sessions">
+              <li class="story__session">
+                <span class="story__session-time">9:00 AM</span>
+                <span class="story__session-title">Welcome &amp; opening keynote</span>
+              </li>
+              <li class="story__session">
+                <span class="story__session-time">10:30 AM</span>
+                <span class="story__session-title">State of Signal — a look at 2026</span>
+              </li>
+              <li class="story__session">
+                <span class="story__session-time">12:00 PM</span>
+                <span class="story__session-title">Lunch &amp; owner networking</span>
+              </li>
+              <li class="story__session">
+                <span class="story__session-time">2:00 PM</span>
+                <span class="story__session-title">Breakout: recurring revenue at scale</span>
+              </li>
+              <li class="story__session">
+                <span class="story__session-time">4:00 PM</span>
+                <span class="story__session-title">Welcome reception</span>
+              </li>
+            </ol>
+          </article>
+
+          <article class="story__panel" id="story-2">
+            <header class="story__panel-head">
+              <h3 class="story__panel-title">Go deep on what actually moves the business.</h3>
+              <p class="story__panel-body">Owner-led breakouts and operational deep dives — built around the systems Signal franchises use to move from steady to standout.</p>
+            </header>
+            <ol class="story__sessions">
+              <li class="story__session">
+                <span class="story__session-time">8:30 AM</span>
+                <span class="story__session-title">Owner-led sessions · track A</span>
+              </li>
+              <li class="story__session">
+                <span class="story__session-time">10:30 AM</span>
+                <span class="story__session-title">Operational deep dive: building systems</span>
+              </li>
+              <li class="story__session">
+                <span class="story__session-time">12:00 PM</span>
+                <span class="story__session-title">Lunch &amp; lightning talks</span>
+              </li>
+              <li class="story__session">
+                <span class="story__session-time">1:30 PM</span>
+                <span class="story__session-title">Leadership roundtable</span>
+              </li>
+              <li class="story__session">
+                <span class="story__session-time">3:30 PM</span>
+                <span class="story__session-title">Sales &amp; marketing workshop</span>
+              </li>
+            </ol>
+          </article>
+
+          <article class="story__panel" id="story-3">
+            <header class="story__panel-head">
+              <h3 class="story__panel-title">Time with the people writing the next chapter.</h3>
+              <p class="story__panel-body">Direct access to Signal's executive team — strategy updates, an honest look at what's ahead, and the conversations that close the summit with momentum.</p>
+            </header>
+            <ol class="story__sessions">
+              <li class="story__session">
+                <span class="story__session-time">9:00 AM</span>
+                <span class="story__session-title">Fireside chat with Signal leadership</span>
+              </li>
+              <li class="story__session">
+                <span class="story__session-time">11:00 AM</span>
+                <span class="story__session-title">The next stage — 2027 strategy preview</span>
+              </li>
+              <li class="story__session">
+                <span class="story__session-time">12:30 PM</span>
+                <span class="story__session-title">Closing lunch</span>
+              </li>
+              <li class="story__session">
+                <span class="story__session-time">2:00 PM</span>
+                <span class="story__session-title">Optional tours &amp; Q&amp;A</span>
+              </li>
+            </ol>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-grid" data-version-show="v1" aria-label="Register for Leadership Summit 2026">
+      <div class="cta-grid__container">
+        <div class="cta-grid__hero">
+          <div class="cta-grid__button-col">
+            <a href="#register" class="cta-grid__cta">
+              <span class="cta-grid__cta-label">Register Now</span>
+            </a>
+          </div>
+          <div class="cta-grid__image">
+            <canvas class="cta-grid__canvas" aria-hidden="true"></canvas>
+          </div>
+          <div class="cta-grid__heading-card">
+            <h2 class="cta-grid__tagline">Three days in Omaha. The room that decides the year.</h2>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer" data-version-show="v1">
+      <div class="footer__inner">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <img src="assets/signal-logo.png" alt="Signal" class="footer__logo" />
+            <p class="footer__tagline">Leadership Summit 2026<br />October 6–8 · Omaha, Nebraska</p>
+          </div>
+          <nav class="footer__nav" aria-label="Footer navigation">
+            <a href="/" class="footer__link">Home</a>
+            <a href="/agenda" class="footer__link">Agenda</a>
+            <a href="/travel" class="footer__link">Travel &amp; Hotel</a>
+            <a href="/faqs" class="footer__link">FAQs</a>
+          </nav>
+        </div>
+        <div class="footer__bottom">
+          <p class="footer__copy">© 2026 Signal · All rights reserved</p>
+          <a href="#register" class="footer__cta">
+            Register for Summit
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="14" height="14">
+              <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ============================================================== -->
+    <!-- V2 SECTIONS — full page-wide V2 design (hidden when body[data-version=v1]) -->
+    <!-- ============================================================== -->
+
+    <section class="hero-v2" data-version-show="v2">
+      <div class="hero-v2__inner">
+        <a href="#register" class="hero-v2__cta">
+          <span class="hero-v2__cta-label">Register Now</span>
+          <span class="hero-v2__cta-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+      <div class="hero-v2__fade" aria-hidden="true"></div>
+    </section>
+
+    <section class="video-v2" data-version-show="v2" aria-label="Last summit highlights">
+      <div class="video-v2__container">
+        <p class="video-v2__heading">
+          Three days of company updates, owner-led breakouts, and conversations that decide the year. Watch how the room came together in 2025.
+        </p>
+        <a class="video-card video-card--with-label" href="#video" aria-label="Watch highlights from the 2025 Summit">
+          <span class="video-card__media">
+            <img class="video-card__thumb" src="assets/video-thumbnail.jpeg" alt="" />
+          </span>
+          <span class="video-card__play" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 5.5v13l11-6.5-11-6.5z" fill="currentColor"/>
+            </svg>
+            <span class="video-card__play-label">A look back at 2025.</span>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <section class="ribbon-v2" data-version-show="v2" aria-hidden="true">
+      <svg class="ribbon-svg ribbon-svg--v2" viewBox="0 0 1801 225" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="rg-hero-v2" x1="0" y1="0" x2="1801" y2="175" gradientUnits="userSpaceOnUse">
+            <stop offset="0%"   stop-color="#E5751A" />
+            <stop offset="22%"  stop-color="#FF9332" />
+            <stop offset="55%"  stop-color="#FFB37A" />
+            <stop offset="82%"  stop-color="#FFD9B8" />
+            <stop offset="100%" stop-color="#FFE8D2" />
+          </linearGradient>
+          <linearGradient id="rg-glow-v2" x1="0" y1="87.5" x2="1801" y2="87.5" gradientUnits="userSpaceOnUse">
+            <stop offset="0%"   stop-color="#D85B0A" stop-opacity="0.20" />
+            <stop offset="35%"  stop-color="#FF9332" stop-opacity="0.6" />
+            <stop offset="70%"  stop-color="#FFB37A" stop-opacity="0.7" />
+            <stop offset="100%" stop-color="#FFD9B8" stop-opacity="0.4" />
+          </linearGradient>
+          <filter id="rg-blur-v2" x="-15%" y="-50%" width="130%" height="200%">
+            <feGaussianBlur stdDeviation="14" />
+          </filter>
+        </defs>
+        <path class="ribbon-v2__bg-below"
+          d="M0 174.5 H1001.77 C1029.04 174.5 1053.83 158.656 1065.29 133.903 L1078.67 105.006 C1083.75 94.03 1094.75 87.0109 1106.84 87.0278 L1800.5 88 V225 H0 Z"
+          fill="#0032A0" />
+        <g class="ribbon-v2__glow" filter="url(#rg-blur-v2)">
+          <path
+            d="M0 174.5V87.5H1039.83C1055.21 87.5 1069.23 78.6778 1075.89 64.8092L1087.94 39.7088C1099.59 15.4387 1124.13 0 1151.05 0H1800.5V88L1106.84 87.0278C1094.75 87.0109 1083.75 94.03 1078.67 105.006L1065.29 133.903C1053.83 158.656 1029.04 174.5 1001.77 174.5H0Z"
+            fill="url(#rg-glow-v2)" />
+        </g>
+        <g class="ribbon-v2__hero">
+          <path
+            d="M0 174.5V87.5H1039.83C1055.21 87.5 1069.23 78.6778 1075.89 64.8092L1087.94 39.7088C1099.59 15.4387 1124.13 0 1151.05 0H1800.5V88L1106.84 87.0278C1094.75 87.0109 1083.75 94.03 1078.67 105.006L1065.29 133.903C1053.83 158.656 1029.04 174.5 1001.77 174.5H0Z"
+            fill="url(#rg-hero-v2)" />
+        </g>
+      </svg>
+    </section>
+
+    <section class="info-v2" data-version-show="v2" aria-label="What to expect">
+      <div class="info-v2__container">
+        <p class="info-v2__eyebrow">
+          <span class="info-v2__eyebrow-dot" aria-hidden="true"></span>
+          What to expect
+        </p>
+        <h2 class="info-v2__heading">Three days for franchise leaders.</h2>
+        <p class="info-v2__lede">Updates, breakouts, and the conversations that decide the year.</p>
+
+        <div class="info-v2__days">
+          <article class="info-v2__day">
+            <header class="info-v2__day-head">
+              <p class="info-v2__day-num">Day 01</p>
+              <p class="info-v2__day-date">Oct 6 · Mon</p>
+            </header>
+            <div class="info-v2__sessions">
+              <div class="info-v2__session info-v2__session--sm">
+                <p class="info-v2__session-time">9:00</p>
+                <p class="info-v2__session-title">Opening keynote</p>
+              </div>
+              <div class="info-v2__session info-v2__session--lg">
+                <p class="info-v2__session-time">10:30 · 90 min</p>
+                <p class="info-v2__session-title">State of Signal</p>
+                <p class="info-v2__session-body">A look at 2026 — where we are, where we're going.</p>
+              </div>
+              <div class="info-v2__session info-v2__session--sm">
+                <p class="info-v2__session-time">12:00</p>
+                <p class="info-v2__session-title">Owner networking lunch</p>
+              </div>
+              <div class="info-v2__session info-v2__session--md">
+                <p class="info-v2__session-time">2:00 · 2h</p>
+                <p class="info-v2__session-title">Recurring revenue at scale</p>
+                <p class="info-v2__session-body">Breakout track</p>
+              </div>
+              <div class="info-v2__session info-v2__session--sm">
+                <p class="info-v2__session-time">4:00</p>
+                <p class="info-v2__session-title">Welcome reception</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="info-v2__day">
+            <header class="info-v2__day-head">
+              <p class="info-v2__day-num">Day 02</p>
+              <p class="info-v2__day-date">Oct 7 · Tue</p>
+            </header>
+            <div class="info-v2__sessions">
+              <div class="info-v2__session info-v2__session--md">
+                <p class="info-v2__session-time">8:30 · 2h</p>
+                <p class="info-v2__session-title">Owner-led sessions</p>
+                <p class="info-v2__session-body">Multiple tracks</p>
+              </div>
+              <div class="info-v2__session info-v2__session--lg">
+                <p class="info-v2__session-time">10:30 · 90 min</p>
+                <p class="info-v2__session-title">Operational deep dive</p>
+                <p class="info-v2__session-body">Systems that turn ambition into results.</p>
+              </div>
+              <div class="info-v2__session info-v2__session--sm">
+                <p class="info-v2__session-time">12:00</p>
+                <p class="info-v2__session-title">Lunch &amp; lightning talks</p>
+              </div>
+              <div class="info-v2__session info-v2__session--md">
+                <p class="info-v2__session-time">1:30 · 90 min</p>
+                <p class="info-v2__session-title">Leadership roundtable</p>
+              </div>
+              <div class="info-v2__session info-v2__session--md">
+                <p class="info-v2__session-time">3:30 · 90 min</p>
+                <p class="info-v2__session-title">Sales &amp; marketing workshop</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="info-v2__day">
+            <header class="info-v2__day-head">
+              <p class="info-v2__day-num">Day 03</p>
+              <p class="info-v2__day-date">Oct 8 · Wed</p>
+            </header>
+            <div class="info-v2__sessions">
+              <div class="info-v2__session info-v2__session--lg">
+                <p class="info-v2__session-time">9:00 · 2h</p>
+                <p class="info-v2__session-title">Fireside with leadership</p>
+                <p class="info-v2__session-body">Direct time with Signal's executive team.</p>
+              </div>
+              <div class="info-v2__session info-v2__session--md">
+                <p class="info-v2__session-time">11:00 · 90 min</p>
+                <p class="info-v2__session-title">2027 strategy preview</p>
+              </div>
+              <div class="info-v2__session info-v2__session--sm">
+                <p class="info-v2__session-time">12:30</p>
+                <p class="info-v2__session-title">Closing lunch</p>
+              </div>
+              <div class="info-v2__session info-v2__session--sm">
+                <p class="info-v2__session-time">2:00</p>
+                <p class="info-v2__session-title">Optional tours &amp; Q&amp;A</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer-v2" data-version-show="v2">
+      <div class="footer-v2__inner">
+        <div class="footer-v2__logo-block">
+          <img src="assets/signal-logo.png" alt="Signal" class="footer-v2__logo" />
+          <p class="footer-v2__tagline">Leadership Summit 2026<br />October 6–8 · Omaha, Nebraska</p>
+        </div>
+        <nav class="footer-v2__sitemap" aria-label="Footer navigation">
+          <a href="/" class="footer-v2__link">Home</a>
+          <a href="/agenda" class="footer-v2__link">Agenda</a>
+          <a href="/travel" class="footer-v2__link">Travel &amp; Hotel</a>
+          <a href="/faqs" class="footer-v2__link">FAQs</a>
+        </nav>
+      </div>
+      <canvas class="footer-v2__canvas" aria-hidden="true"></canvas>
+    </footer>
+
+    <!-- ============================================================== -->
+    <!-- end V2 -->
+    <!-- ============================================================== -->
+
+    <div class="message-overlay" id="message-overlay" role="dialog" aria-modal="true" aria-labelledby="message-overlay-title" aria-hidden="true">
+      <button class="message-overlay__close" type="button" aria-label="Close message">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div class="message-overlay__inner">
+        <p class="message-overlay__eyebrow">A message from Jordan Bauer · CEO, Signal</p>
+        <h2 class="message-overlay__heading" id="message-overlay-title">
+          The strongest franchises grow because their leaders show up.
+        </h2>
+        <div class="message-overlay__body">
+          <p>For owners, for teams, for each other. Leadership Summit isn't a status update — it's the room where we decide what the next chapter of Signal looks like, together.</p>
+          <p>Over three days, we'll cover company updates, owner-led breakouts on what's actually working in the field, and conversations focused on leadership, sales, operations, and the next stage of franchise growth. Expect honesty. Expect rigor. Expect leaving with something you can put into practice the Monday after you fly home.</p>
+          <p>If you've ever felt your network was stronger than your strategy, this is the trip. Bring your owners. Bring your key employees. We'll do the rest.</p>
+          <p><strong>See you in Omaha.</strong></p>
+          <p>— Jordan</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="version-toggle" role="group" aria-label="Design version">
+    <button type="button" class="version-toggle__btn is-active" data-version="v1" aria-pressed="true">V1</button>
+    <button type="button" class="version-toggle__btn" data-version="v2" aria-pressed="false">V2</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script src="script.js"></script>
+  <script type="module">
+    /* Three.js scenes:
+       - V2 footer: a rotating GLB model
+       - V1 cta-grid: a 12×22 grid of extruded Signal-ribbon Z-shapes with
+         mouse-react look-at behaviour, matching the supplied Pattern Studio spec. */
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+    /* ---------- shared: GLB loader for the footer ---------- */
+    const loader = new GLTFLoader();
+    let cachedGltf = null;
+    function loadModel(cb) {
+      if (cachedGltf) { cb(cachedGltf); return; }
+      loader.load('assets/3d-bg.glb', (gltf) => {
+        cachedGltf = gltf;
+        cb(gltf);
+      }, undefined, (err) => console.warn('3D load failed', err));
+    }
+
+    function initFooter3D(canvas, opts = {}) {
+      if (!canvas) return;
+      const { camZ = 4.2, scale = 2.4, rotateSpeed = 0.005 } = opts;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+      camera.position.set(0, 0.3, camZ);
+
+      scene.add(new THREE.AmbientLight(0xfff7ee, 0.85));
+      const key = new THREE.DirectionalLight(0xffffff, 1.1);
+      key.position.set(3, 4, 5);
+      scene.add(key);
+      const accent = new THREE.DirectionalLight(0xff9332, 0.6);
+      accent.position.set(-4, 2, -3);
+      scene.add(accent);
+
+      const group = new THREE.Group();
+      scene.add(group);
+
+      loadModel((gltf) => {
+        const model = gltf.scene.clone(true);
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z) || 1;
+        model.position.sub(center);
+        model.scale.setScalar(scale / maxDim);
+        group.add(model);
+      });
+
+      const fit = () => {
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        if (!w || !h) return;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      };
+      fit();
+      window.addEventListener('resize', fit);
+      if ('ResizeObserver' in window) new ResizeObserver(fit).observe(canvas);
+
+      let t = 0;
+      const tick = () => {
+        if (!reduce) {
+          t += rotateSpeed;
+          group.rotation.y = t;
+          group.rotation.x = Math.sin(t * 0.6) * 0.15;
+        }
+        renderer.render(scene, camera);
+        requestAnimationFrame(tick);
+      };
+      tick();
+    }
+
+    /* ---------- Pattern Studio: 12×22 grid of mouse-reactive Signal Z-shapes ---------- */
+    const PATTERN_SVG = `<svg width="117" height="65" viewBox="0 0 117 65" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M98.5 32.5L117 0H83.6759C76.7307 0 70.2827 3.6031 66.6427 9.51805L55.4286 27.741C53.6086 30.6984 50.3847 32.5 46.912 32.5H18L0 65H33.5253C40.6318 65 47.2046 61.229 50.7912 55.0939L61.1044 37.453C62.8977 34.3855 66.1841 32.5 69.7374 32.5H98.5Z" fill="#FF9332"/></svg>`;
+
+    function buildPatternGeometry(svgText, depth, bevel) {
+      const data = new SVGLoader().parse(svgText);
+      const shapes = [];
+      for (const path of data.paths) {
+        for (const s of SVGLoader.createShapes(path)) shapes.push(s);
+      }
+      const geo = new THREE.ExtrudeGeometry(shapes, {
+        depth,
+        bevelEnabled: true,
+        bevelThickness: bevel,
+        bevelSize: bevel,
+        bevelSegments: 2,
+        curveSegments: 6,
+      });
+      geo.scale(1, -1, 1); // SVG Y-down → three.js Y-up
+      geo.computeBoundingBox();
+      const bb = geo.boundingBox;
+      geo.translate(
+        -(bb.min.x + bb.max.x) / 2,
+        -(bb.min.y + bb.max.y) / 2,
+        -(bb.min.z + bb.max.z) / 2
+      );
+      const size = new THREE.Vector3();
+      bb.getSize(size);
+      const norm = 1 / Math.max(size.x, size.y, size.z);
+      geo.scale(norm, norm, norm);
+      geo.computeVertexNormals();
+      return geo;
+    }
+
+    function initPatternStudio(canvas) {
+      if (!canvas) return;
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const CFG = {
+        color: 0xFF8C00,
+        metalness: 0.75,
+        roughness: 0.32,
+        clearcoat: 0.45,
+        clearcoatRoughness: 0.18,
+        envMapIntensity: 1.25,
+        rows: 12,
+        cols: 22,
+        spacingX: 0.98,
+        spacingY: 0.98,
+        scale: 1.0,
+        depth: 4,
+        bevel: 0.35,
+        fov: 35,
+        cameraZ: 18,
+        viewLift: 3.5,
+        maxYaw: 1.1,
+        verticalTilt: 0.22,
+        maxPitch: 0.45,
+        smoothing: 0.15,
+        influence: 1.0,
+      };
+
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.0;
+
+      const scene = new THREE.Scene();
+      scene.background = null;
+
+      const camera = new THREE.PerspectiveCamera(CFG.fov, 1, 0.1, 500);
+      camera.position.set(0, 0, CFG.cameraZ);
+      camera.lookAt(0, 0, 0);
+
+      // PMREM environment for clearcoat/metallic reflections (no external HDRI)
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmrem.fromScene(new RoomEnvironment(renderer), 0.04).texture;
+
+      // Studio lighting tuned for the white card scene
+      const keyLight = new THREE.DirectionalLight(0xffffff, 1.65);
+      keyLight.position.set(6, 5, 8);
+      scene.add(keyLight);
+      const fillLight = new THREE.DirectionalLight(0xe8efff, 0.4);
+      fillLight.position.set(-7, 2, 5);
+      scene.add(fillLight);
+      const rimLight = new THREE.DirectionalLight(0xffb070, 0.55);
+      rimLight.position.set(-3, -6, 4);
+      scene.add(rimLight);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.22));
+
+      const geometry = buildPatternGeometry(PATTERN_SVG, CFG.depth, CFG.bevel);
+      const material = new THREE.MeshPhysicalMaterial({
+        color: CFG.color,
+        metalness: CFG.metalness,
+        roughness: CFG.roughness,
+        clearcoat: CFG.clearcoat,
+        clearcoatRoughness: CFG.clearcoatRoughness,
+        envMapIntensity: CFG.envMapIntensity,
+        side: THREE.DoubleSide,
+      });
+
+      const total = CFG.rows * CFG.cols;
+      const mesh = new THREE.InstancedMesh(geometry, material, total);
+      mesh.frustumCulled = false;
+      scene.add(mesh);
+
+      const positions = new Array(total);
+      const baseScale = new THREE.Vector3(CFG.scale, CFG.scale, CFG.scale);
+      const offX = -(CFG.cols - 1) * CFG.spacingX * 0.5;
+      const offY = -(CFG.rows - 1) * CFG.spacingY * 0.5;
+      for (let r = 0; r < CFG.rows; r++) {
+        for (let c = 0; c < CFG.cols; c++) {
+          positions[r * CFG.cols + c] = new THREE.Vector3(
+            offX + c * CFG.spacingX,
+            offY + r * CFG.spacingY,
+            0
+          );
+        }
+      }
+
+      // Mouse → world plane projection
+      const ndc = new THREE.Vector2();
+      const mouseWorld = new THREE.Vector3();
+      const mouseTarget = new THREE.Vector3();
+      const raycaster = new THREE.Raycaster();
+      const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+      let mouseActive = false;
+
+      const root = canvas.closest('.cta-grid__hero') || canvas;
+      root.addEventListener('pointermove', (e) => {
+        const r = canvas.getBoundingClientRect();
+        ndc.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+        ndc.y = -((e.clientY - r.top) / r.height) * 2 + 1;
+        mouseActive = true;
+        raycaster.setFromCamera(ndc, camera);
+        raycaster.ray.intersectPlane(plane, mouseTarget);
+      });
+      root.addEventListener('pointerleave', () => { mouseActive = false; });
+
+      const _m = new THREE.Matrix4();
+      const _q = new THREE.Quaternion();
+      const _qYaw = new THREE.Quaternion();
+      const _qPitch = new THREE.Quaternion();
+      const _yAxis = new THREE.Vector3(0, 1, 0);
+      const _xAxis = new THREE.Vector3(1, 0, 0);
+      const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
+
+      function applyMatrices() {
+        const use = mouseActive && !reduce;
+        const mx = mouseWorld.x, my = mouseWorld.y;
+        for (let i = 0; i < total; i++) {
+          const p = positions[i];
+          let yaw = 0, pitch = 0;
+          if (use) {
+            yaw = clamp(
+              Math.atan2(mx - p.x, CFG.viewLift) * CFG.influence,
+              -CFG.maxYaw, CFG.maxYaw
+            );
+            pitch = clamp(
+              -Math.atan2(my - p.y, CFG.viewLift) * CFG.influence * CFG.verticalTilt,
+              -CFG.maxPitch, CFG.maxPitch
+            );
+          }
+          _qYaw.setFromAxisAngle(_yAxis, yaw);
+          _qPitch.setFromAxisAngle(_xAxis, pitch);
+          _q.identity().multiply(_qYaw).multiply(_qPitch);
+          _m.compose(p, _q, baseScale);
+          mesh.setMatrixAt(i, _m);
+        }
+        mesh.instanceMatrix.needsUpdate = true;
+      }
+
+      const fit = () => {
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        if (!w || !h) return;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      };
+      fit();
+      window.addEventListener('resize', fit);
+      if ('ResizeObserver' in window) new ResizeObserver(fit).observe(canvas);
+
+      const tick = () => {
+        const s = 1 - CFG.smoothing;
+        mouseWorld.x += (mouseTarget.x - mouseWorld.x) * s;
+        mouseWorld.y += (mouseTarget.y - mouseWorld.y) * s;
+        applyMatrices();
+        renderer.render(scene, camera);
+        requestAnimationFrame(tick);
+      };
+      applyMatrices();
+      tick();
+    }
+
+    function initAll3D() {
+      initFooter3D(document.querySelector('.footer-v2__canvas'), { camZ: 4.2, scale: 2.4 });
+      initPatternStudio(document.querySelector('.cta-grid__canvas'));
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAll3D, { once: true });
+    } else {
+      initAll3D();
+    }
+  </script>
+</body>
+</html>

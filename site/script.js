@@ -1,0 +1,424 @@
+/* Signal Leadership Summit — hero animations (GSAP) */
+(function () {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer = window.matchMedia('(pointer: fine)').matches;
+
+  if (typeof gsap === 'undefined') {
+    document.documentElement.classList.remove('js-anim');
+    return;
+  }
+
+  /* Nav scroll state — dynamically picks the visible hero (V1 .hero__top or V2 .hero-v2)
+     because data-version-show hides one of them in CSS, and the hidden one reports
+     offsetHeight=0 which would otherwise leave the nav permanently in scrolled state. */
+  function initNavScroll() {
+    const nav = document.querySelector('.nav');
+    if (!nav) return;
+
+    const update = () => {
+      const isV2 = document.body.dataset.version === 'v2';
+      const hero = isV2
+        ? document.querySelector('.hero-v2')
+        : document.querySelector('.hero__top');
+      if (!hero) return;
+      const threshold = hero.offsetTop + hero.offsetHeight - nav.offsetHeight;
+      const scrolled = window.scrollY > threshold;
+      nav.classList.toggle('is-scrolled', scrolled);
+    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    // Expose so the version toggle can re-evaluate after switching V1↔V2.
+    nav._updateScrollState = update;
+  }
+
+  /* Ticker pause/play (works without GSAP) */
+  function initTicker() {
+    const ticker = document.querySelector('.ticker');
+    const btn = ticker && ticker.querySelector('.ticker__pause');
+    if (!ticker || !btn) return;
+    btn.addEventListener('click', () => {
+      const paused = ticker.getAttribute('data-paused') === 'true';
+      ticker.setAttribute('data-paused', paused ? 'false' : 'true');
+      btn.setAttribute('aria-label', paused ? 'Pause announcements' : 'Play announcements');
+    });
+  }
+
+  /* Procedural S-curve pattern for the video card hover overlay.
+     Triangular grid: row 0 = 9 elements, drops one per row from the right.
+     Depth factor = (row + col); top-left elevated (bright + drop shadow),
+     bottom-right phased out (darker, no shadow, lower opacity). */
+  function initVideoPattern() {
+    const canvases = document.querySelectorAll('.video-card__pattern');
+    if (!canvases.length) return;
+
+    // ---------- Tweakable parameters ----------
+    const ROWS = 9;            // top row count (also total rows)
+    const SHAPE_W = 36;        // each shape width  (px in canvas coord space)
+    const SHAPE_H = 9;         // each shape height
+    const GAP_X = 5;           // horizontal gap between shapes
+    const GAP_Y = 9;           // vertical gap between rows
+    const MAX_SHADOW = 6;      // maximum drop-shadow offset for top-left shapes
+    const MAX_BLUR = 5;        // maximum shadow blur
+    // ------------------------------------------
+
+    const cols = ROWS;
+    const cssW = MAX_SHADOW * 2 + cols * SHAPE_W + (cols - 1) * GAP_X;
+    const cssH = MAX_SHADOW * 2 + ROWS * SHAPE_H + (ROWS - 1) * GAP_Y;
+    const dpr = window.devicePixelRatio || 1;
+
+    /* Draw a single S-curve wave segment (the Signal ribbon shape, scaled). */
+    function tracePath(ctx, x, y, w, h) {
+      const sx = w / 1801;
+      const sy = h / 175;
+      ctx.beginPath();
+      ctx.moveTo(x,                       y + 174.5 * sy);
+      ctx.lineTo(x,                       y +  87.5 * sy);
+      ctx.lineTo(x + 1039.83 * sx,        y +  87.5 * sy);
+      ctx.bezierCurveTo(
+        x + 1055.21 * sx, y + 87.5    * sy,
+        x + 1069.23 * sx, y + 78.6778 * sy,
+        x + 1075.89 * sx, y + 64.8092 * sy
+      );
+      ctx.lineTo(x + 1087.94 * sx, y + 39.7088 * sy);
+      ctx.bezierCurveTo(
+        x + 1099.59 * sx, y + 15.4387 * sy,
+        x + 1124.13 * sx, y +  0      * sy,
+        x + 1151.05 * sx, y +  0      * sy
+      );
+      ctx.lineTo(x + 1800.5 * sx, y +  0      * sy);
+      ctx.lineTo(x + 1800.5 * sx, y + 88      * sy);
+      ctx.lineTo(x + 1106.84 * sx, y + 87.0278 * sy);
+      ctx.bezierCurveTo(
+        x + 1094.75 * sx, y +  87.0109 * sy,
+        x + 1083.75 * sx, y +  94.03   * sy,
+        x + 1078.67 * sx, y + 105.006  * sy
+      );
+      ctx.lineTo(x + 1065.29 * sx, y + 133.903 * sy);
+      ctx.bezierCurveTo(
+        x + 1053.83 * sx, y + 158.656 * sy,
+        x + 1029.04 * sx, y + 174.5   * sy,
+        x + 1001.77 * sx, y + 174.5   * sy
+      );
+      ctx.lineTo(x, y + 174.5 * sy);
+      ctx.closePath();
+    }
+
+    function render(ctx) {
+      ctx.clearRect(0, 0, cssW, cssH);
+      const maxDistance = (ROWS - 1) * 2;
+      for (let row = 0; row < ROWS; row++) {
+        const colsInRow = ROWS - row;
+        for (let col = 0; col < colsInRow; col++) {
+          const distance = row + col;
+          const t = distance / maxDistance;          // 0 (top-left) → 1 (bottom-right)
+          const inv = 1 - t;
+
+          // Position (with shadow padding inset)
+          const x = MAX_SHADOW + col * (SHAPE_W + GAP_X);
+          const y = MAX_SHADOW + row * (SHAPE_H + GAP_Y);
+
+          // Shadow: sharper & offset on top-left, vanishes toward bottom-right
+          ctx.shadowColor   = `rgba(0, 0, 0, ${0.65 * inv})`;
+          ctx.shadowBlur    = MAX_BLUR * inv;
+          ctx.shadowOffsetX = MAX_SHADOW * inv * 0.6;
+          ctx.shadowOffsetY = MAX_SHADOW * inv;
+
+          // Fill: bright white at low t, fades to dark gray / transparent
+          const lightness = Math.round(245 - t * 210); // 245 → 35
+          const alpha = 1 - t * 0.78;                  // 1 → 0.22
+          ctx.fillStyle = `rgba(${lightness}, ${lightness}, ${lightness}, ${alpha})`;
+
+          tracePath(ctx, x, y, SHAPE_W, SHAPE_H);
+          ctx.fill();
+        }
+      }
+      // reset shadow state for safety
+      ctx.shadowColor   = 'transparent';
+      ctx.shadowBlur    = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+    }
+
+    // Size every canvas the same and draw the pattern on each.
+    // The bottom-right canvas is rotated 180° via CSS so the bright/elevated
+    // corner of the same drawing hugs the bottom-right of the card.
+    canvases.forEach((canvas) => {
+      canvas.width = cssW * dpr;
+      canvas.height = cssH * dpr;
+      canvas.style.aspectRatio = `${cssW} / ${cssH}`;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      render(ctx);
+    });
+  }
+
+  /* Audio player — UI-only player with simulated playback so the design works
+     even without an actual MP3 file. data-duration attribute (seconds) drives
+     the progress / time display. */
+  function initAudioPlayer() {
+    document.querySelectorAll('.audio-player').forEach((player) => {
+      const btn = player.querySelector('.audio-player__btn');
+      const fill = player.querySelector('.audio-player__fill');
+      const timeEl = player.querySelector('.audio-player__time');
+      const totalSeconds = parseFloat(player.dataset.duration || '0') || 0;
+      if (!btn || !fill || !timeEl || !totalSeconds) return;
+
+      const totalSpan = timeEl.querySelector('.audio-player__total');
+      const fmt = (s) => {
+        const m = Math.floor(s / 60);
+        const sec = Math.floor(s % 60).toString().padStart(2, '0');
+        return `${m}:${sec}`;
+      };
+      const totalLabel = fmt(totalSeconds);
+      if (totalSpan) totalSpan.textContent = ` / ${totalLabel}`;
+
+      let elapsed = 0;
+      let raf = null;
+      let lastTs = 0;
+      const tick = (ts) => {
+        if (!lastTs) lastTs = ts;
+        elapsed += (ts - lastTs) / 1000;
+        lastTs = ts;
+        if (elapsed >= totalSeconds) {
+          elapsed = totalSeconds;
+          stop();
+          return;
+        }
+        fill.style.width = (elapsed / totalSeconds) * 100 + '%';
+        timeEl.firstChild.textContent = fmt(elapsed);
+        raf = requestAnimationFrame(tick);
+      };
+      const stop = () => {
+        if (raf) cancelAnimationFrame(raf);
+        raf = null;
+        lastTs = 0;
+        player.setAttribute('data-playing', 'false');
+        btn.setAttribute('aria-label', 'Play audio message');
+      };
+      const play = () => {
+        if (elapsed >= totalSeconds) {
+          elapsed = 0;
+          fill.style.width = '0%';
+        }
+        player.setAttribute('data-playing', 'true');
+        btn.setAttribute('aria-label', 'Pause audio message');
+        lastTs = 0;
+        raf = requestAnimationFrame(tick);
+      };
+      btn.addEventListener('click', () => {
+        if (player.getAttribute('data-playing') === 'true') stop();
+        else play();
+      });
+    });
+  }
+
+  /* Story section — highlight the sidebar nav item that matches the panel
+     currently most in view. Uses IntersectionObserver. */
+  function initStoryNav() {
+    const links = document.querySelectorAll('.story__nav-link');
+    const panels = document.querySelectorAll('.story__panel');
+    if (!links.length || !panels.length) return;
+
+    const linkByTarget = new Map();
+    links.forEach((l) => linkByTarget.set(l.dataset.target, l));
+
+    const setActive = (id) => {
+      links.forEach((l) => l.classList.toggle('is-active', l.dataset.target === id));
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        // Pick the entry with the highest intersection ratio among those intersecting
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActive(visible.target.id);
+      },
+      {
+        // Bias the observation window to the upper-middle of the viewport
+        rootMargin: '-30% 0px -50% 0px',
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      }
+    );
+    panels.forEach((p) => io.observe(p));
+  }
+
+  /* Fullscreen overlay for the CEO message */
+  function initMessageOverlay() {
+    const overlay = document.getElementById('message-overlay');
+    const trigger = document.querySelector('.message-section__expand');
+    const closeBtn = overlay && overlay.querySelector('.message-overlay__close');
+    if (!overlay || !trigger || !closeBtn) return;
+
+    const open = () => {
+      overlay.setAttribute('aria-hidden', 'false');
+      trigger.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('is-overlay-open');
+      closeBtn.focus();
+    };
+    const close = () => {
+      overlay.setAttribute('aria-hidden', 'true');
+      trigger.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('is-overlay-open');
+      trigger.focus();
+    };
+    trigger.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay.getAttribute('aria-hidden') === 'false') close();
+    });
+  }
+
+  /* Page-wide V1/V2 toggle. Flips body[data-version], which CSS uses to show
+     the matching set of sections (V1 sections vs V2 sections). */
+  function initVersionToggles() {
+    const toggle = document.querySelector('.version-toggle');
+    if (!toggle) return;
+    toggle.addEventListener('click', (e) => {
+      const btn = e.target.closest('.version-toggle__btn');
+      if (!btn) return;
+      const v = btn.dataset.version;
+      document.body.dataset.version = v;
+      toggle.querySelectorAll('.version-toggle__btn').forEach((b) => {
+        const active = b.dataset.version === v;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-pressed', String(active));
+      });
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      // Re-evaluate nav scroll state since the visible hero just changed.
+      const nav = document.querySelector('.nav');
+      if (nav && nav._updateScrollState) nav._updateScrollState();
+    });
+  }
+
+  function init() {
+    initNavScroll();
+    initTicker();
+    initAudioPlayer();
+    initMessageOverlay();
+    initStoryNav();
+    initVersionToggles();
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+    /* Content stagger */
+    tl.to(
+      [
+        '.hero__pill',
+        '.hero__title',
+        '.hero__details',
+      ],
+      {
+        opacity: 1,
+        y: 0,
+        duration: reduceMotion ? 0.01 : 0.7,
+        stagger: reduceMotion ? 0 : 0.12,
+      }
+    );
+
+    /* Ribbon layers fade in in place (no slide). */
+    tl.to(
+      '.ribbon-layer',
+      {
+        opacity: 1,
+        duration: reduceMotion ? 0.01 : 0.8,
+        stagger: reduceMotion ? 0 : 0.08,
+        ease: 'power2.out',
+      },
+      reduceMotion ? 0 : 0.2
+    );
+
+    /* Two-stage shine choreography:
+       1) Entrance sweep — bright, fast pass across the ribbon shortly after load
+       2) Ambient sweep — very slow, subtle pass that loops indefinitely so the
+          ribbon keeps a soft "alive" quality without being distracting. */
+    if (!reduceMotion) {
+      const shineTl = gsap.timeline({ delay: 0.7 });
+
+      shineTl.fromTo(
+        '#rg-shine',
+        { attr: { gradientTransform: 'translate(-1400 0)' } },
+        {
+          attr: { gradientTransform: 'translate(2400 0)' },
+          duration: 2.4,
+          ease: 'power2.inOut',
+        }
+      );
+
+      // Hand off to a slow, faint ambient loop after the entrance sweep
+      shineTl.add(() => {
+        gsap.set('.ribbon-layer--shine', { opacity: 0.35 });
+        gsap.fromTo(
+          '#rg-shine',
+          { attr: { gradientTransform: 'translate(-1400 0)' } },
+          {
+            attr: { gradientTransform: 'translate(2400 0)' },
+            duration: 16,
+            ease: 'none',
+            repeat: -1,
+            repeatDelay: 6,
+          }
+        );
+      });
+    }
+
+    /* Invite section: scroll-reveal stagger */
+    if (typeof IntersectionObserver !== 'undefined') {
+      const io = new IntersectionObserver(
+        (entries, obs) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            obs.unobserve(entry.target);
+            gsap.to(
+              [
+                '.invite__heading',
+                '.invite__caption',
+                '.invite__cta-stack',
+              ],
+              {
+                opacity: 1,
+                y: 0,
+                duration: reduceMotion ? 0.01 : 0.7,
+                stagger: reduceMotion ? 0 : 0.12,
+                ease: 'power3.out',
+              }
+            );
+          });
+        },
+        { threshold: 0.15 }
+      );
+      const invite = document.querySelector('.invite');
+      if (invite) io.observe(invite);
+    }
+
+    /* Subtle parallax on mouse move (desktop only, no reduced-motion) */
+    if (finePointer && !reduceMotion) {
+      const layers = [
+        { el: '.ribbon-layer--glow', strength: 14 },
+        { el: '.ribbon-layer--mid', strength: 9 },
+        { el: '.ribbon-layer--hero', strength: 5 },
+      ];
+
+      const setters = layers.map(({ el, strength }) => {
+        const xTo = gsap.quickTo(el, 'x', { duration: 0.9, ease: 'power3.out' });
+        const yTo = gsap.quickTo(el, 'y', { duration: 0.9, ease: 'power3.out' });
+        return { xTo, yTo, strength };
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        const nx = e.clientX / window.innerWidth - 0.5;   // -0.5 .. 0.5
+        const ny = e.clientY / window.innerHeight - 0.5;
+        setters.forEach(({ xTo, yTo, strength }) => {
+          xTo(nx * strength);
+          yTo(ny * strength * 0.6);
+        });
+      }, { passive: true });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+})();
