@@ -1,2 +1,6 @@
 .DS_Store
 .claude/
+
+# Large media — exceeds GitHub's 100MB per-file hard limit.
+# Track via Git LFS or host externally before re-enabling.
+*.mov

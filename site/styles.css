@@ -473,6 +473,83 @@ img, svg { display: block; max-width: 100%; }
 
 .ribbon-layer { will-change: transform, opacity; }
 
+/* ---------- Page loading screen ---------- */
+/* Hidden by default — no JS means the loader stays out of the way and the
+   real site renders immediately. html.js-anim flips it visible at first paint;
+   JS dismisses it after window.load + grey→orange wipe + fade. */
+.page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--white);
+  display: none;
+}
+html.js-anim .page-loader {
+  display: block;
+}
+/* The ribbon is positioned in lockstep with the hero ribbon — JS reads
+   .hero__ribbon's bounding rect and applies it as inline `top`/`height` so
+   the grey ribbon sits exactly where the orange ribbon will be. Defaults
+   are a sensible pre-measurement fallback (matches the hero's CSS height). */
+.page-loader__ribbon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: clamp(280px, 36vh, 520px);
+  width: 100%;
+  height: clamp(180px, 23vw, 310px);
+  display: block;
+  overflow: visible;
+}
+@media (min-width: 960px) {
+  .page-loader__ribbon {
+    height: clamp(230px, 26vw, 360px);
+  }
+}
+
+/* Continuous L→R shimmer band — matches the existing hero shine cadence */
+.page-loader__shimmer {
+  transform: translateX(-700px);
+  animation: pageLoaderShimmer 2.4s ease-in-out infinite;
+}
+@keyframes pageLoaderShimmer {
+  0%   { transform: translateX(-700px); }
+  100% { transform: translateX(1801px); }
+}
+
+/* Final reveal: CSS mask wipes the grey skeleton L→R, exposing the orange
+   ribbon path underneath. */
+.page-loader.is-revealed .page-loader__skeleton {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 35%);
+          mask-image: linear-gradient(90deg, transparent 0%, black 35%);
+  -webkit-mask-size: 200% 100%;
+          mask-size: 200% 100%;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  animation: pageLoaderWipe 2.4s ease-in-out forwards;
+}
+@keyframes pageLoaderWipe {
+  0%   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+  100% { -webkit-mask-position: -100% 0; mask-position: -100% 0; }
+}
+
+/* Dismiss: fade the whole loader out, revealing the site behind. */
+.page-loader.is-dismissed {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+/* Reduced motion: no shimmer/wipe animation; the loader still appears briefly
+   then fades, but without distracting motion. */
+@media (prefers-reduced-motion: reduce) {
+  .page-loader__shimmer,
+  .page-loader.is-revealed .page-loader__skeleton {
+    animation: none !important;
+  }
+}
+
 /* ---------- Event info card (between ribbon and invite, on blue) ---------- */
 .event-info {
   background: var(--signal-blue);
@@ -604,18 +681,24 @@ img, svg { display: block; max-width: 100%; }
   position: relative;
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  /* Matches the supplied video-mask.svg viewBox (1428 × 788) */
+  aspect-ratio: 1428 / 788;
   text-decoration: none;
   isolation: isolate;
-  box-shadow: 0 28px 60px -28px rgba(0, 20, 80, 0.45);
-  border-radius: 12px;
-  overflow: hidden;
+  /* Drop-shadow follows the mask silhouette instead of a rectangle. */
+  filter:
+    drop-shadow(0 12px 20px rgba(0, 20, 80, 0.10))
+    drop-shadow(0 36px 70px rgba(0, 20, 80, 0.14));
 }
 .video-card__media {
   position: absolute;
   inset: 0;
   background: var(--signal-blue-deep);
   overflow: hidden;
+  /* Branded ribbon-shape silhouette via the SVG mask. The cutout in the
+     bottom-right corner is where the play button sits when revealed. */
+  -webkit-mask: url('assets/video-mask.svg') center / 100% 100% no-repeat;
+          mask: url('assets/video-mask.svg') center / 100% 100% no-repeat;
 }
 .video-card__thumb {
   position: absolute;
@@ -624,163 +707,161 @@ img, svg { display: block; max-width: 100%; }
   height: 100%;
   object-fit: cover;
   transition: transform 0.5s var(--ease-out), filter 0.3s var(--ease-out);
-  filter: brightness(0.85);
+  filter: brightness(0.92);
 }
 .video-card:hover .video-card__thumb {
-  transform: scale(1.03);
-  filter: brightness(0.95);
+  transform: scale(1.02);
+  filter: brightness(1);
 }
+
+/* Play button — brand orange, centered over the masked video card.
+   Hidden by default; fades in only on hover/focus. */
 .video-card__play {
   position: absolute;
-  /* Sits inside the thumbnail at the bottom-right corner. */
-  right: clamp(1rem, 2vw, 1.75rem);
-  bottom: clamp(1rem, 2vw, 1.75rem);
+  top: 50%;
+  left: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: clamp(58px, 5.5vw, 80px);
-  height: clamp(58px, 5.5vw, 80px);
+  width: clamp(72px, 7vw, 108px);
+  height: clamp(72px, 7vw, 108px);
   border-radius: 50%;
   background: var(--signal-orange);
   color: var(--white);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
-  transition: transform 0.25s var(--ease-out), background 0.25s var(--ease-out);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.9);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.32);
+  transition: opacity 0.3s var(--ease-out),
+              transform 0.4s var(--ease-out),
+              background 0.25s var(--ease-out);
+  z-index: 2;
+  pointer-events: none;
 }
-.video-card:hover .video-card__play {
-  transform: scale(1.06);
+.video-card:hover .video-card__play,
+.video-card:focus-visible .video-card__play {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
   background: var(--signal-orange-hot);
 }
 .video-card__play svg { width: 40%; height: 40%; display: block; transform: translateX(2%); }
 
 /* ---------- Message section (two equal cards on white) ---------- */
+/* ---------- Event hook section (replaces the old "word from leadership"
+   layout). Centered headline + sub + dual CTAs on black, followed by a
+   full-bleed 3-up image strip with brand-tinted duotones. */
 .message-section {
-  background: var(--white);
-  padding: clamp(3rem, 6vw, 5.5rem) var(--gutter) clamp(4rem, 7vw, 6rem);
-  color: var(--signal-blue-deep);
+  background: #000;
+  color: var(--white);
+  padding: clamp(4.5rem, 9vw, 8rem) 0 0;
+  text-align: center;
+  overflow: hidden;
 }
 .message-section__container {
   max-width: var(--container);
   margin: 0 auto;
+  padding: 0 var(--gutter) clamp(3.5rem, 6.5vw, 5.5rem);
 }
-.message-section__head {
-  margin: 0 0 clamp(2rem, 4vw, 3rem);
-}
-.message-section__heading {
-  margin: 0;
+.message-section__hook {
+  margin: 0 0 clamp(1rem, 2vw, 1.75rem);
   font-family: var(--font-sans);
-  font-size: clamp(1.875rem, 3.4vw, 3rem);
+  font-size: clamp(2.75rem, 8vw, 7.5rem);
   font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.015em;
-  color: var(--signal-blue-deep);
-  white-space: nowrap;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  color: var(--white);
+  text-wrap: balance;
 }
-@media (max-width: 640px) {
-  .message-section__heading { white-space: normal; }
+.message-section__hook em {
+  font-style: italic;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.message-section__sub {
+  margin: 0 0 clamp(1.75rem, 3vw, 2.5rem);
+  font-size: clamp(0.9375rem, 1.1vw, 1.0625rem);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.65);
+}
+.message-section__cta-row {
+  display: inline-flex;
+  gap: 0.6rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.message-section__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 168px;
+  padding: clamp(0.85rem, 1.1vw, 1rem) clamp(1.4rem, 2vw, 1.85rem);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: clamp(0.9rem, 1vw, 1rem);
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: background 0.25s var(--ease-out), color 0.25s var(--ease-out), transform 0.25s var(--ease-out), border-color 0.25s var(--ease-out);
+}
+.message-section__cta--primary {
+  background: var(--signal-orange);
+  color: #1A0F00;
+}
+.message-section__cta--primary:hover {
+  background: var(--signal-orange-hot);
+  transform: translateY(-1px);
+}
+.message-section__cta--ghost {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--white);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.message-section__cta--ghost:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.22);
 }
 
-/* Mobile: stack; desktop: equal-width cards */
-.message-section__layout {
+/* Full-bleed 3-up image strip — duotone-tinted with brand colors. */
+.message-section__strip {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: clamp(1rem, 2vw, 1.5rem);
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  background: #000;
 }
-@media (min-width: 900px) {
-  .message-section__layout {
-    grid-template-columns: 1fr 1fr;
-    align-items: stretch;
-  }
-}
-
-/* --- Photo card with caption + brand accent --- */
-.message-section__photo {
+.message-section__strip-item {
   position: relative;
-  margin: 0;
   overflow: hidden;
-  border-radius: 12px;
-  background: var(--signal-blue);
-  min-height: clamp(420px, 56vh, 620px);
+  aspect-ratio: 4 / 5;
+  background: #000;
 }
-.message-section__photo img {
+.message-section__strip-item img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 60% 30%;
+  filter: grayscale(0.55) contrast(1.08);
 }
-.message-section__photo-caption {
-  position: absolute;
-  left: clamp(1.25rem, 2.5vw, 2rem);
-  bottom: clamp(1.25rem, 2.5vw, 2rem);
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  padding: 0.85rem 1.1rem;
-  background: rgba(0, 31, 102, 0.78);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 6px;
-  color: var(--white);
-}
-.message-section__photo-name {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.005em;
-}
-.message-section__photo-name::before {
+.message-section__strip-item::after {
   content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 2px;
-  background: var(--signal-orange);
-  flex-shrink: 0;
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: color;
+  opacity: 0.78;
+  pointer-events: none;
 }
-.message-section__photo-role {
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.78);
-  margin-left: 14px;
-}
+.message-section__strip-item--orange::after { background: var(--signal-orange); }
+.message-section__strip-item--blue::after { background: #2C5BFF; }
+.message-section__strip-item--red::after { background: #E5240E; }
 
-/* --- Content card: clean modern surface (white card, hairline border, refined type) --- */
-.message-section__content {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(1.5rem, 2.5vw, 2rem);
-  padding: clamp(2.25rem, 3.75vw, 3.25rem);
-  background: var(--white);
-  border: 1px solid rgba(0, 31, 102, 0.08);
-  color: var(--signal-blue-deep);
-  border-radius: 12px;
-  min-height: clamp(420px, 56vh, 620px);
+@media (max-width: 720px) {
+  .message-section__strip {
+    grid-template-columns: 1fr;
+  }
+  .message-section__strip-item { aspect-ratio: 16 / 10; }
 }
-.message-section__quote {
-  margin: 0;
-  padding: 0;
-  border: none;
-  font-family: var(--font-sans);
-  font-size: clamp(1.4375rem, 2.2vw, 1.9375rem);
-  font-weight: 400;
-  line-height: 1.28;
-  letter-spacing: -0.015em;
-  color: var(--signal-blue-deep);
-}
-.message-section__quote-mark { display: none; }
-.message-section__body {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-  font-size: clamp(0.9375rem, 1vw, 1rem);
-  line-height: 1.6;
-  color: rgba(0, 31, 102, 0.72);
-}
-.message-section__body p { margin: 0; }
 
 /* ---------- Audio player ---------- */
 .audio-player {
@@ -929,7 +1010,7 @@ img, svg { display: block; max-width: 100%; }
 
 /* ---------- Story section (sticky day nav + scrolling agenda panels) ---------- */
 .story {
-  background: var(--signal-blue-deep);
+  background: var(--signal-blue);
   color: var(--white);
   padding: clamp(3rem, 6vw, 5rem) 0 clamp(3rem, 5vw, 4rem);
 }
@@ -989,7 +1070,9 @@ img, svg { display: block; max-width: 100%; }
   opacity: 0.7;
 }
 
-/* --- Panels: hairline separator between days --- */
+/* --- Panels: each panel takes a full viewport height. Content centers
+        vertically; fade + slide-in animation triggers as the panel enters
+        view (via initStoryFadeIn observer). --- */
 .story__panels {
   display: flex;
   flex-direction: column;
@@ -998,31 +1081,42 @@ img, svg { display: block; max-width: 100%; }
 .story__panel {
   display: flex;
   flex-direction: column;
-  gap: clamp(1.5rem, 2.5vw, 2rem);
-  padding: clamp(2.5rem, 4vw, 3.25rem) 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  justify-content: center;
+  gap: clamp(2.75rem, 4.5vw, 4rem);
+  padding: clamp(4rem, 7vw, 6rem) 0;
+  min-height: 100svh;
   scroll-margin-top: calc(var(--nav-h) + 1rem);
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.85s var(--ease-out), transform 0.85s var(--ease-out);
 }
-.story__panel:first-child { padding-top: 0; }
-.story__panel:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
+.story__panel.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .story__panel {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 .story__panel-head { max-width: 56ch; }
 .story__panel-title {
-  margin: 0 0 0.65rem;
+  margin: 0 0 1rem;
   font-family: var(--font-sans);
-  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  font-size: clamp(2rem, 3vw, 3rem);
   font-weight: 500;
-  line-height: 1.18;
-  letter-spacing: -0.012em;
+  line-height: 1.1;
+  letter-spacing: -0.018em;
   color: var(--white);
 }
 .story__panel-body {
   margin: 0;
-  font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
+  font-size: clamp(1.0625rem, 1.25vw, 1.25rem);
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 52ch;
 }
 
 /* --- Sessions with a left timeline rail + dot per row --- */
@@ -1034,28 +1128,28 @@ img, svg { display: block; max-width: 100%; }
   display: flex;
   flex-direction: column;
 }
-/* vertical timeline line through all dots — soft light-blue against the signal-blue-deep bg */
+/* Vertical timeline rail — orange, minimal weight */
 .story__sessions::before {
   content: "";
   position: absolute;
-  left: 4px;                    /* centers under the 9px dot */
+  left: 2.5px;                  /* centers under the 6px dot */
   top: 1.05rem;
   bottom: 1.05rem;
   width: 1px;
-  background: rgba(150, 185, 245, 0.55);
+  background: rgba(255, 147, 50, 0.45);
 }
 .story__session {
   position: relative;
   display: grid;
-  grid-template-columns: 9px 110px 1fr;
+  grid-template-columns: 6px 140px 1fr;
   align-items: center;
-  gap: clamp(0.85rem, 1.5vw, 1.25rem);
-  padding: 0.6rem 0;
+  gap: clamp(1rem, 1.75vw, 1.5rem);
+  padding: clamp(0.85rem, 1.4vw, 1.15rem) 0;
 }
 .story__session::before {
   content: "";
-  width: 9px;
-  height: 9px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--signal-orange);
   align-self: center;
@@ -1063,16 +1157,17 @@ img, svg { display: block; max-width: 100%; }
   z-index: 1;
 }
 .story__session-time {
-  font-size: 0.8125rem;
+  font-size: clamp(0.875rem, 1vw, 1rem);
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.62);
   font-variant-numeric: tabular-nums;
 }
 .story__session-title {
-  font-size: clamp(0.9375rem, 1.05vw, 1rem);
+  font-size: clamp(1.0625rem, 1.25vw, 1.25rem);
   font-weight: 500;
-  line-height: 1.4;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
   color: var(--white);
 }
 
@@ -1276,6 +1371,69 @@ body[data-version="v2"] [data-version-show="v1"] { display: none !important; }
   .version-toggle__btn { transition: none; }
 }
 
+/* ---------- Section visibility toggle (floats above the version pill) ---------- */
+.section-toggle {
+  position: fixed;
+  right: clamp(1rem, 2vw, 1.5rem);
+  bottom: calc(clamp(1rem, 2vw, 1.5rem) + 52px);
+  z-index: 200;
+  display: inline-flex;
+  padding: 4px;
+  background: var(--white);
+  border: 1px solid rgba(0, 50, 160, 0.18);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px -10px rgba(0, 20, 80, 0.35);
+}
+.section-toggle__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.85rem;
+  height: 36px;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--signal-blue-deep);
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out);
+}
+.section-toggle__btn:hover {
+  background: rgba(0, 50, 160, 0.06);
+}
+.section-toggle__state {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 22px;
+  padding: 0 0.55rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--signal-orange);
+  border-radius: 999px;
+  transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out);
+}
+.section-toggle__btn:not(.is-on) .section-toggle__state {
+  color: rgba(0, 31, 102, 0.55);
+  background: rgba(0, 31, 102, 0.08);
+}
+@media (prefers-reduced-motion: reduce) {
+  .section-toggle__btn,
+  .section-toggle__state { transition: none; }
+}
+
+/* Generic hide hook used by .section-toggle__btn — keeps the section in the
+   DOM (no layout reflow), just visually + interactively removed. */
+.is-section-hidden { display: none !important; }
+
 /* ---------- V2 nav over the hero image (fully transparent until scrolled) ---------- */
 body[data-version="v2"] .nav:not(.is-scrolled) {
   background: transparent;
@@ -1313,24 +1471,79 @@ body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta:hover {
   display: flex;
   flex-direction: column;
 }
-.hero-v2__inner {
+/* Spacer pushes the black bottom container to the viewport floor, while the
+   hero image continues to fill the upper portion. */
+.hero-v2__spacer {
+  flex: 1;
+}
+
+/* Black container that visually extends the hero image — sits at the bottom
+   of the viewport on first paint and carries the event summary + action row. */
+.hero-v2__bottom {
   position: relative;
   z-index: 2;
+  background: #000;
+  color: var(--white);
+  padding: clamp(2rem, 4vw, 3rem) 0 clamp(2rem, 4vw, 3rem);
+}
+.hero-v2__bottom-inner {
   width: 100%;
   max-width: var(--container);
   margin: 0 auto;
-  padding: 0 var(--gutter) clamp(2.5rem, 5vw, 4rem);
+  padding: 0 var(--gutter);
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+}
+.hero-v2__summary {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: clamp(1.0625rem, 1.4vw, 1.375rem);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: -0.005em;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 68ch;
+}
+
+/* Action row: date | Register CTA (600px+) | location.
+   Wraps gracefully on narrow viewports. */
+.hero-v2__action-row {
+  display: flex;
   align-items: center;
-  flex: 1;
+  gap: clamp(1.25rem, 2.5vw, 2.25rem);
+  flex-wrap: wrap;
+}
+.hero-v2__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 0 0 auto;
+}
+.hero-v2__meta-label {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+.hero-v2__meta-value {
+  margin: 0;
+  font-size: clamp(1rem, 1.2vw, 1.125rem);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--white);
 }
 .hero-v2__cta {
   display: inline-flex;
   align-items: center;
-  gap: 0.65rem;
-  padding: clamp(0.85rem, 1.2vw, 1.1rem) clamp(1.5rem, 2.25vw, 2.25rem);
+  justify-content: center;
+  gap: 0.75rem;
+  /* Min 600px width per spec; flexes within reasonable bounds on smaller
+     viewports without breaking the row. */
+  min-width: min(600px, 100%);
+  padding: clamp(1.1rem, 1.5vw, 1.4rem) clamp(1.5rem, 2.25vw, 2.25rem);
   background: var(--white);
   color: var(--signal-blue-deep);
   font-family: inherit;
@@ -1341,7 +1554,8 @@ body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta:hover {
   border-radius: 6px;
   text-decoration: none;
   transition: background 0.25s var(--ease-out), color 0.25s var(--ease-out), transform 0.25s var(--ease-out);
-  box-shadow: 0 18px 48px -12px rgba(0, 20, 80, 0.45);
+  box-shadow: 0 18px 48px -12px rgba(0, 0, 0, 0.55);
+  flex: 1 1 600px;
 }
 .hero-v2__cta:hover {
   background: var(--signal-orange);
@@ -1352,16 +1566,9 @@ body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta:hover {
   font-size: 1.25em;
   line-height: 0;
 }
-/* Smooth dark→white transition at the bottom — fades the hero image into the next white section. */
-.hero-v2__fade {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: clamp(80px, 14vw, 220px);
-  background: linear-gradient(to bottom, transparent 0%, rgba(255, 255, 255, 0.4) 55%, var(--white) 100%);
-  pointer-events: none;
-  z-index: 1;
+@media (max-width: 760px) {
+  .hero-v2__cta { min-width: 100%; flex: 1 1 100%; order: 0; }
+  .hero-v2__meta { flex: 1 1 calc(50% - 0.75rem); }
 }
 
 /* ---------- V2 Video section (last summit) ---------- */
@@ -1384,8 +1591,18 @@ body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta:hover {
   max-width: 64ch;
 }
 
+/* V2: rectangular video card with the labeled play-pill anchored bottom-right
+   and always visible (overrides the V1 centered-on-hover behaviour). */
+.video-card--with-label .video-card__media {
+  border-radius: 12px;
+}
+
 /* V2 video card play button becomes a pill with the title label baked in */
 .video-card--with-label .video-card__play {
+  top: auto;
+  left: auto;
+  right: clamp(1rem, 2vw, 1.5rem);
+  bottom: clamp(1rem, 2vw, 1.5rem);
   width: auto;
   height: auto;
   padding: clamp(0.7rem, 1vw, 0.9rem) clamp(1.1rem, 1.5vw, 1.4rem) clamp(0.7rem, 1vw, 0.9rem) clamp(0.85rem, 1.2vw, 1.05rem);
@@ -1393,6 +1610,15 @@ body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta:hover {
   gap: 0.65rem;
   background: var(--signal-orange);
   box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.45);
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.video-card--with-label:hover .video-card__play,
+.video-card--with-label:focus-visible .video-card__play {
+  opacity: 1;
+  transform: none;
+  background: var(--signal-orange-hot);
 }
 .video-card--with-label .video-card__play svg {
   width: clamp(16px, 1.2vw, 20px);
@@ -1425,137 +1651,157 @@ body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta:hover {
   overflow: visible;
 }
 
-/* ---------- V2 Info section (blue, paragraph + 3-day breakdown) ---------- */
+/* ---------- V2 Calendar / Agenda (blue, 3-day breakdown) ----------
+   The calendar is the most important block on the V2 page. It's built to
+   maximise scannability: generous padding, large white type, clear hierarchy
+   (Day → header → time → title → body), and no orange accents on the
+   time/date so the eye flows through the content instead of bouncing on
+   color noise. */
 .info-v2 {
   background: var(--signal-blue);
   color: var(--white);
-  padding: clamp(3.5rem, 7vw, 6rem) var(--gutter);
+  padding: clamp(4.5rem, 9vw, 8rem) var(--gutter);
 }
 .info-v2__container {
   max-width: var(--container);
   margin: 0 auto;
 }
-.info-v2__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin: 0 0 1.25rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--signal-orange);
+
+/* Header: eyebrow + heading + lede.
+   Eyebrow now lives on a separator, not as a dot+label pill — quieter and
+   cleaner. Heading is larger; lede has more breathing room. */
+.info-v2__header {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.85rem, 1.5vw, 1.25rem);
+  margin: 0 0 clamp(3rem, 5vw, 4.5rem);
+  padding-bottom: clamp(2rem, 3.5vw, 3rem);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
-.info-v2__eyebrow-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 2px;
-  background: var(--signal-orange);
+.info-v2__eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
 }
 .info-v2__heading {
-  margin: 0 0 clamp(0.75rem, 1.25vw, 1.125rem);
+  margin: 0;
   font-family: var(--font-sans);
-  font-size: clamp(1.75rem, 3.4vw, 2.875rem);
+  font-size: clamp(2rem, 4.4vw, 3.75rem);
   font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.015em;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   color: var(--white);
-  white-space: nowrap;
-}
-@media (max-width: 760px) {
-  .info-v2__heading { white-space: normal; }
+  max-width: 18ch;
 }
 .info-v2__lede {
-  margin: 0 0 clamp(2.5rem, 4vw, 3.5rem);
-  font-size: clamp(0.95rem, 1.1vw, 1.0625rem);
+  margin: 0;
+  font-size: clamp(1.0625rem, 1.3vw, 1.25rem);
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.72);
-  max-width: 56ch;
+  color: rgba(255, 255, 255, 0.75);
+  max-width: 64ch;
 }
 
 /* Calendar-style 3-column day grid */
 .info-v2__days {
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(1.5rem, 2.5vw, 2rem);
+  gap: clamp(2rem, 3.5vw, 3rem);
 }
 @media (min-width: 860px) {
   .info-v2__days {
     grid-template-columns: 1fr 1fr 1fr;
-    gap: clamp(1rem, 1.5vw, 1.25rem);
+    gap: clamp(1.5rem, 2.25vw, 2rem);
   }
 }
 .info-v2__day {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0;
 }
+/* Day header — Day 01 dominant, full date below.
+   Bottom rule separates header from the session list. */
 .info-v2__day-head {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin: 0 0 0.35rem;
-  padding: 0 0.25rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0 0 clamp(1.5rem, 2.25vw, 2rem);
+  padding: 0 0 clamp(1.25rem, 2vw, 1.75rem);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 .info-v2__day-num {
   margin: 0;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--signal-orange);
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 3vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--white);
 }
 .info-v2__day-date {
   margin: 0;
-  font-size: 0.8125rem;
+  font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.6);
-  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.65);
+  letter-spacing: -0.005em;
 }
 
-/* Sessions: variable-height cards on a light translucent surface, no separators */
+/* Sessions list — generously padded, white type, calm separators */
 .info-v2__sessions {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: clamp(0.75rem, 1vw, 1rem);
 }
 .info-v2__session {
-  background: rgba(255, 255, 255, 0.07);
-  border-radius: 10px;
-  padding: 0.7rem 0.85rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: clamp(1.4rem, 2vw, 1.75rem) clamp(1.25rem, 2vw, 1.75rem);
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.65rem;
+  transition: background 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
 }
-.info-v2__session--md { padding: 0.9rem 0.95rem; }
-.info-v2__session--lg { padding: 1.05rem 1rem 1.1rem; }
+.info-v2__session:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.info-v2__session--md { padding: clamp(1.65rem, 2.4vw, 2rem) clamp(1.25rem, 2vw, 1.75rem); }
+.info-v2__session--lg { padding: clamp(1.9rem, 2.8vw, 2.4rem) clamp(1.25rem, 2vw, 1.75rem); }
+
+/* Time — white, uppercase, tracked. Replaces the old orange treatment. */
 .info-v2__session-time {
   margin: 0;
-  font-size: 0.6875rem;
+  font-size: clamp(0.75rem, 0.85vw, 0.8125rem);
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--signal-orange);
+  color: rgba(255, 255, 255, 0.6);
   font-variant-numeric: tabular-nums;
 }
 .info-v2__session-title {
   margin: 0;
-  font-size: clamp(0.875rem, 1vw, 0.9375rem);
+  font-size: clamp(1.0625rem, 1.4vw, 1.3125rem);
   font-weight: 500;
-  line-height: 1.3;
-  letter-spacing: -0.005em;
+  line-height: 1.25;
+  letter-spacing: -0.012em;
   color: var(--white);
 }
 .info-v2__session-body {
-  margin: 0.3rem 0 0;
-  font-size: 0.8125rem;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.65);
+  margin: 0.35rem 0 0;
+  font-size: clamp(0.9375rem, 1vw, 1rem);
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* ---------- V1 CTA grid (Pattern Studio card: button col + image + overlay heading) ---------- */
 .cta-grid {
-  background: var(--signal-blue);
+  /* Upper half on Signal blue (continues the section above), lower half on
+     white — the inner white card floats across the seam like the reference. */
+  background: linear-gradient(to bottom, var(--signal-blue) 50%, var(--white) 50%);
   padding: clamp(2rem, 4vw, 4rem) var(--gutter);
 }
 .cta-grid__container {
@@ -1573,7 +1819,9 @@ body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta:hover {
   display: flex;
   flex-direction: row;
   align-items: flex-end;
-  gap: 10px;
+  /* Generous breathing room between the left content column (button +
+     overlay heading) and the 3D ribbon scene on the right. */
+  gap: clamp(2rem, 5vw, 6rem);
   aspect-ratio: 1426 / 698;
   box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.08);
   overflow: hidden;
@@ -1622,7 +1870,9 @@ body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta:hover {
   height: 100% !important;
   display: block;
 }
-/* Overlay heading card pinned to the top-left of the hero (inside the 60px padding) */
+/* Overlay heading card pinned to the top-left of the hero. The container is
+   transparent — the tagline sits directly on the white card behind it, in the
+   cleared top-left negative space of the 3D ribbon grid. */
 .cta-grid__heading-card {
   position: absolute;
   box-sizing: border-box;
@@ -1630,8 +1880,8 @@ body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta:hover {
   left: clamp(1.75rem, 3.13vw, 60px);
   width: clamp(280px, 28vw, 391px);
   padding: 18px 16px 28px;
-  background: var(--white);
-  border-radius: 10px;
+  background: transparent;
+  border-radius: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1640,93 +1890,92 @@ body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta:hover {
 .cta-grid__tagline {
   margin: 0;
   font-family: 'Montserrat', var(--font-sans);
-  font-weight: 400;
-  font-size: clamp(1.25rem, 2vw, 2rem);
-  line-height: 1.22;
-  letter-spacing: -0.005em;
-  color: #0033A6;
+  font-weight: 500;
+  font-size: clamp(1.5rem, 2.4vw, 2.5rem);
+  line-height: 1.12;
+  letter-spacing: -0.018em;
+  color: var(--signal-blue-deep);
+  text-wrap: balance;
 }
 
-/* ---------- V1 Footer ---------- */
+/* Mobile + tablet (< 960px): stack vertically — heading → button → scene.
+   The heading card stops being an absolute overlay; the canvas becomes a
+   square block beneath the CTA. The JS pairs with this breakpoint to drop
+   the grid down to ~8×8 and disable the L-cutout. */
+@media (max-width: 959px) {
+  .cta-grid__hero {
+    flex-direction: column;
+    align-items: stretch;
+    aspect-ratio: auto;
+    gap: clamp(1.25rem, 3vw, 2rem);
+    padding: clamp(1.5rem, 4vw, 2rem);
+  }
+  .cta-grid__heading-card {
+    position: static;
+    order: 1;
+    width: 100%;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+  }
+  .cta-grid__button-col {
+    order: 2;
+    width: 100%;
+    max-width: 220px;
+  }
+  .cta-grid__image {
+    order: 3;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    flex: none;
+  }
+  .cta-grid__tagline {
+    font-size: clamp(1.5rem, 5.5vw, 2rem);
+  }
+}
+
+/* ---------- V1 Footer — compact sitemap bar on white ---------- */
 .footer {
   background: var(--white);
-  border-top: 1px solid rgba(0, 31, 102, 0.08);
-  padding: clamp(2.5rem, 5vw, 4rem) var(--gutter) clamp(1.5rem, 3vw, 2rem);
+  padding: clamp(1rem, 2vw, 1.75rem) var(--gutter) clamp(1.5rem, 3vw, 2.5rem);
 }
 .footer__inner {
   max-width: var(--container);
   margin: 0 auto;
-}
-.footer__top {
+  padding: 0.75rem clamp(1rem, 1.75vw, 1.5rem);
+  background: var(--white);
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: clamp(2rem, 4vw, 4rem);
+  gap: clamp(1rem, 2vw, 2rem);
   flex-wrap: wrap;
-  padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
-  border-bottom: 1px solid rgba(0, 31, 102, 0.08);
-}
-.footer__brand {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-width: 32ch;
 }
 .footer__logo {
-  height: 40px;
+  height: 22px;
   width: auto;
-}
-.footer__tagline {
-  margin: 0;
-  font-size: clamp(0.875rem, 1vw, 0.9375rem);
-  line-height: 1.5;
-  color: rgba(0, 31, 102, 0.7);
 }
 .footer__nav {
   display: flex;
-  gap: clamp(1.5rem, 2.5vw, 2.5rem);
+  gap: clamp(0.85rem, 1.75vw, 1.5rem);
   flex-wrap: wrap;
 }
 .footer__link {
-  font-size: 0.8125rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--signal-blue-deep);
   text-decoration: none;
   transition: color 0.2s var(--ease-out);
 }
 .footer__link:hover { color: var(--signal-orange); }
-
-.footer__bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  padding-top: clamp(1.25rem, 2.5vw, 2rem);
-}
 .footer__copy {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   letter-spacing: 0.04em;
   color: rgba(0, 31, 102, 0.5);
 }
-.footer__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--signal-blue-deep);
-  text-decoration: none;
-  transition: color 0.2s var(--ease-out);
-}
-.footer__cta:hover { color: var(--signal-orange); }
-.footer__cta svg { transition: transform 0.2s var(--ease-out); }
-.footer__cta:hover svg { transform: translateX(3px); }
 
 /* ---------- V2 Footer (3D element + sitemap) ---------- */
 .footer-v2 {

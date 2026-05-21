@@ -213,6 +213,31 @@
     });
   }
 
+  /* Story section — fade + slide each full-viewport panel in once it enters
+     view. Each panel keeps its visible state once shown (no flicker on
+     scroll-back). Reduced-motion users get instant visibility. */
+  function initStoryFadeIn() {
+    const panels = document.querySelectorAll('.story__panel');
+    if (!panels.length) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) {
+      panels.forEach((p) => p.classList.add('is-visible'));
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: '0px 0px -12% 0px', threshold: 0.12 }
+    );
+    panels.forEach((p) => io.observe(p));
+  }
+
   /* Story section — highlight the sidebar nav item that matches the panel
      currently most in view. Uses IntersectionObserver. */
   function initStoryNav() {
@@ -270,6 +295,25 @@
     });
   }
 
+  /* Section visibility toggle — buttons with [data-section-target] flip the
+     `.is-section-hidden` class on the targeted section and update their own
+     visual state + a11y attributes. */
+  function initSectionToggles() {
+    const btns = document.querySelectorAll('.section-toggle__btn[data-section-target]');
+    btns.forEach((btn) => {
+      const stateEl = btn.querySelector('.section-toggle__state');
+      btn.addEventListener('click', () => {
+        const target = document.querySelector(btn.dataset.sectionTarget);
+        if (!target) return;
+        const isOn = !btn.classList.contains('is-on');
+        btn.classList.toggle('is-on', isOn);
+        btn.setAttribute('aria-pressed', String(isOn));
+        if (stateEl) stateEl.textContent = isOn ? 'On' : 'Off';
+        target.classList.toggle('is-section-hidden', !isOn);
+      });
+    });
+  }
+
   /* Page-wide V1/V2 toggle. Flips body[data-version], which CSS uses to show
      the matching set of sections (V1 sections vs V2 sections). */
   function initVersionToggles() {
@@ -292,16 +336,76 @@
     });
   }
 
-  function init() {
-    initNavScroll();
-    initTicker();
-    initAudioPlayer();
-    initMessageOverlay();
-    initStoryNav();
-    initVersionToggles();
+  /* Page loading screen lifecycle. Holds the site behind a white overlay with
+     a grey ribbon + looping shimmer. After window.load (plus a minimum visible
+     window so the loader never flashes), it runs the grey→orange wipe, then
+     fades the overlay out and fires onDismissed so the hero entrance can play. */
+  function initPageLoader(onDismissed) {
+    const loader = document.querySelector('.page-loader');
+    if (!loader) { onDismissed && onDismissed(); return; }
+
+    const MIN_VISIBLE = 1200;   // ms — let the shimmer breathe at least once
+    const WIPE_MS = reduceMotion ? 0 : 2400;
+    const FADE_MS = reduceMotion ? 0 : 500;
+    const start = performance.now();
+
+    /* Position the loader's ribbon precisely on top of the hero ribbon so
+       the grey-to-orange wipe lands the new orange exactly where the hero
+       ribbon will be. Re-runs on resize / after fonts load, so the alignment
+       holds across viewport changes. */
+    const heroRibbon = document.querySelector('.hero__ribbon');
+    const loaderRibbon = loader.querySelector('.page-loader__ribbon');
+    const alignRibbon = () => {
+      if (!heroRibbon || !loaderRibbon) return;
+      const rect = heroRibbon.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;   // hero hidden (e.g. V2)
+      loaderRibbon.style.top = rect.top + 'px';
+      loaderRibbon.style.height = rect.height + 'px';
+    };
+    alignRibbon();
+    window.addEventListener('resize', alignRibbon);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(alignRibbon);
+    }
+
+    const dismiss = () => {
+      loader.classList.add('is-revealed');
+      setTimeout(() => {
+        /* Pre-mount the hero ribbon at full opacity BEFORE the loader fades.
+           The loader's orange ribbon and the hero's orange ribbon are
+           positioned identically, so this eliminates the visual gap where
+           the orange ribbon would otherwise appear to "load in" after the
+           loader vanishes. The cross-fade between them is now seamless. */
+        if (typeof gsap !== 'undefined') {
+          gsap.set('.ribbon-layer', { opacity: 1 });
+        }
+        /* Kick the rest of the hero entrance + the loader fade in parallel
+           so the title/details animate in while the loader is dissolving. */
+        if (onDismissed) onDismissed();
+        loader.classList.add('is-dismissed');
+        setTimeout(() => {
+          if (loader.parentNode) loader.parentNode.removeChild(loader);
+        }, FADE_MS);
+      }, WIPE_MS);
+    };
+
+    const ready = () => {
+      const wait = Math.max(0, MIN_VISIBLE - (performance.now() - start));
+      setTimeout(dismiss, wait);
+    };
+
+    if (document.readyState === 'complete') ready();
+    else window.addEventListener('load', ready, { once: true });
+  }
+
+  /* Hero entrance + shine choreography. Fires when the page-loader hands
+     off — the ribbon is already at opacity 1 (set inside initPageLoader's
+     dismiss before the loader fades), so we only need to stagger in the
+     surrounding content (pill, title, details) and run the shine sweep. */
+  function startHeroAnimations() {
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-    /* Content stagger */
+    /* Content stagger (ribbon-layer already mounted by initPageLoader) */
     tl.to(
       [
         '.hero__pill',
@@ -316,24 +420,12 @@
       }
     );
 
-    /* Ribbon layers fade in in place (no slide). */
-    tl.to(
-      '.ribbon-layer',
-      {
-        opacity: 1,
-        duration: reduceMotion ? 0.01 : 0.8,
-        stagger: reduceMotion ? 0 : 0.08,
-        ease: 'power2.out',
-      },
-      reduceMotion ? 0 : 0.2
-    );
-
     /* Two-stage shine choreography:
        1) Entrance sweep — bright, fast pass across the ribbon shortly after load
        2) Ambient sweep — very slow, subtle pass that loops indefinitely so the
           ribbon keeps a soft "alive" quality without being distracting. */
     if (!reduceMotion) {
-      const shineTl = gsap.timeline({ delay: 0.7 });
+      const shineTl = gsap.timeline({ delay: 0.4 });
 
       shineTl.fromTo(
         '#rg-shine',
@@ -361,6 +453,17 @@
         );
       });
     }
+  }
+
+  function init() {
+    initNavScroll();
+    initTicker();
+    initAudioPlayer();
+    initMessageOverlay();
+    initStoryNav();
+    initStoryFadeIn();
+    initVersionToggles();
+    initSectionToggles();
 
     /* Invite section: scroll-reveal stagger */
     if (typeof IntersectionObserver !== 'undefined') {
@@ -414,6 +517,11 @@
         });
       }, { passive: true });
     }
+
+    /* Kick off the loading screen. Hero entrance animations only fire once
+       the loader has dismissed — the user sees: grey ribbon (shimmering) →
+       grey-to-orange wipe → loader fades → site reveals + hero animates in. */
+    initPageLoader(startHeroAnimations);
   }
 
   if (document.readyState === 'loading') {
