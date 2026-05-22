@@ -740,7 +740,7 @@ main { display: block; }
 /* ----- HEADING ----- Left-aligned, two-line cap, dark inverted pill. */
 .agenda__head {
   text-align: left;
-  margin-bottom: clamp(36px, 4vw, 56px);
+  margin-bottom: clamp(48px, 5.5vw, 80px);
   max-width: 720px;
 }
 .agenda__heading-dates {
@@ -773,13 +773,16 @@ main { display: block; }
   margin: 0;
   font-family: var(--font-sans);
   font-weight: 500;
-  /* Peers with .summit-details__heading and .reel__heading. */
-  font-size: clamp(30px, 4vw, 56px);
-  line-height: 1.05;
+  /* Peers with .summit-details__heading and .reel__heading. The two
+     spans inside each get their own line via display: block — no
+     text-wrap: balance, which was forcing the first sentence to break
+     into two ragged lines for "visual balance." */
+  font-size: clamp(28px, 3.4vw, 48px);
+  line-height: 1.06;
   letter-spacing: -0.024em;
   color: var(--signal-blue-deep);
-  text-wrap: balance;
 }
+.agenda__heading-line { display: block; }
 
 /* ----- TWO-COLUMN BODY ----- */
 .agenda__body {
@@ -800,52 +803,27 @@ main { display: block; }
   position: sticky;
   top: var(--agenda-top);
   display: grid;
-  grid-template-columns: 6px 1fr;
-  gap: clamp(20px, 2vw, 28px);
+  grid-template-columns: 2px 1fr;
+  gap: clamp(22px, 2.4vw, 32px);
   align-items: stretch;
 }
 
-/* The vertical track + orange fill. Track sits muted but visible; the
-   fill carries a soft bloom so the leading edge reads as alive even
-   when the user is between transitions. */
+/* Hairline progress track. Just gradient fill — no bloom, no dot. */
 .agenda__progress {
   position: relative;
-  width: 6px;
-  background: rgba(0, 22, 77, 0.14);
-  border-radius: 6px;
-  overflow: visible;
+  width: 2px;
+  background: rgba(0, 22, 77, 0.10);
+  border-radius: 2px;
+  overflow: hidden;
 }
 .agenda__progress-fill {
   position: absolute;
   inset: 0 0 auto 0;
   height: 0%;
   background: linear-gradient(180deg, var(--signal-orange) 0%, var(--signal-orange-deep) 100%);
-  border-radius: 6px;
-  box-shadow:
-    0 0 14px rgba(255, 147, 50, 0.45),
-    0 0 4px rgba(255, 147, 50, 0.6),
-    0 0 0 1px rgba(229, 117, 26, 0.25);
+  border-radius: 2px;
   will-change: height;
 }
-/* A tiny bloom dot at the leading edge of the fill. */
-.agenda__progress-fill::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -3px;
-  width: 14px;
-  height: 14px;
-  border-radius: 999px;
-  background: var(--signal-orange);
-  transform: translateX(-50%);
-  box-shadow: 0 0 12px 2px rgba(255, 147, 50, 0.55);
-  filter: blur(2px);
-  opacity: 0.85;
-  pointer-events: none;
-}
-/* Hide the bloom when there's nothing filled yet. */
-.agenda__progress-fill[style*="height: 0%"]::after,
-.agenda__progress-fill:not([style])::after { display: none; }
 
 .agenda__days {
   list-style: none;
@@ -853,9 +831,7 @@ main { display: block; }
   padding: 0;
   display: flex;
   flex-direction: column;
-}
-.agenda__days li + li {
-  border-top: 1px solid rgba(0, 22, 77, 0.10);
+  gap: clamp(20px, 2.2vw, 32px);
 }
 
 .agenda__day {
@@ -865,10 +841,10 @@ main { display: block; }
   width: 100%;
   text-align: left;
   cursor: pointer;
-  padding: clamp(14px, 1.4vw, 18px) 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   color: inherit;
   opacity: 0.55;
   transition: opacity 240ms ease;
@@ -882,15 +858,16 @@ main { display: block; }
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(0, 22, 77, 0.55);
+  color: rgba(0, 22, 77, 0.5);
   transition: color 240ms ease;
 }
 .agenda__day.is-active .agenda__day-label {
   color: var(--signal-orange-deep);
 }
 .agenda__day-date {
-  font-size: 17px;
+  font-size: clamp(20px, 1.9vw, 26px);
   font-weight: 500;
+  line-height: 1.15;
   letter-spacing: -0.018em;
   color: var(--signal-blue-deep);
 }
@@ -954,34 +931,36 @@ main { display: block; }
   text-wrap: balance;
 }
 
-.agenda__list { width: 100%; }
+.agenda__list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(22px, 2.6vw, 36px);
+}
 
 .agenda__row {
   display: grid;
-  grid-template-columns: 88px minmax(0, 1fr);
-  gap: clamp(16px, 1.8vw, 28px);
-  padding: clamp(10px, 1.1vw, 14px) 0;
-  border-top: 1px solid rgba(0, 22, 77, 0.07);
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: clamp(20px, 2.4vw, 36px);
+  padding: 0;
+  border: 0;
   align-items: baseline;
-}
-.agenda__list > .agenda__row:first-child {
-  border-top: 0;
-  padding-top: clamp(6px, 0.8vw, 10px);
 }
 
 .agenda__time {
   margin: 0;
-  font-size: 15px;
-  font-weight: 500;
-  color: rgba(0, 22, 77, 0.58);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(0, 22, 77, 0.5);
   font-variant-numeric: tabular-nums slashed-zero;
-  letter-spacing: 0;
 }
 
 .agenda__main {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
   min-width: 0;
 }
 .agenda__title {
