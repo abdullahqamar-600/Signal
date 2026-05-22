@@ -34,6 +34,20 @@ import {
   canvas.setAttribute('aria-hidden', 'true');
   stage.appendChild(canvas);
 
+  /* ---------- Cursor companion ----------
+     A floating pill that follows the pointer inside the stage. Fades
+     in on enter, scales up while dragging. CSS handles all visuals;
+     here we just position it on every pointermove. */
+  const reelCursor = document.createElement('div');
+  reelCursor.className = 'reel__cursor';
+  reelCursor.setAttribute('aria-hidden', 'true');
+  reelCursor.innerHTML =
+    '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+      '<path d="M9 6l-5 6 5 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<path d="M15 6l5 6-5 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+    '</svg>';
+  stage.appendChild(reelCursor);
+
   const renderer = new Renderer({
     canvas,
     dpr: Math.min(window.devicePixelRatio || 1, 2),
@@ -89,9 +103,21 @@ import {
     precision highp float;
     uniform sampler2D uTexture;
     uniform float uOpacity;
+    uniform float uMeshX;
+    uniform float uHalfStage;
     varying vec2 vUv;
     void main() {
-      vec4 c = texture2D(uTexture, vUv);
+      // Texture parallax — UV scrolls slightly opposite to card motion,
+      // so the image content reads as if behind the card surface.
+      float clipX = uHalfStage > 0.0 ? uMeshX / uHalfStage : 0.0;
+      vec2 uv = vUv + vec2(clipX * 0.045, 0.0);
+      uv = clamp(uv, vec2(0.001), vec2(0.999));
+      vec4 c = texture2D(uTexture, uv);
+
+      // Specular sweep — soft white catches the card as it crosses center.
+      float center = 1.0 - smoothstep(0.0, 0.35, abs(clipX));
+      c.rgb += vec3(1.0) * center * 0.08;
+
       gl_FragColor = vec4(c.rgb, c.a * uOpacity);
     }
   `;
@@ -116,15 +142,28 @@ import {
     stageW = r.width;
     stageH = r.height;
 
+    // Guard against measuring before CSS has constrained the stage. If
+    // the stage's CSS height clamp hasn't applied (stale cached CSS, a
+    // layout transition mid-flight, etc.), getBoundingClientRect can
+    // return absurd values that cascade into a multi-thousand-pixel
+    // canvas. Cap to a sane visual range that matches the stage's
+    // intended clamp(320px, 44vh, 480px) plus a tolerance.
+    if (stageH > 600 || stageH < 200) {
+      stageH = Math.max(280, Math.min(window.innerHeight * 0.5, 480));
+    }
+    if (stageW < 100) stageW = window.innerWidth;
+
     const ts = getComputedStyle(track);
     gapPx = parseFloat(ts.gap) || 16;
     const pad = parseFloat(ts.paddingLeft) || gapPx;
     const inner = stageW - pad * 2;
-    // 3-up on desktop, 2-up on tablet (handled by CSS); replicate the
-    // same math so the WebGL meshes align with whatever the CSS thinks.
-    const desktop = window.innerWidth > 880;
-    const slots = desktop ? 3 : 2;
-    cardWPx = (inner - gapPx * (slots - 1)) / slots;
+    // Read the card width fraction from the CSS variable on .reel__card
+    // (currently 40% on desktop, 60% on tablet). Keeps the WebGL meshes
+    // in lockstep with whatever the CSS owns.
+    const cardEl = cards[0];
+    let cardCss = parseFloat(getComputedStyle(cardEl).flexBasis);
+    if (!cardCss || Number.isNaN(cardCss)) cardCss = inner * 0.4;
+    cardWPx = cardCss;
     cardHPx = (cardWPx * 3) / 4; // aspect 4:3
     stepPx = cardWPx + gapPx;
 
@@ -142,8 +181,13 @@ import {
     renderer.setSize(stageW, stageH);
     camera.perspective({ aspect: stageW / stageH });
 
-    // Rebuild geometry if card dimensions changed meaningfully.
-    const key = `${cardWPx.toFixed(0)}x${cardHPx.toFixed(0)}`;
+    // Rebuild geometry whenever the world-space card dimensions shift.
+    // Watching cardWPx alone misses the case where stageH changes
+    // (pxToWorld shifts) but the card's pixel size stays constant —
+    // which leaves the planes at the old, tiny world scale.
+    const wCard = cardWPx * pxToWorld;
+    const hCard = cardHPx * pxToWorld;
+    const key = `${wCard.toFixed(3)}x${hCard.toFixed(3)}`;
     if (key !== geomKey) {
       geomKey = key;
       buildGeometry();
@@ -304,32 +348,67 @@ import {
     meshes.push(mesh);
   }
 
-  /* ---------- Scroll / snap / morph state ---------- */
+  /* ---------- Scroll / snap / morph state ----------
+     - `scroll` follows `target` via a critically-damped spring.
+       Stiffness + damping picked for a tiny overshoot (~2 px) before
+       settling — gives the strip an inertial feel instead of a lerp.
+     - `morph` is driven by scroll velocity, not an idle gate. Slow
+       scrub → subtle bend; aggressive flick → strong bend. Decays as
+       the strip slows.
+     - Snap still uses an idle gate (a quiet window after the last
+       input) so the strip locks to a card without yanking. */
   let scroll = 0;
   let target = 0;
+  let scrollVel = 0;            // spring velocity
+  let prevScroll = 0;
+  let velSmoothed = 0;          // smoothed |delta scroll|, drives morph
   let morph = 0;
   let lastInputTs = 0;
-  // Tighter timings than the first pass — the user wanted "quicker."
-  const IDLE_MS = 80;
-  const SNAP_MS = 100;
-  const SCROLL_LERP = 0.22;   // was 0.12
-  const MORPH_LERP  = 0.18;   // was 0.12
+
+  const SNAP_MS = 110;
+  const SPRING_STIFFNESS = 0.085;
+  const SPRING_DAMPING = 0.78;
+  const MORPH_LERP = 0.20;
+  const VEL_SMOOTH = 0.18;
+  const MAX_VEL_PX = 14;        // velocity (px/frame) that maps to full morph
   function noteInput() { lastInputTs = performance.now(); }
 
-  // Round `value` to the nearest multiple of stepPx. With infinite
-  // scroll this is all we need — every card-step is a snap point and
-  // both directions wrap freely.
   function nearestSnap(value) {
     return stepPx > 0 ? Math.round(value / stepPx) * stepPx : 0;
   }
-
-  // Wrap a world-space x into [-loopW/2, +loopW/2) so cards that exit
-  // one side instantly reappear on the other.
   function wrapWorld(x, loopW) {
     if (loopW <= 0) return x;
     const half = loopW / 2;
     return ((x + half) % loopW + loopW) % loopW - half;
   }
+  const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+
+  /* ---------- Entrance choreography ----------
+     One-shot reveal when the section first enters the viewport. Cards
+     lift from below + fade up with an 80 ms stagger; morph starts at
+     0.55 and decays to 0 across the same window so the bend resolves
+     to flat once the strip arrives. */
+  let entryStarted = false;
+  let entryStartMs = 0;
+  const ENTRY_DURATION_MS = 1200;
+  const ENTRY_STAGGER_MS = 80;
+  if ('IntersectionObserver' in window) {
+    const obs = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting && !entryStarted) {
+          entryStarted = true;
+          entryStartMs = performance.now();
+          obs.disconnect();
+        }
+      }
+    }, { threshold: 0.2 });
+    obs.observe(stage);
+  } else {
+    entryStarted = true;
+    entryStartMs = performance.now();
+  }
+  // easeOutQuart — fast start, gentle settle. No bounce.
+  const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4);
 
   /* ---------- Render loop ---------- */
   let first = true;
@@ -338,42 +417,74 @@ import {
     if (!active) return;
     const now = performance.now();
     const since = now - lastInputTs;
-    const idle = since > IDLE_MS;
 
-    // Morph: ramp up while interacting, decay after idle.
-    const morphTarget = idle ? 0 : 1;
-    morph += (morphTarget - morph) * MORPH_LERP;
-    if (morph < 0.002 && morphTarget === 0) morph = 0;
-
-    // Snap once the user has been quiet and scroll has settled. With
-    // the infinite loop, scroll can be any value — snap rounds to the
-    // nearest card-step boundary, positive or negative.
-    if (since > SNAP_MS && Math.abs(scroll - target) < 0.6) {
+    // Snap once the user has been quiet and scroll has caught up.
+    if (since > SNAP_MS && Math.abs(scroll - target) < 0.8 && Math.abs(scrollVel) < 0.5) {
       const n = nearestSnap(scroll);
       if (Math.abs(n - target) > 0.5) target = n;
     }
 
-    scroll += (target - scroll) * SCROLL_LERP;
-    if (Math.abs(target - scroll) < 0.05) scroll = target;
+    // Spring physics replaces the linear lerp. Slight overshoot when
+    // the user releases a fast scrub → settles in 200–300 ms.
+    const accel = (target - scroll) * SPRING_STIFFNESS;
+    scrollVel = (scrollVel + accel) * SPRING_DAMPING;
+    scroll += scrollVel;
+    if (Math.abs(scrollVel) < 0.02 && Math.abs(target - scroll) < 0.05) {
+      scroll = target;
+      scrollVel = 0;
+    }
+
+    // Velocity-coupled morph. Take the smoothed magnitude of delta-scroll
+    // and map it to [0, 1]. A flick produces a stronger bend than a slow
+    // wheel nudge — the cards behave like a physical material.
+    const instVel = Math.abs(scroll - prevScroll);
+    prevScroll = scroll;
+    velSmoothed += (instVel - velSmoothed) * VEL_SMOOTH;
+    const morphFromVel = clamp01(velSmoothed / MAX_VEL_PX);
+
+    // Entry morph: starts at 0.55, decays linearly to 0 across entry.
+    let entryProgressGlobal = 1;
+    if (entryStarted) {
+      entryProgressGlobal = clamp01((now - entryStartMs) / ENTRY_DURATION_MS);
+    } else {
+      entryProgressGlobal = 0;
+    }
+    const entryMorph = (1 - entryProgressGlobal) * 0.55;
+
+    const morphTarget = Math.max(morphFromVel, entryMorph);
+    morph += (morphTarget - morph) * MORPH_LERP;
+    if (morph < 0.002 && morphTarget === 0) morph = 0;
 
     // Lay out the wrapped strip.
     const loopWorld = cards.length * stepWorld;
     const scrollWorld = scroll * pxToWorld;
-    // Initial offset so the second card sits visually at the stage
-    // center on a fresh load — three cards land neatly across the
-    // viewport with card 0 on the left, card 1 in the middle, card 2
-    // on the right.
-    const offsetWorld = -stepWorld;
+    // Initial offset so two cards span the viewport with the third
+    // peeking at the right edge on a fresh load.
+    const offsetWorld = -stepWorld * 0.5;
 
     for (let i = 0; i < meshes.length; i++) {
       const raw = i * stepWorld - scrollWorld + offsetWorld;
       const meshX = wrapWorld(raw, loopWorld);
       meshes[i].position.x = meshX;
+      // Entrance stagger: each card has its own progress window so they
+      // arrive sequentially with the same 1.2 s duration.
+      let cardEntry = 1;
+      if (entryStarted) {
+        const delay = i * ENTRY_STAGGER_MS;
+        const t = (now - entryStartMs - delay) / ENTRY_DURATION_MS;
+        cardEntry = clamp01(easeOutQuart(clamp01(t)));
+      } else {
+        cardEntry = 0;
+      }
+      meshes[i].position.y = (1 - cardEntry) * cardHPx * pxToWorld * 0.35;
+      meshes[i].program.uniforms.uOpacity.value = cardEntry;
       meshes[i].program.uniforms.uMeshX.value = meshX;
       meshes[i].program.uniforms.uHalfStage.value = halfStageWorld;
       meshes[i].program.uniforms.uMorph.value = morph;
-      // Cull cards far outside the visible band.
-      const offscreen = Math.abs(meshX) > halfStageWorld + stepWorld;
+      // Cull cards entirely outside the visible band (after entry done).
+      const offscreen = entryProgressGlobal >= 1
+        ? Math.abs(meshX) > halfStageWorld + stepWorld
+        : false;
       meshes[i].visible = !offscreen;
     }
 
@@ -388,8 +499,19 @@ import {
 
   /* ---------- Inputs ---------- */
   let hovering = false;
-  stage.addEventListener('pointerenter', () => { hovering = true; });
-  stage.addEventListener('pointerleave', () => { hovering = false; });
+  function positionCursor(x, y) {
+    const r = stage.getBoundingClientRect();
+    reelCursor.style.transform = `translate3d(${x - r.left - 28}px, ${y - r.top - 28}px, 0)`;
+  }
+  stage.addEventListener('pointerenter', (e) => {
+    hovering = true;
+    reelCursor.classList.add('is-visible');
+    positionCursor(e.clientX, e.clientY);
+  });
+  stage.addEventListener('pointerleave', () => {
+    hovering = false;
+    reelCursor.classList.remove('is-visible');
+  });
 
   stage.addEventListener('wheel', (e) => {
     if (!hovering) return;
@@ -411,10 +533,11 @@ import {
     dragStartX = e.clientX;
     dragStartTarget = target;
     stage.setPointerCapture(e.pointerId);
-    stage.style.cursor = 'grabbing';
+    reelCursor.classList.add('is-dragging');
     noteInput();
   });
   stage.addEventListener('pointermove', (e) => {
+    if (hovering) positionCursor(e.clientX, e.clientY);
     if (e.pointerId !== dragId) return;
     target = dragStartTarget - (e.clientX - dragStartX);
     noteInput();
@@ -422,7 +545,7 @@ import {
   const endDrag = (e) => {
     if (e.pointerId !== dragId) return;
     dragId = null;
-    stage.style.cursor = '';
+    reelCursor.classList.remove('is-dragging');
   };
   stage.addEventListener('pointerup', endDrag);
   stage.addEventListener('pointercancel', endDrag);
