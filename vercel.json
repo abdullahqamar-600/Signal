@@ -1,0 +1,7 @@
+{
+  "outputDirectory": "site",
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/", "destination": "/v3/", "permanent": false }
+  ]
+}
