@@ -239,6 +239,13 @@ main { display: block; }
   box-shadow: 0 10px 24px -8px rgba(255, 147, 50, 0.55);
 }
 
+/* Keyboard focus — orange ring works on both light and dark trays. */
+.tray-nav__link:focus-visible,
+.tray-nav__cta:focus-visible {
+  outline: 2px solid var(--signal-orange);
+  outline-offset: 3px;
+}
+
 @media (max-width: 720px) {
   .tray-nav { padding: 5px; gap: 3px; }
   .tray-nav__group { gap: 0; }
@@ -366,15 +373,18 @@ main { display: block; }
 .hero__title {
   font-family: var(--font-sans);
   font-weight: 600;
-  /* Two short lines. Bigger ceiling than the long-copy version so the
-     two-line headline lands with the weight a hero deserves. */
+  /* Two-line headline with each line wrapped in a span so the break is
+     semantic (not <br>) and we can tune per-line spacing. */
   font-size: clamp(48px, 6.6vw, 104px);
   line-height: 1.02;
   letter-spacing: -0.028em;
   color: var(--white);
   margin: 0;
   max-width: 18ch;
+  display: flex;
+  flex-direction: column;
 }
+.hero__title-line { display: block; }
 
 @media (max-width: 720px) {
   .hero { min-height: 600px; height: 90vh; }
@@ -398,13 +408,13 @@ main { display: block; }
   padding: clamp(56px, 7vw, 96px) 0;
 }
 .logos__inner {
-  max-width: 1480px;
+  max-width: 1080px;
   margin: 0 auto;
   padding: 0 clamp(1.5rem, 4vw, 4rem);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: clamp(20px, 4vw, 64px);
+  justify-content: space-around;
+  gap: clamp(28px, 5vw, 88px);
   flex-wrap: wrap;
 }
 .logos__item {
@@ -432,7 +442,7 @@ main { display: block; }
 .summit-details {
   position: relative;
   background: var(--signal-blue-ink);
-  padding: clamp(72px, 9vw, 128px) 0 0;
+  padding: clamp(40px, 5vw, 72px) 0 0;
   overflow: hidden;
   isolation: isolate;
 }
@@ -450,7 +460,7 @@ main { display: block; }
   z-index: 1;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 clamp(1.5rem, 4vw, 4rem) clamp(24px, 3vw, 56px);
+  padding: 0 clamp(1.5rem, 4vw, 4rem) clamp(16px, 2vw, 32px);
 }
 
 /* Header — headline + one-line support copy stacked left-aligned. */
@@ -458,8 +468,8 @@ main { display: block; }
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: clamp(14px, 1.6vw, 22px);
-  margin-bottom: clamp(36px, 4vw, 64px);
+  gap: clamp(10px, 1.2vw, 16px);
+  margin-bottom: clamp(24px, 2.8vw, 40px);
 }
 .summit-details__pill {
   display: inline-flex;
@@ -763,9 +773,10 @@ main { display: block; }
   margin: 0;
   font-family: var(--font-sans);
   font-weight: 500;
-  font-size: clamp(30px, 3.6vw, 50px);
+  /* Peers with .summit-details__heading and .reel__heading. */
+  font-size: clamp(30px, 4vw, 52px);
   line-height: 1.05;
-  letter-spacing: -0.022em;
+  letter-spacing: -0.024em;
   color: var(--signal-blue-deep);
   text-wrap: balance;
 }
@@ -1191,9 +1202,11 @@ main { display: block; }
   margin: 0;
   font-family: var(--font-sans);
   font-weight: 500;
-  font-size: clamp(34px, 4.6vw, 64px);
+  /* Peer to .summit-details__heading and .agenda__heading. Same band
+     keeps the section H2s reading as siblings instead of competing. */
+  font-size: clamp(30px, 4vw, 52px);
   line-height: 1.04;
-  letter-spacing: -0.028em;
+  letter-spacing: -0.024em;
   color: var(--signal-blue-deep);
   max-width: 22ch;
   text-wrap: balance;

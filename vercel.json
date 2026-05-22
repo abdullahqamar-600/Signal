@@ -3,5 +3,10 @@
   "cleanUrls": true,
   "rewrites": [
     { "source": "/v1/assets/:path*", "destination": "/assets/:path*" }
+  ],
+  "redirects": [
+    { "source": "/v3", "destination": "/", "permanent": true },
+    { "source": "/v3/", "destination": "/", "permanent": true },
+    { "source": "/v3/:path*", "destination": "/:path*", "permanent": true }
   ]
 }

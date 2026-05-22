@@ -5,9 +5,14 @@
   /* ---------- Hero video autoplay ---------- */
   const heroVideo = document.querySelector('.hero__video');
   if (heroVideo) {
-    const play = () => heroVideo.play && heroVideo.play().catch(() => {});
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const play = () => {
+      if (reduceMotion.matches) { try { heroVideo.pause(); } catch (e) {} return; }
+      heroVideo.play && heroVideo.play().catch(() => {});
+    };
     play();
     document.addEventListener('visibilitychange', () => { if (!document.hidden) play(); });
+    if (reduceMotion.addEventListener) reduceMotion.addEventListener('change', play);
   }
 
   /* ---------- Tray-nav theme (dark over dark sections, light over light)
