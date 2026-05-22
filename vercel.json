@@ -2,21 +2,6 @@
   "outputDirectory": "site",
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/", "destination": "/v3/index.html" },
-    { "source": "/agenda", "destination": "/v3/agenda.html" },
-    { "source": "/agenda.html", "destination": "/v3/agenda.html" },
-    { "source": "/travel", "destination": "/v3/travel.html" },
-    { "source": "/travel.html", "destination": "/v3/travel.html" },
-    { "source": "/faqs", "destination": "/v3/faqs.html" },
-    { "source": "/faqs.html", "destination": "/v3/faqs.html" },
-    { "source": "/register", "destination": "/v3/register.html" },
-    { "source": "/register.html", "destination": "/v3/register.html" },
-    { "source": "/styles.css", "destination": "/v3/styles.css" },
-    { "source": "/script.js", "destination": "/v3/script.js" },
-    { "source": "/reel.js", "destination": "/v3/reel.js" },
-    { "source": "/assets/glimpses/:path*", "destination": "/v3/assets/glimpses/:path*" },
-    { "source": "/assets/globe.png", "destination": "/v3/assets/globe.png" },
-    { "source": "/v1", "destination": "/index.html" },
-    { "source": "/v1/", "destination": "/index.html" }
+    { "source": "/v1/assets/:path*", "destination": "/assets/:path*" }
   ]
 }

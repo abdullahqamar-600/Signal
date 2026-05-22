@@ -1,1814 +1,2095 @@
-/* ---------- Tokens ---------- */
+/* ============================================================== */
+/*  Signal Leadership Summit 2026 — V3                            */
+/*  Hero pass: full-bleed video, twin pills, big headline         */
+/* ============================================================== */
+
 :root {
-  --signal-orange: #FF9332;
-  --signal-orange-hot: #FFB37A;
-  --signal-blue: #0032A0;
-  --signal-blue-deep: #001F66;
-  --white: #FFFFFF;
-  /* Cool grey — replaces the first blue band of V1. Darker than a
-     hairline tint so the band reads as a deliberate surface against
-     the white sections, while still letting the orange ribbon pop. */
-  --signal-grey: #DDE3EC;
-  --signal-grey-deep: #CFD6E2;
+  --signal-orange:      #FF9332;
+  --signal-orange-hot:  #FFB37A;
+  --signal-orange-deep: #E5751A;
+  --signal-blue:        #0032A0;
+  --signal-blue-deep:   #001F66;
+  /* Matched to the deep midnight navy of the globe image (assets/globe.png)
+     so the section bg blends seamlessly into the globe horizon band. */
+  --signal-blue-ink:    #020C2E;
+  --white:              #FFFFFF;
 
-  --bg: var(--white);
-  --ink: var(--signal-blue-deep);
-  --ink-muted: rgba(0, 31, 102, 0.65);
-
-  --font-sans: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-
-  --eyebrow-size: 0.875rem;
-  --h1-size: clamp(2.75rem, 7vw, 6rem);
-  --meta-label-size: 0.75rem;
-  --meta-value-size: 1rem;
-
-  --container: 1280px;
-  --gutter: clamp(1.25rem, 4vw, 3rem);
-  --nav-h: 88px;
-
-  --radius-pill: 999px;
-
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --font-sans:          'Montserrat', system-ui, -apple-system, sans-serif;
+  --container:          1280px;
+  --gutter:             clamp(1.25rem, 4vw, 3rem);
+  --nav-h:              88px;
 }
 
-/* ---------- Reset ---------- */
-*, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; }
-body {
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--signal-blue-ink);
+  color: var(--white);
   font-family: var(--font-sans);
   font-weight: 400;
-  line-height: 1.5;
-  color: var(--ink);
-  background: var(--bg);
-  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  -moz-osx-font-smoothing: grayscale;
+  /* `clip` (not `hidden`) so position:sticky descendants work.
+     overflow:hidden promotes a scroll container which breaks sticky. */
+  overflow-x: clip;
 }
 
-a { color: inherit; text-decoration: none; }
-address { font-style: normal; }
 img, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+main { display: block; }
 
-/* ---------- Nav ---------- */
+
+/* ============================================================== */
+/*  NAV — sits over the video, transparent, white text             */
+/* ============================================================== */
 .nav {
-  position: sticky;
-  top: 0;
-  z-index: 50;
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 30;
   height: var(--nav-h);
-  display: flex;
-  align-items: center;
-  background: var(--white);
-  transition: background 0.25s var(--ease-out);
+  background: transparent;
 }
-.nav.is-scrolled {
-  background: var(--signal-blue);
-}
-
 .nav__inner {
-  width: 100%;
-  max-width: var(--container);
+  max-width: 1480px;
+  height: 100%;
   margin: 0 auto;
-  padding: 0 var(--gutter);
+  padding: 0 clamp(1.5rem, 3vw, 3.25rem);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 24px;
+}
+.nav__logo {
+  display: inline-flex;
+  align-items: center;
+}
+.nav__logo-img {
+  height: 26px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.96;
+}
+.nav__center {
+  justify-self: start;
+  margin-left: 36px;
+  display: flex;
+  gap: clamp(20px, 2.4vw, 36px);
+  align-items: center;
+}
+.nav__right {
   display: flex;
   align-items: center;
-  gap: clamp(0.75rem, 1.5vw, 1.5rem);
-  height: 100%;
-}
-
-.nav__logo { display: inline-flex; align-items: center; }
-.nav__logo-img {
-  height: 36px;
-  width: auto;
-}
-
-.nav__links {
-  display: none;
-  justify-content: center;
-  gap: clamp(1rem, 2.5vw, 2.5rem);
-  flex: 1;
+  gap: clamp(18px, 2vw, 30px);
 }
 .nav__link {
-  position: relative;
-  font-size: 0.9rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  color: rgba(0, 31, 102, 0.7);
-  padding: 0.5rem 0;
-  transition: color 0.2s var(--ease-out);
-}
-.nav__link:hover { color: var(--signal-blue-deep); }
-.nav__link--active { color: var(--signal-blue-deep); }
-.nav__link--active::after {
-  content: "";
-  position: absolute;
-  left: 0; right: 0; bottom: -4px;
-  height: 2px;
-  background: var(--signal-orange);
-}
-.nav.is-scrolled .nav__link { color: rgba(255, 255, 255, 0.72); }
-.nav.is-scrolled .nav__link:hover,
-.nav.is-scrolled .nav__link--active { color: var(--white); }
-
-/* ---------- Buttons ---------- */
-.btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.85rem 1.5rem;
-  font-family: inherit;
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-  border: none;
-  transition: transform 0.2s var(--ease-out), background 0.2s var(--ease-out), color 0.2s var(--ease-out);
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--white);
+  opacity: 0.92;
   white-space: nowrap;
+  transition: opacity 160ms ease;
 }
-.btn--primary {
-  background: var(--signal-orange);
-  color: var(--signal-blue-deep);
+.nav__link:hover { opacity: 1; }
+.nav__link--has-menu .nav__caret {
+  width: 9px;
+  height: 5px;
+  opacity: 0.82;
+  margin-top: 1px;
 }
-.btn--primary:hover {
-  background: var(--signal-orange-hot);
+.nav__lang {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--white);
+  opacity: 0.86;
+  letter-spacing: 0.02em;
 }
-.btn--white {
-  background: var(--white);
-  color: var(--signal-blue-deep);
-}
-.btn--white:hover {
-  background: var(--signal-orange);
-  color: var(--signal-blue-deep);
-}
-.btn__arrow {
-  transition: transform 0.2s var(--ease-out);
-}
-.btn:hover .btn__arrow { transform: translateX(3px); }
-
 .nav__cta {
-  padding: 0.55rem 1.1rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 22px;
   background: var(--white);
-  color: var(--signal-blue-deep);
-  border: 1px solid rgba(0, 50, 160, 0.22);
-  border-radius: 6px;
-  transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
+  color: #0B0F1A;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 999px;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
 }
 .nav__cta:hover {
-  background: var(--signal-blue-deep);
+  background: var(--signal-orange);
   color: var(--white);
-  border-color: var(--signal-blue-deep);
-}
-.nav.is-scrolled .nav__cta {
-  background: transparent;
-  color: var(--white);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-.nav.is-scrolled .nav__cta:hover {
-  background: var(--white);
-  color: var(--signal-blue-deep);
-  border-color: var(--white);
 }
 
-/* ---------- Hero (split: white top with content, ribbon band, blue bottom with logos) ---------- */
+@media (max-width: 880px) {
+  .nav__center { display: none; }
+  .nav__right .nav__link:not(.nav__link--has-menu) { display: none; }
+  .nav__lang { display: none; }
+}
+
+
+/* ============================================================== */
+/*  TRAY NAV — floating frosted pill, fixed bottom-center.         */
+/*  Holds the section links + Register CTA on the right.           */
+/*  Adapts to the background it's sitting over:                    */
+/*    data-theme="dark"  → white text on dark glass                */
+/*    data-theme="light" → blue text on light glass                */
+/* ============================================================== */
+.tray-nav {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(18px, 2.4vw, 28px);
+  transform: translateX(-50%);
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 999px;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  transition: background 250ms ease, border-color 250ms ease, box-shadow 250ms ease;
+}
+.tray-nav__group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Dark theme — over dark sections (hero, summit-details, footer) */
+.tray-nav[data-theme="dark"] {
+  background: rgba(10, 13, 28, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow:
+    0 18px 40px -16px rgba(0, 0, 0, 0.55),
+    0 2px 6px -2px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.tray-nav[data-theme="dark"] .tray-nav__link {
+  color: rgba(255, 255, 255, 0.86);
+}
+.tray-nav[data-theme="dark"] .tray-nav__link:hover,
+.tray-nav[data-theme="dark"] .tray-nav__link.is-active {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Light theme — over light sections (agenda, glimpses) */
+.tray-nav[data-theme="light"] {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(0, 22, 77, 0.10);
+  box-shadow:
+    0 18px 40px -16px rgba(0, 22, 77, 0.18),
+    0 2px 6px -2px rgba(0, 22, 77, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.tray-nav[data-theme="light"] .tray-nav__link {
+  color: rgba(0, 22, 77, 0.78);
+}
+.tray-nav[data-theme="light"] .tray-nav__link:hover,
+.tray-nav[data-theme="light"] .tray-nav__link.is-active {
+  color: var(--signal-blue-ink);
+  background: rgba(0, 22, 77, 0.06);
+}
+
+.tray-nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: color 160ms ease, background 160ms ease;
+}
+.tray-nav__link.is-active::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--signal-orange);
+  box-shadow: 0 0 0 4px rgba(255, 147, 50, 0.18);
+}
+
+/* Register CTA inside the tray — always orange, in both themes */
+.tray-nav__cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--white);
+  background: var(--signal-orange);
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+  margin-left: 4px;
+}
+.tray-nav__cta:hover {
+  background: var(--signal-orange-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px -8px rgba(255, 147, 50, 0.55);
+}
+
+@media (max-width: 720px) {
+  .tray-nav { padding: 5px; gap: 3px; }
+  .tray-nav__group { gap: 0; }
+  .tray-nav__link { padding: 9px 14px; font-size: 13px; }
+  .tray-nav__cta { padding: 9px 16px; font-size: 13px; }
+}
+@media (max-width: 560px) {
+  .tray-nav { display: none; }
+}
+
+
+/* ============================================================== */
+/*  HERO                                                           */
+/* ============================================================== */
 .hero {
   position: relative;
-  /* overflow intentionally visible so the ribbon's halo bloom can render
-     above the SVG. Horizontal overflow is absorbed by body's overflow-x: hidden. */
-  overflow: visible;
+  width: 100%;
+  /* Same proportions as the Digidop hero (≈ 100vh on desktop) */
+  min-height: 760px;
+  height: 100vh;
+  max-height: 1080px;
+  overflow: hidden;
   isolation: isolate;
+  background: #000;
 }
 
-.hero__top {
-  background: var(--white);
-  padding: clamp(0.75rem, 1.5vw, 1.5rem) 0 0;
+.hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  /* Slight saturation pull keeps the warm midtones reading against the blue overlay */
+  filter: saturate(1.05);
 }
 
-.hero__container {
+/* Top vignette — keeps nav legible no matter what frame the loop is on.
+   Neutral dark (no blue tint) so the video reads true. */
+.hero__overlay--top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 220px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0.15) 60%,
+    rgba(0, 0, 0, 0)    100%
+  );
+}
+
+/* Bottom blue ramp — kept short and concentrated near the seam so the
+   video shows in true color through most of the hero. Only the last
+   ~25% paints the Signal Blue Ink that meets the next section. */
+.hero__overlay--bottom {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 38%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(2, 12, 46, 0)    0%,
+    rgba(2, 12, 46, 0.08) 35%,
+    rgba(2, 12, 46, 0.35) 65%,
+    rgba(2, 12, 46, 0.85) 88%,
+    var(--signal-blue-ink) 100%
+  );
+}
+
+.hero__content {
   position: relative;
   z-index: 2;
-  width: 100%;
-  max-width: var(--container);
+  /* Match the nav__inner shell exactly so the headline's left edge
+     lines up with the logo above it. */
+  max-width: 1480px;
   margin: 0 auto;
-  padding: 0 var(--gutter);
-}
-
-/* ---------- Ticker (integrated into nav as a small scrolling element) ---------- */
-.ticker {
-  display: none;
-  flex: 1;
-  align-items: center;
-  min-width: 0;
+  padding: 0 clamp(1.5rem, 3vw, 3.25rem);
+  padding-bottom: clamp(110px, 18vh, 220px);
   height: 100%;
-  font-size: 0.75rem;
-  letter-spacing: 0.01em;
-  color: rgba(0, 31, 102, 0.7);
-}
-.ticker__viewport {
-  flex: 1;
-  overflow: hidden;
-  min-width: 0;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 92%, transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 92%, transparent 100%);
-}
-.ticker__track {
-  display: inline-flex;
-  width: max-content;
-  animation: ticker-scroll 42s linear infinite;
-  will-change: transform;
-}
-.ticker__group {
-  display: inline-flex;
-  align-items: center;
-  gap: 1.25rem;
-  padding-right: 1.25rem;
-}
-.ticker__item { white-space: nowrap; }
-.ticker__sep {
-  color: var(--signal-orange);
-  font-weight: 600;
-}
-.ticker:hover .ticker__track,
-.ticker[data-paused="true"] .ticker__track {
-  animation-play-state: paused;
-}
-@keyframes ticker-scroll {
-  from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(-50%, 0, 0); }
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
-.ticker__pause {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  margin-left: 0.5rem;
-  padding: 0;
-  background: rgba(0, 31, 102, 0.06);
-  color: rgba(0, 31, 102, 0.7);
-  border: 1px solid rgba(0, 31, 102, 0.12);
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background 0.2s var(--ease-out), border-color 0.2s var(--ease-out), color 0.2s var(--ease-out);
+/* Pills sit just above the headline */
+.hero__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: clamp(20px, 2.4vw, 32px);
 }
-.ticker__pause:hover {
-  background: rgba(0, 31, 102, 0.12);
-  color: var(--signal-blue-deep);
-}
-.ticker__icon { width: 9px; height: 9px; }
-.ticker__icon--play { display: none; }
-.ticker[data-paused="true"] .ticker__icon--pause { display: none; }
-.ticker[data-paused="true"] .ticker__icon--play { display: block; }
-
-/* When the nav scrolls into the blue area, recolor the ticker for dark bg */
-.nav.is-scrolled .ticker { color: rgba(255, 255, 255, 0.72); }
-.nav.is-scrolled .ticker__pause {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.85);
-  border-color: rgba(255, 255, 255, 0.16);
-}
-.nav.is-scrolled .ticker__pause:hover {
-  background: rgba(255, 255, 255, 0.18);
-  color: var(--white);
-}
-
-/* Show the ticker only on wider screens — keeps mobile nav clean */
-@media (min-width: 1024px) {
-  .ticker { display: flex; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ticker__track { animation: none; }
-}
-
-/* Compact grey pill above the hero heading. Mixed case, no leading dot. */
 .hero__pill {
   display: inline-flex;
   align-items: center;
-  margin: 0 0 clamp(0.75rem, 1.25vw, 1.125rem);
-  padding: 0.25rem 0.7rem;
-  background: rgba(0, 31, 102, 0.06);
-  border-radius: 999px;
-  font-size: clamp(0.6875rem, 0.8vw, 0.8125rem);
-  font-weight: 500;
-  letter-spacing: 0.005em;
-  text-transform: none;
-  color: var(--signal-blue-deep);
-}
-
-/* Hero: heading on top, date/venue details beneath as a horizontal pair.
-   Details get a small translateY so they visually overlap the ribbon below
-   without changing layout height (ribbon stays anchored in place). */
-.hero__row {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: clamp(1.25rem, 2.5vw, 2rem);
-}
-.hero__details {
-  display: flex;
-  flex-direction: row;       /* horizontal pair beneath the heading */
-  flex-wrap: wrap;
-  gap: clamp(2rem, 4vw, 4rem);
-  position: relative;
-  z-index: 3;                /* above .hero__ribbon (z-index: 1) */
-  /* Using `top` (not transform) because GSAP resets transform on .hero__details
-     to translate(0,0) after the fade-in animation ends. Top offset survives. */
-  top: clamp(1rem, 2.5vw, 2.5rem);
-}
-.hero__detail { margin: 0; }
-.hero__detail-value {
-  margin: 0 0 0.2rem;
-  font-size: clamp(1rem, 1.25vw, 1.125rem);
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--signal-blue-deep);
-}
-.hero__detail-sub {
-  margin: 0;
-  font-size: clamp(0.875rem, 0.95vw, 0.9375rem);
-  line-height: 1.45;
-  color: rgba(0, 31, 102, 0.65);
-}
-
-.hero__title {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-weight: 500;
-  font-size: clamp(2.25rem, 4vw, 4.25rem);
-  line-height: 1.04;
-  letter-spacing: -0.015em;
-  text-transform: uppercase;
-  color: var(--signal-blue-deep);
-}
-/* Each line forced to a single row at desktop so the heading is strictly 2 lines. */
-.hero__title-line { display: block; }
-@media (min-width: 900px) {
-  .hero__title-line { white-space: nowrap; }
-}
-
-.hero__actions {
-  display: flex;
-  gap: clamp(0.5rem, 1vw, 0.75rem);
-  flex-wrap: wrap;
-  margin: 0 0 clamp(1.25rem, 2.5vw, 1.75rem);
-}
-
-.hero__cta {
-  padding: 0.85rem 1.4rem;
-  font-size: 0.875rem;
-  border-radius: 6px;
-}
-
-.hero__subline {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.625rem;
-  margin: 0;
-  font-size: clamp(0.875rem, 1vw, 1rem);
-  font-weight: 500;
-  color: var(--signal-blue-deep);
-}
-.hero__subline-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  background: var(--signal-orange);
-  flex-shrink: 0;
-}
-
-/* Outline button for the white-bg area */
-.btn--outline-blue {
-  background: transparent;
-  color: var(--signal-blue-deep);
-  border: 1px solid var(--signal-blue-deep);
-}
-.btn--outline-blue:hover {
-  background: var(--signal-blue-deep);
+  gap: 10px;
+  padding: 10px 16px;
+  background: rgba(10, 13, 28, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   color: var(--white);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  white-space: nowrap;
+}
+.hero__pill-mark {
+  width: 18px;
+  height: 10px;
+  color: var(--signal-orange);
+  display: inline-flex;
+}
+.hero__pill-mark svg { width: 100%; height: 100%; }
+
+/* Headline — match Digidop ratio/size: ~4 lines, large, semibold,
+   tight line-height, white. Brand rule says H1 is uppercase, but the
+   sentence here reads as one continuous line of body-style copy, so
+   we set it mixed-case to mirror the Digidop voice while keeping
+   Montserrat at brand-weights. */
+.hero__title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  /* Two short lines. Bigger ceiling than the long-copy version so the
+     two-line headline lands with the weight a hero deserves. */
+  font-size: clamp(48px, 6.6vw, 104px);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+  color: var(--white);
+  margin: 0;
+  max-width: 18ch;
 }
 
-/* ---------- Logo marquee (standalone section between hero and video, on grey) ---------- */
-.logos-strip {
-  background: var(--signal-grey);
-  padding: clamp(1.5rem, 3vw, 2.5rem) var(--gutter);
+@media (max-width: 720px) {
+  .hero { min-height: 600px; height: 90vh; }
+  .hero__title {
+    font-size: clamp(32px, 7.6vw, 52px);
+    max-width: 100%;
+  }
+  .hero__pills { gap: 8px; }
+  .hero__pill { font-size: 12px; padding: 8px 13px; }
 }
-.logos-strip__container {
-  max-width: var(--container);
+
+
+/* ============================================================== */
+/*  LOGO STRIP                                                     */
+/*  Sits directly after hero on the same Signal Blue Ink base so   */
+/*  the seam stays invisible. Logos are evenly distributed across  */
+/*  the full inner width, muted/desaturated.                       */
+/* ============================================================== */
+.logos {
+  background: var(--signal-blue-ink);
+  padding: clamp(56px, 7vw, 96px) 0;
+}
+.logos__inner {
+  max-width: 1480px;
   margin: 0 auto;
-}
-.logos__viewport {
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
-}
-/* On the grey strip, logos read as a soft Signal-blue silhouette. */
-.logos-strip .logos__item {
-  filter: brightness(0) saturate(100%) invert(13%) sepia(76%) saturate(2898%) hue-rotate(218deg) brightness(95%) contrast(105%);
-  opacity: 0.35;
-}
-.logos-strip .logos__item:hover { opacity: 0.7; }
-.logos__track {
-  display: inline-flex;
-  width: max-content;
-  animation: logos-scroll 40s linear infinite;
-  will-change: transform;
-}
-.logos__group {
-  display: inline-flex;
+  padding: 0 clamp(1.5rem, 4vw, 4rem);
+  display: flex;
   align-items: center;
-  gap: clamp(2rem, 4vw, 4rem);
-  padding-right: clamp(2rem, 4vw, 4rem);
+  justify-content: space-between;
+  gap: clamp(20px, 4vw, 64px);
+  flex-wrap: wrap;
 }
 .logos__item {
-  flex-shrink: 0;
-  height: clamp(20px, 1.5vw, 26px);
+  height: 28px;
   width: auto;
+  max-width: 160px;
   object-fit: contain;
-  opacity: 0.55;
-  transition: opacity 0.2s var(--ease-out);
-}
-.logos__item:hover { opacity: 1; }
-.logos-strip:hover .logos__track { animation-play-state: paused; }
-
-@keyframes logos-scroll {
-  from { transform: translate3d(0, 0, 0); }
-  to   { transform: translate3d(-50%, 0, 0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .logos__track { animation: none; }
-}
-
-/* ---------- Ribbon band — white above the lower contour, blue below ---------- */
-.hero__ribbon {
-  position: relative;
-  display: block;
-  background: var(--white);
-  z-index: 1;
-  pointer-events: none;
-  /* overflow intentionally visible so the orange halo bloom can render above
-     the SVG. (Mixed overflow-x: hidden + overflow-y: visible would be promoted
-     to overflow-y: auto by the browser, which clips the bloom. Horizontal
-     overflow is already handled by body { overflow-x: hidden }.) */
-  overflow: visible;
-}
-
-.ribbon-svg {
-  display: block;
-  width: 100%;
-  /* viewBox is 225 tall now (was 175) — height bumped ~1.29× to keep ribbon
-     visually the same size while giving room for the blue fill below the contour. */
-  height: clamp(180px, 23vw, 310px);
-  overflow: visible;
-}
-
-@media (min-width: 960px) {
-  .ribbon-svg {
-    height: clamp(230px, 26vw, 360px);
-  }
-}
-
-.hero__container { margin-bottom: 0; }
-
-.ribbon-layer { will-change: transform, opacity; }
-
-/* Override the inline fill on the ribbon's lower-contour band so the
-   area beneath the orange ribbon flows into the grey section below it
-   instead of the original Signal blue. */
-.ribbon-bg-below { fill: var(--signal-grey); }
-
-/* ---------- Page loading screen ---------- */
-/* Hidden by default — no JS means the loader stays out of the way and the
-   real site renders immediately. html.js-anim flips it visible at first paint;
-   JS dismisses it after window.load + grey→orange wipe + fade. */
-.page-loader {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: var(--white);
-  display: none;
-}
-html.js-anim .page-loader {
-  display: block;
-}
-/* The ribbon is positioned in lockstep with the hero ribbon — JS reads
-   .hero__ribbon's bounding rect and applies it as inline `top`/`height` so
-   the grey ribbon sits exactly where the orange ribbon will be. Defaults
-   are a sensible pre-measurement fallback (matches the hero's CSS height). */
-.page-loader__ribbon {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: clamp(280px, 36vh, 520px);
-  width: 100%;
-  height: clamp(180px, 23vw, 310px);
-  display: block;
-  overflow: visible;
-}
-@media (min-width: 960px) {
-  .page-loader__ribbon {
-    height: clamp(230px, 26vw, 360px);
-  }
-}
-
-/* Continuous L→R shimmer band — matches the existing hero shine cadence */
-.page-loader__shimmer {
-  transform: translateX(-700px);
-  animation: pageLoaderShimmer 2.4s ease-in-out infinite;
-}
-@keyframes pageLoaderShimmer {
-  0%   { transform: translateX(-700px); }
-  100% { transform: translateX(1801px); }
-}
-
-/* Final reveal: CSS mask wipes the grey skeleton L→R, exposing the orange
-   ribbon path underneath. */
-.page-loader.is-revealed .page-loader__skeleton {
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 35%);
-          mask-image: linear-gradient(90deg, transparent 0%, black 35%);
-  -webkit-mask-size: 200% 100%;
-          mask-size: 200% 100%;
-  -webkit-mask-repeat: no-repeat;
-          mask-repeat: no-repeat;
-  animation: pageLoaderWipe 2.4s ease-in-out forwards;
-}
-@keyframes pageLoaderWipe {
-  0%   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
-  100% { -webkit-mask-position: -100% 0; mask-position: -100% 0; }
-}
-
-/* Dismiss: fade the whole loader out, revealing the site behind. */
-.page-loader.is-dismissed {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 0.5s ease, visibility 0.5s ease;
-}
-
-/* Reduced motion: no shimmer/wipe animation; the loader still appears briefly
-   then fades, but without distracting motion. */
-@media (prefers-reduced-motion: reduce) {
-  .page-loader__shimmer,
-  .page-loader.is-revealed .page-loader__skeleton {
-    animation: none !important;
-  }
-}
-
-/* ---------- Event info card (between ribbon and invite, on blue) ---------- */
-.event-info {
-  background: var(--signal-blue);
-  padding: clamp(2rem, 4vw, 3.5rem) var(--gutter);
-}
-.event-info__inner {
-  max-width: var(--container);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: clamp(1.5rem, 3vw, 2.5rem);
-}
-@media (min-width: 720px) {
-  .event-info__inner {
-    grid-template-columns: 1fr 1.6fr;
-    gap: clamp(2.5rem, 5vw, 4rem);
-  }
-}
-.event-info__label {
-  margin: 0 0 0.65rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.62);
-}
-.event-info__value {
-  margin: 0;
-  font-size: clamp(1.375rem, 2vw, 1.875rem);
-  font-weight: 500;
-  letter-spacing: -0.005em;
-  line-height: 1.25;
-  color: var(--ink);
-}
-.event-info__sub {
-  margin: 0.35rem 0 0;
-  font-size: clamp(0.95rem, 1.1vw, 1.0625rem);
-  font-weight: 400;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.72);
-}
-
-/* ---------- Invite section (3rd section on grey) ---------- */
-.invite {
-  background: var(--signal-grey);
-  padding: clamp(3.5rem, 7vw, 6rem) var(--gutter) clamp(4rem, 8vw, 7rem);
-  position: relative;
-}
-.invite__container {
-  /* ~20% tighter than the standard 1280px container so the content
-     feels more contained and the row of info reads as a tighter group. */
-  max-width: 1024px;
-  margin: 0 auto;
-}
-.invite__heading {
-  margin: 0 0 clamp(2.5rem, 5vw, 4rem);
-  font-family: var(--font-sans);
-  font-size: clamp(1.875rem, 3.4vw, 3rem);
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: -0.014em;
-  color: var(--signal-blue-deep);
-  max-width: none;
-  text-wrap: balance;
-}
-/* Brand-native emphasis: orange on a key word, same Montserrat family. */
-.invite__heading em {
-  font-style: normal;
-  color: var(--signal-orange);
-}
-.invite__bottom {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(1.75rem, 3vw, 2.5rem);
-}
-.invite__row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: clamp(1.25rem, 2.5vw, 2rem);
-  align-items: start;
-}
-@media (min-width: 768px) {
-  .invite__row {
-    /* Caption gets ~50% of the row so the full sentence lands on
-       exactly two lines; the two meta blocks share the remainder. */
-    grid-template-columns: 1.8fr 1fr 1fr;
-  }
-}
-.invite__caption {
-  margin: 0;
-  font-size: clamp(0.9375rem, 1vw, 1rem);
-  line-height: 1.5;
-  color: rgba(0, 31, 102, 0.65);
-  /* Sized so the caption sentence wraps to exactly two lines — matching
-     the two-line rhythm of the date and location blocks beside it. */
-  max-width: 44ch;
-  text-wrap: balance;
-}
-.invite__meta { margin: 0; }
-.invite__meta-value {
-  margin: 0;
-  font-size: clamp(0.9375rem, 1vw, 1.0625rem);
-  font-weight: 600;
-  line-height: 1.4;
-  color: var(--signal-blue-deep);
-}
-.invite__meta-sub {
-  margin: 0.2rem 0 0;
-  font-size: clamp(0.875rem, 0.95vw, 0.9375rem);
-  line-height: 1.5;
-  color: rgba(0, 31, 102, 0.6);
-}
-/* CTAs: vertical stack, full container width — Register Now on top,
-   View Agenda beneath. */
-.invite__cta-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 100%;
-}
-
-/* Block-style buttons (rectangular, full-width within stack) */
-.btn--block {
-  justify-content: center;
-  width: 100%;
-  padding: clamp(1.1rem, 1.6vw, 1.4rem) 1.5rem;
-  border-radius: 4px;
-  font-size: clamp(0.95rem, 1.05vw, 1.0625rem);
-  letter-spacing: 0.04em;
-}
-/* ---------- Video section: 2nd section, editorial frame on grey ---------- */
-.video-section {
-  background: var(--signal-grey);
-  padding: clamp(3rem, 5.5vw, 5rem) clamp(1rem, 2vw, 2rem) clamp(2.75rem, 5vw, 4.5rem);
-}
-.video-section__container {
-  /* Wider than the standard container so the video reads as a feature. */
-  max-width: 1560px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Editorial frame above the card: eyebrow + duration on a thin rule. */
-.video-section__frame {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0 clamp(0.25rem, 1vw, 0.75rem) clamp(0.85rem, 1.4vw, 1.15rem);
-  border-bottom: 1px solid rgba(0, 31, 102, 0.10);
-  margin: 0 0 clamp(1.25rem, 2vw, 1.75rem);
-}
-.video-section__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65rem;
-  margin: 0;
-  font-size: clamp(0.7rem, 0.85vw, 0.8125rem);
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--signal-blue-deep);
-}
-.video-section__mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 12px;
-  color: var(--signal-orange);
-}
-.video-section__mark svg { width: 100%; height: 100%; display: block; }
-.video-section__eyebrow-label { color: var(--signal-blue-deep); }
-.video-section__eyebrow-divider {
-  width: 28px;
-  height: 1px;
-  background: rgba(0, 31, 102, 0.22);
-  display: inline-block;
-}
-.video-section__eyebrow-meta {
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  color: rgba(0, 31, 102, 0.55);
-}
-.video-section__duration {
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: clamp(0.7rem, 0.85vw, 0.8125rem);
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--signal-orange);
-  font-variant-numeric: tabular-nums;
-}
-.video-section__duration span {
-  font-size: 0.6em;
-  transform: translateY(-1px);
-}
-
-/* Caption below the video card. */
-.video-section__caption {
-  margin: clamp(1rem, 1.6vw, 1.35rem) 0 0;
-  font-size: clamp(0.875rem, 1vw, 0.9375rem);
-  color: rgba(0, 31, 102, 0.6);
-  letter-spacing: 0.005em;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-.video-section__caption span {
-  font-weight: 600;
-  color: var(--signal-blue-deep);
-  transition: color 0.2s var(--ease-out);
-}
-.video-section__container:hover .video-section__caption span { color: var(--signal-orange); }
-
-@media (max-width: 640px) {
-  .video-section__frame {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-}
-.video-card {
-  position: relative;
-  display: block;
-  width: 100%;
-  /* Matches the supplied video-mask.svg viewBox (1428 × 788) */
-  aspect-ratio: 1428 / 788;
-  text-decoration: none;
-  isolation: isolate;
-  /* Drop-shadow follows the mask silhouette instead of a rectangle. */
-  filter:
-    drop-shadow(0 12px 20px rgba(0, 20, 80, 0.10))
-    drop-shadow(0 36px 70px rgba(0, 20, 80, 0.14));
-}
-.video-card__media {
-  position: absolute;
-  inset: 0;
-  background: var(--signal-blue-deep);
-  overflow: hidden;
-  /* Branded ribbon-shape silhouette via the SVG mask. The cutout in the
-     bottom-right corner is where the play button sits when revealed. */
-  -webkit-mask: url('assets/video-mask.svg') center / 100% 100% no-repeat;
-          mask: url('assets/video-mask.svg') center / 100% 100% no-repeat;
-}
-.video-card__thumb {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s var(--ease-out), filter 0.3s var(--ease-out);
-  filter: brightness(0.92);
-}
-.video-card:hover .video-card__thumb {
-  transform: scale(1.02);
-  filter: brightness(1);
-}
-
-/* Play button — brand orange, centered over the masked video card.
-   Hidden by default; fades in only on hover/focus. */
-.video-card__play {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: clamp(72px, 7vw, 108px);
-  height: clamp(72px, 7vw, 108px);
-  border-radius: 50%;
-  background: var(--signal-orange);
-  color: var(--white);
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(0.9);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.32);
-  transition: opacity 0.3s var(--ease-out),
-              transform 0.4s var(--ease-out),
-              background 0.25s var(--ease-out);
-  z-index: 2;
-  pointer-events: none;
-}
-.video-card:hover .video-card__play,
-.video-card:focus-visible .video-card__play {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
-  background: var(--signal-orange-hot);
-}
-.video-card__play svg { width: 40%; height: 40%; display: block; transform: translateX(2%); }
-
-/* Always-visible variant for the framed grey-section layout. The play
-   button sits at 0.92 opacity by default, lifts to full + halo on hover.
-   Soft expanding ring uses a pseudo-element so the button itself stays
-   crisp while the halo can pulse independently. */
-.video-card__play--always {
-  opacity: 0.96;
-  transform: translate(-50%, -50%) scale(1);
-  background: var(--signal-orange);
-  box-shadow:
-    0 0 0 8px rgba(255, 147, 50, 0.10),
-    0 18px 36px rgba(229, 117, 26, 0.32);
-}
-.video-card__play--always::before {
-  content: "";
-  position: absolute;
-  inset: -14px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 147, 50, 0.35);
-  opacity: 0;
-  transition: opacity 0.3s var(--ease-out), transform 0.6s var(--ease-out);
-}
-.video-card:hover .video-card__play--always,
-.video-card:focus-visible .video-card__play--always {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1.06);
-}
-.video-card:hover .video-card__play--always::before,
-.video-card:focus-visible .video-card__play--always::before {
-  opacity: 1;
-  transform: scale(1.18);
-}
-@media (prefers-reduced-motion: reduce) {
-  .video-card__play--always,
-  .video-card__play--always::before {
-    transition: none;
-  }
-}
-
-/* ---------- Message section (two equal cards on white) ---------- */
-/* ---------- Event hook section (brand-aligned: white surface, Montserrat
-   throughout, orange "Signal" emphasis, container-bound brand-tinted
-   image strip with rounded corners). */
-.message-section {
-  background: var(--white);
-  color: var(--signal-blue-deep);
-  padding: clamp(4.5rem, 9vw, 7.5rem) var(--gutter);
-  text-align: center;
-}
-.message-section__container {
-  max-width: var(--container);
-  margin: 0 auto;
-}
-.message-section__hook {
-  margin: 0 0 clamp(0.85rem, 1.75vw, 1.5rem);
-  font-family: var(--font-sans);
-  font-size: clamp(2.25rem, 6vw, 5rem);
-  font-weight: 600;
-  line-height: 1.05;
-  letter-spacing: -0.028em;
-  color: var(--signal-blue-deep);
-  text-wrap: balance;
-}
-/* Brand-native emphasis: orange color, same Montserrat family — no serif. */
-.message-section__hook em {
-  font-style: normal;
-  color: var(--signal-orange);
-}
-.message-section__sub {
-  margin: 0 0 clamp(2rem, 3.25vw, 2.75rem);
-  font-family: var(--font-sans);
-  font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  color: rgba(0, 31, 102, 0.65);
-}
-.message-section__cta-row {
-  display: inline-flex;
-  gap: 0.65rem;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: clamp(3rem, 5vw, 4.5rem);
-}
-.message-section__cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 168px;
-  padding: clamp(0.95rem, 1.2vw, 1.15rem) clamp(1.6rem, 2.25vw, 2.1rem);
-  font-family: 'Inter', var(--font-sans);
-  font-weight: 500;
-  font-size: clamp(0.8125rem, 0.95vw, 0.9375rem);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-decoration: none;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  transition: background 0.25s var(--ease-out), color 0.25s var(--ease-out), transform 0.25s var(--ease-out), border-color 0.25s var(--ease-out);
-}
-.message-section__cta--primary {
-  background: var(--signal-orange);
-  color: var(--signal-blue-deep);
-}
-.message-section__cta--primary:hover {
-  background: var(--signal-orange-hot);
-  transform: translateY(-1px);
-}
-.message-section__cta--ghost {
-  background: transparent;
-  color: var(--signal-blue-deep);
-  border-color: rgba(0, 31, 102, 0.22);
-}
-.message-section__cta--ghost:hover {
-  background: rgba(0, 31, 102, 0.04);
-  border-color: rgba(0, 31, 102, 0.4);
-}
-
-/* Container-bound 3-up image strip with brand-tinted duotones (orange + blue
-   only; one untreated middle frame for variation). Rounded corners + gutter
-   gap match the site's other card surfaces (video card, cta-grid). */
-.message-section__strip {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(0.85rem, 1.5vw, 1.5rem);
-  margin: 0 auto;
-}
-.message-section__strip-item {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 5 / 4;
-  border-radius: 14px;
-  background: var(--signal-blue);
-  transition: transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out);
-}
-@media (min-width: 1024px) {
-  .message-section__strip-item { aspect-ratio: 16 / 11; }
-}
-.message-section__strip-item img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(0.35) contrast(1.04);
-  transition: filter 0.45s var(--ease-out), transform 0.6s var(--ease-out);
-}
-.message-section__strip-item:not(.message-section__strip-item--orange):not(.message-section__strip-item--blue) img {
-  filter: none;
-}
-.message-section__strip-item::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  mix-blend-mode: color;
-  opacity: 0.55;
-  pointer-events: none;
-  transition: opacity 0.45s var(--ease-out);
-}
-.message-section__strip-item:not(.message-section__strip-item--orange):not(.message-section__strip-item--blue)::after {
-  display: none;
-}
-.message-section__strip-item--orange::after { background: var(--signal-orange); }
-.message-section__strip-item--blue::after   { background: var(--signal-blue); }
-
-/* Subtle hover affordance — lifts the card and lets the photo breathe by
-   easing the duotone back. Calm; matches the rest of the site's restraint. */
-.message-section__strip-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 22px 40px -18px rgba(0, 20, 80, 0.25);
-}
-.message-section__strip-item:hover::after { opacity: 0.4; }
-.message-section__strip-item:hover img { transform: scale(1.02); }
+  filter: brightness(0) invert(1);
+  opacity: 0.48;
+  transition: opacity 200ms ease;
+}
+.logos__item:hover { opacity: 0.86; }
 
 @media (max-width: 720px) {
-  .message-section__strip {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-  .message-section__strip-item { aspect-ratio: 16 / 10; }
+  .logos__inner { justify-content: center; gap: 28px 40px; }
+  .logos__item { height: 22px; }
 }
 
-/* ---------- Audio player ---------- */
-.audio-player {
-  display: flex;
-  align-items: center;
-  gap: clamp(0.75rem, 1.25vw, 1rem);
-  padding: clamp(0.75rem, 1.25vw, 1rem);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 8px;
-}
-/* Compact inline variant — minimal icon-only play button next to title + duration */
-.audio-player--compact {
-  background: transparent;
-  border: none;
-  padding: 0;
-  gap: 0.75rem;
-  align-self: flex-start;
-}
-.audio-player--compact .audio-player__btn {
-  width: 32px;
-  height: 32px;
-  background: transparent;
-  color: var(--signal-blue-deep);
-  border-radius: 6px;
-  border: none;
-}
-.audio-player--compact .audio-player__btn:hover {
-  background: rgba(0, 31, 102, 0.08);
-}
-.audio-player--compact .audio-player__icon { width: 18px; height: 18px; }
-.audio-player--compact .audio-player__title {
-  margin: 0;
-  font-size: clamp(0.875rem, 1vw, 0.9375rem);
-  font-weight: 600;
-  color: var(--signal-blue-deep);
-  line-height: 1.25;
-}
-.audio-player--compact .audio-player__meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-.audio-player--compact .audio-player__sub {
-  margin: 0;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(0, 31, 102, 0.45);
-}
-.audio-player--compact .audio-player__duration {
-  color: var(--signal-blue-deep);
-  font-variant-numeric: tabular-nums;
-}
-.audio-player__btn {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--signal-orange);
-  color: var(--white);
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s var(--ease-out), transform 0.2s var(--ease-out);
-}
-.audio-player__btn:hover { background: var(--signal-orange-hot); }
-.audio-player__btn:active { transform: scale(0.95); }
-.audio-player__icon { width: 18px; height: 18px; }
-.audio-player__icon--pause { display: none; }
-.audio-player[data-playing="true"] .audio-player__icon--play { display: none; }
-.audio-player[data-playing="true"] .audio-player__icon--pause { display: block; }
 
-.audio-player__body {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.audio-player__title {
-  margin: 0;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--white);
-}
-.audio-player__track {
+/* ============================================================== */
+/*  SUMMIT DETAILS — Where & When                                   */
+/*  Pill + dates-led headline + 2 facts + Travel CTA + dot-globe   */
+/*  dome anchored at the bottom, intersected by the orange ribbon. */
+/* ============================================================== */
+.summit-details {
   position: relative;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.18);
-  border-radius: 2px;
+  background: var(--signal-blue-ink);
+  padding: clamp(72px, 9vw, 128px) 0 0;
   overflow: hidden;
-}
-.audio-player__fill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 0%;
-  background: var(--signal-orange);
-  border-radius: 2px;
-  transition: width 0.15s linear;
-}
-.audio-player__time {
-  flex-shrink: 0;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.7);
-  font-variant-numeric: tabular-nums;
-}
-.audio-player__total { color: rgba(255, 255, 255, 0.45); }
-
-/* ---------- Expand button: text-link style with expand/collapse icon ---------- */
-.message-section__expand {
-  margin-top: auto;
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0;
-  background: transparent;
-  color: var(--signal-blue-deep);
-  border: none;
-  border-radius: 0;
-  font-family: inherit;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  letter-spacing: 0.005em;
-  cursor: pointer;
-  transition: color 0.2s var(--ease-out);
-}
-.message-section__expand:hover { color: var(--signal-orange); }
-.message-section__expand-icon {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.2s var(--ease-out);
-}
-.message-section__expand:hover .message-section__expand-icon { transform: scale(1.08); }
-/* Show expand icon by default, collapse icon when overlay is open */
-.message-section__expand-icon--collapse { display: none; }
-.message-section__expand[aria-expanded="true"] .message-section__expand-icon--expand { display: none; }
-.message-section__expand[aria-expanded="true"] .message-section__expand-icon--collapse { display: inline-block; }
-
-/* ---------- Speakers grid (3×3 portrait cards on white, name overlaid) ---------- */
-.speakers-grid {
-  background: var(--white);
-  color: var(--signal-blue-deep);
-  padding: clamp(3.5rem, 6vw, 5rem) 0 clamp(3rem, 5vw, 4rem);
-}
-.speakers-grid__container {
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: 0 var(--gutter);
-}
-
-/* Centered editorial intro — heading sits above a quiet lede.
-   Mirrors the reference's centered title + subtitle. */
-.speakers-grid__intro {
-  text-align: center;
-  margin: 0 auto clamp(2.5rem, 4vw, 3.5rem);
-  max-width: 56ch;
-}
-.speakers-grid__heading {
-  margin: 0 0 clamp(0.65rem, 1.25vw, 1rem);
-  font-family: var(--font-sans);
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 500;
-  line-height: 1.08;
-  letter-spacing: -0.02em;
-  color: var(--signal-blue-deep);
-  text-wrap: balance;
-}
-.speakers-grid__lede {
-  margin: 0;
-  font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
-  line-height: 1.55;
-  color: rgba(0, 31, 102, 0.65);
-}
-
-/* 3×3 grid of portrait cards. */
-.speakers-grid__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(0.85rem, 1.5vw, 1.5rem);
-}
-
-.speakers-grid__item {
-  position: relative;
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-  border-radius: 12px;
-  background: var(--signal-grey);
-  border: 1px solid rgba(0, 31, 102, 0.06);
   isolation: isolate;
-  transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
 }
-.speakers-grid__item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 22px 40px -22px rgba(0, 20, 80, 0.25);
-}
-
-.speakers-grid__photo {
+/* Soft overlay to lift the dome out of the dark blue */
+.summit-details::before {
+  content: "";
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  /* Slight desaturation by default — faces become fully alive on hover. */
-  filter: saturate(0.7) contrast(1.02);
-  transition: filter 0.5s var(--ease-out), transform 0.6s var(--ease-out);
+  background: radial-gradient(60% 70% at 50% 70%, rgba(0, 80, 200, 0.14), transparent 70%);
+  pointer-events: none;
   z-index: 0;
 }
-.speakers-grid__item:hover .speakers-grid__photo {
-  filter: saturate(1) contrast(1);
-  transform: scale(1.03);
-}
-
-/* Caption sits in the bottom-left of the card, over a soft white gradient
-   that fades up from the photo so the text remains legible regardless of
-   what's behind it. */
-.speakers-grid__item::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 55%;
-  background: linear-gradient(
-    to top,
-    rgba(255, 255, 255, 0.96) 0%,
-    rgba(255, 255, 255, 0.82) 30%,
-    rgba(255, 255, 255, 0.0) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-.speakers-grid__caption {
-  position: absolute;
-  left: clamp(1rem, 1.75vw, 1.5rem);
-  right: clamp(1rem, 1.75vw, 1.5rem);
-  bottom: clamp(0.9rem, 1.5vw, 1.25rem);
-  z-index: 2;
-}
-.speakers-grid__name {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: clamp(1rem, 1.25vw, 1.25rem);
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.005em;
-  color: var(--signal-blue-deep);
-}
-.speakers-grid__role {
-  margin: 0.25rem 0 0;
-  font-family: var(--font-sans);
-  font-size: clamp(0.8125rem, 0.9vw, 0.9375rem);
-  font-weight: 500;
-  line-height: 1.35;
-  color: rgba(0, 31, 102, 0.62);
-}
-
-@media (max-width: 720px) {
-  .speakers-grid__list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 480px) {
-  .speakers-grid__list {
-    grid-template-columns: 1fr;
-  }
-  .speakers-grid__item { aspect-ratio: 4 / 4.5; }
-}
-
-/* ---------- Speakers section (WebGL 3D wheel of portraits) ---------- */
-.speakers {
-  background: var(--white);
-  color: var(--signal-blue-deep);
-  padding: clamp(3.5rem, 6vw, 5rem) 0 clamp(3rem, 5vw, 4rem);
+.summit-details__inner {
   position: relative;
-  overflow: hidden;
-}
-.speakers__container {
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: 0 var(--gutter);
-}
-
-/* Intro mirrors story section's intro rhythm */
-.speakers__intro {
-  padding-bottom: clamp(1.75rem, 3vw, 2.5rem);
-  margin-bottom: clamp(1.5rem, 2.5vw, 2.25rem);
-  border-bottom: 1px solid rgba(0, 31, 102, 0.12);
-}
-.speakers__heading {
-  margin: 0 0 clamp(0.65rem, 1vw, 0.95rem);
-  font-family: var(--font-sans);
-  font-size: clamp(1.875rem, 3.6vw, 3.25rem);
-  font-weight: 500;
-  line-height: 1.06;
-  letter-spacing: -0.02em;
-  color: var(--signal-blue-deep);
-  max-width: 22ch;
-  text-wrap: balance;
-}
-.speakers__lede {
-  margin: 0;
-  font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
-  line-height: 1.55;
-  color: rgba(0, 31, 102, 0.65);
-  max-width: 56ch;
-}
-
-/* Stage holds the canvas + absolutely-positioned captions. */
-.speakers__stage {
-  position: relative;
-  width: 100%;
-  /* Tall enough to hold the wheel + captions beneath the planes. */
-  aspect-ratio: 16 / 9;
-  /* Cap height so the stage doesn't dominate on tall narrow viewports. */
-  max-height: 640px;
-  margin: 0 auto;
-  touch-action: pan-y;       /* allow vertical page scroll on touch; horizontal handled by JS */
-  user-select: none;
-  cursor: grab;
-}
-.speakers__stage:active { cursor: grabbing; }
-
-.speakers__canvas {
-  position: absolute;
-  inset: 0;
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-}
-
-/* Caption layer — absolutely positioned children, JS writes their transforms.
-   The `<ul>` itself is a positioning context overlaid on the canvas. */
-.speakers__captions {
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  pointer-events: none;
   z-index: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 4rem) clamp(24px, 3vw, 56px);
 }
-.speakers__caption {
-  position: absolute;
-  /* Each caption is anchored top-left (0,0) of the stage. JS sets
-     transform: translate3d(x, y, 0) translate(-50%, 0) to center it
-     under the projected plane position. */
-  top: 0;
-  left: 0;
-  text-align: center;
+
+/* Header — headline + one-line support copy stacked left-aligned. */
+.summit-details__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(14px, 1.6vw, 22px);
+  margin-bottom: clamp(36px, 4vw, 64px);
+}
+.summit-details__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(10, 13, 28, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: var(--white);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
   white-space: nowrap;
-  opacity: 0;
-  will-change: transform, opacity;
 }
-.speakers__caption-name {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: clamp(0.875rem, 1vw, 1rem);
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: -0.005em;
-  color: var(--signal-blue-deep);
-}
-.speakers__caption-role {
-  margin: 0.25rem 0 0;
-  font-family: var(--font-sans);
-  font-size: clamp(0.625rem, 0.75vw, 0.75rem);
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(0, 31, 102, 0.55);
-}
-
-/* Reduced motion: static front-facing scene, all captions visible at low opacity */
-@media (prefers-reduced-motion: reduce) {
-  .speakers__caption { opacity: 0.7 !important; }
-}
-
-@media (max-width: 720px) {
-  .speakers__stage {
-    aspect-ratio: 4 / 5;
-    max-height: none;
-  }
-  .speakers__caption-name { font-size: 0.875rem; }
-  .speakers__caption-role { font-size: 0.625rem; letter-spacing: 0.12em; }
-}
-
-/* ---------- Story section (Days & breakdown — editorial chapters on white) ---------- */
-.story {
-  background: var(--white);
-  color: var(--signal-blue-deep);
-  padding: clamp(3.5rem, 6vw, 5rem) 0 clamp(3rem, 5vw, 4rem);
-}
-.story__container {
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: 0 var(--gutter);
-}
-
-/* Section intro — mirrors the video section's eyebrow + ribbon-Z mark,
-   then a confident editorial heading sitting above a hairline rule. */
-.story__intro {
-  padding-bottom: clamp(1.75rem, 3vw, 2.5rem);
-  margin-bottom: clamp(2rem, 3.5vw, 3rem);
-  border-bottom: 1px solid rgba(0, 31, 102, 0.12);
-}
-.story__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65rem;
-  margin: 0 0 clamp(1rem, 1.75vw, 1.5rem);
-  font-size: clamp(0.7rem, 0.85vw, 0.8125rem);
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--signal-blue-deep);
-}
-.story__mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 12px;
+.summit-details__pill-mark {
+  width: 14px;
+  height: 8px;
   color: var(--signal-orange);
+  display: inline-flex;
 }
-.story__mark svg { width: 100%; height: 100%; display: block; }
-.story__heading {
+.summit-details__pill-mark svg { width: 100%; height: 100%; }
+
+.summit-details__heading {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: clamp(1.875rem, 3.6vw, 3.25rem);
   font-weight: 500;
-  line-height: 1.06;
-  letter-spacing: -0.02em;
-  color: var(--signal-blue-deep);
-  max-width: 22ch;
-  text-wrap: balance;
+  font-size: clamp(30px, 4vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.022em;
+  color: var(--white);
 }
-
-/* Each day is a chapter card that STICKS to the top of the viewport while
-   the next one scrolls up to overlap it. Because all three acts share
-   `.story__container` as their containing block and stick at the same top
-   offset, day 02 paints over day 01 once it reaches sticky position, then
-   day 03 paints over day 02 — a clean stacking-cards scroll effect. */
-.story__act {
-  position: sticky;
-  top: calc(var(--nav-h) + clamp(0.5rem, 1vw, 1rem));
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: clamp(1.5rem, 3vw, 2.25rem);
-  padding: clamp(2.25rem, 3.5vw, 3rem) clamp(1.25rem, 2.5vw, 2rem);
-  /* Opaque card surface so each act fully covers the one beneath when stacked. */
-  background: var(--white);
-  border-top: 1px solid rgba(0, 31, 102, 0.10);
-  scroll-margin-top: calc(var(--nav-h) + 1rem);
-  /* Generous flow-space gives the user real scroll distance with each
-     card pinned before the next slides up to overlap. */
-  min-height: clamp(420px, 60vh, 560px);
-  /* Soft elevation that increases as a card sits over the previous one —
-     reads as a real stack of cards. */
-  box-shadow: 0 -1px 0 rgba(0, 31, 102, 0.04), 0 -16px 32px -24px rgba(0, 31, 102, 0.18);
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
-}
-.story__act:first-of-type {
-  border-top: 0;
-  box-shadow: none;
-}
-.story__act.is-visible { opacity: 1; transform: translateY(0); }
-@media (prefers-reduced-motion: reduce) {
-  .story__act {
-    position: relative;
-    top: auto;
-    min-height: auto;
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}
-@media (min-width: 820px) {
-  .story__act {
-    grid-template-columns: minmax(180px, 26%) minmax(0, 1fr);
-    gap: clamp(2rem, 4vw, 4rem);
-    align-items: start;
-  }
-}
-/* Compact viewports: fall back to natural stacking, no overlap. */
-@media (max-width: 720px) {
-  .story__act {
-    position: relative;
-    top: auto;
-    min-height: auto;
-  }
-}
-
-/* Aside: small orange eyebrow, the giant numeral, then the weekday + date. */
-.story__act-mark {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0;
-}
-.story__act-eyebrow {
-  margin: 0 0 clamp(0.5rem, 1vw, 0.75rem);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--signal-orange);
-}
-.story__act-num {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: clamp(0.35rem, 0.6vw, 0.55rem);
-  font-family: var(--font-sans);
-  color: var(--signal-blue-deep);
-}
-/* Small "Day" label sitting just above the numeral, locking them
-   together as a single display unit. */
-.story__act-num-label {
-  font-size: clamp(0.8125rem, 0.95vw, 0.9375rem);
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  line-height: 1;
-  color: rgba(0, 31, 102, 0.55);
-}
-/* The display moment: huge numeral acting as the chapter mark. */
-.story__act-num-digits {
-  font-size: clamp(5rem, 9.5vw, 9.5rem);
-  font-weight: 600;
-  line-height: 0.85;
-  letter-spacing: -0.04em;
-  color: var(--signal-blue-deep);
-  font-variant-numeric: tabular-nums;
-}
-.story__act-day {
-  margin: clamp(0.5rem, 1vw, 0.85rem) 0 0;
-  font-size: clamp(0.9375rem, 1vw, 1.0625rem);
+.summit-details__heading-dates {
+  display: block;
+  color: rgba(255, 255, 255, 0.5);
   font-weight: 500;
-  line-height: 1.35;
-  color: rgba(0, 31, 102, 0.6);
-}
-
-/* Body: title, lead paragraph, then schedule list. */
-.story__act-body {
-  min-width: 0;
-}
-.story__act-title {
-  margin: 0 0 clamp(0.65rem, 1vw, 0.85rem);
-  font-family: var(--font-sans);
-  font-size: clamp(1.5rem, 2.3vw, 2rem);
-  font-weight: 500;
-  line-height: 1.12;
   letter-spacing: -0.018em;
-  color: var(--signal-blue-deep);
-  max-width: 24ch;
-  text-wrap: balance;
 }
-.story__act-lead {
-  margin: 0 0 clamp(1.5rem, 2.5vw, 2.25rem);
-  font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
+.summit-details__support {
+  margin: 0;
+  font-size: 15px;
   line-height: 1.55;
-  color: rgba(0, 31, 102, 0.65);
+  color: rgba(255, 255, 255, 0.68);
   max-width: 52ch;
 }
 
-/* Schedule: a clean two-column program list. Time + title rows separated
-   by hairline rules — same rhythm as the invite section's WHEN/WHERE block. */
-.story__sessions {
+/* Facts + CTA row — single horizontal band, no dividers above/below.
+   On the left: 2–3 facts with a single thin separator between them.
+   On the right: the Travel & Hotel CTA, vertically centered. */
+.summit-details__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(24px, 4vw, 64px);
+  flex-wrap: wrap;
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  padding-top: clamp(22px, 2.6vw, 32px);
+}
+.summit-details__facts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.summit-details__fact {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+.summit-details__fact + .summit-details__fact {
+  padding-left: clamp(28px, 4vw, 56px);
+  border-left: 1px solid rgba(255, 255, 255, 0.10);
+}
+.summit-details__fact-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--signal-orange);
+}
+.summit-details__fact-value {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--white);
+}
+
+/* Full-bleed globe horizon. Sits below the content, above the ribbon.
+   The image already carries the brand-blue field and the orange marker;
+   we just give it a height band and crop with object-fit. */
+.summit-details__globe {
+  position: relative;
+  width: 100%;
+  margin-top: clamp(32px, 5vw, 72px);
+  /* Bleed the image fractionally into the ribbon below so the seam
+     reads as one continuous horizon rather than two stacked elements. */
+  margin-bottom: clamp(-80px, -8vw, -40px);
+  line-height: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.summit-details__globe img {
+  display: block;
+  width: 100%;
+  height: clamp(220px, 26vw, 380px);
+  object-fit: cover;
+  /* Anchor on the orange marker (right of center in the source image)
+     so it stays visible as the viewport narrows. */
+  object-position: 60% center;
+}
+
+/* CTA — sits at the right of the row, anchored next to the facts. */
+.summit-details__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 26px;
+  border-radius: 999px;
+  background: var(--signal-orange);
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: background 200ms ease, transform 200ms ease, box-shadow 200ms ease, gap 200ms ease;
+  flex-shrink: 0;
+}
+.summit-details__cta:hover {
+  background: var(--signal-orange-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 40px -10px rgba(255, 147, 50, 0.55);
+  gap: 14px;
+}
+.summit-details__cta-arrow {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: transform 250ms ease;
+}
+.summit-details__cta:hover .summit-details__cta-arrow { transform: translateX(2px); }
+
+/* Dome — absolutely positioned, centered horizontally, anchored so its
+   vertical center aligns with the ribbon's curve. The ribbon (with a
+   higher z-index) paints over the dome's lower half — that's the cut. */
+.summit-details__dome { display: none; }
+.summit-details__dome .dome {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.dome .dot--water { fill: rgba(255, 255, 255, 0.10); }
+.dome .dot--land  { fill: rgba(255, 255, 255, 0.85); }
+
+/* Omaha marker */
+.dome__marker-halo {
+  fill: var(--signal-orange);
+  opacity: 0.18;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: dome-marker-pulse 2.2s ease-out infinite;
+}
+.dome__marker-ring {
+  fill: none;
+  stroke: var(--signal-orange);
+  stroke-width: 1.5;
+  opacity: 0.7;
+}
+.dome__marker-core {
+  fill: var(--signal-orange-hot);
+  filter: drop-shadow(0 0 6px rgba(255, 179, 122, 0.9));
+}
+.dome__marker-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  fill: rgba(255, 255, 255, 0.78);
+}
+@keyframes dome-marker-pulse {
+  0%   { transform: scale(1);   opacity: 0.18; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dome__marker-halo { animation: none; }
+}
+
+/* Responsive */
+@media (max-width: 880px) {
+  .summit-details__heading {
+    font-size: clamp(28px, 7vw, 40px);
+  }
+  .summit-details__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(20px, 3vw, 28px);
+  }
+  .summit-details__facts {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+  }
+  .summit-details__fact {
+    padding-block: 14px;
+    width: 100%;
+  }
+  .summit-details__fact + .summit-details__fact {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+  }
+}
+
+
+/* ============================================================== */
+/*  RIBBON TRANSITION (bottom of summit-details section)           */
+/*  V1's signature orange ribbon — used here as the curved seam    */
+/*  between the dark Signal Blue Ink section above and the         */
+/*  grey #F2F4F8 section below. The SVG's "ribbon-bg-below" path   */
+/*  paints grey from the lower contour downward so the next        */
+/*  section meets it with no visible join.                         */
+/* ============================================================== */
+.summit-details__transition {
+  position: relative;
+  width: 100%;
+  line-height: 0;
+  overflow: visible;
+  /* Sits above the dome so the ribbon's paint occludes the dome's
+     lower half — the masking happens via stacking, not clip-path. */
+  z-index: 2;
+}
+.summit-details__transition .ribbon-svg {
+  display: block;
+  width: 100%;
+  height: clamp(180px, 23vw, 310px);
+  overflow: visible;
+}
+@media (min-width: 960px) {
+  .summit-details__transition .ribbon-svg {
+    height: clamp(230px, 26vw, 360px);
+  }
+}
+.summit-details__transition .ribbon-layer { will-change: transform, opacity; }
+
+/* ============================================================== */
+/*  AGENDA — 3-day session breakdown                                */
+/*  Left rail of days + scroll-progress bar; right side is a sticky */
+/*  stage that cross-fades each day in turn. A frosted-glass veil   */
+/*  sits at the bottom of the viewport, hinting at the next day.    */
+/* ============================================================== */
+.agenda {
+  background: #F2F4F8;
+  color: var(--signal-blue-deep);
+  padding: clamp(72px, 8vw, 120px) 0 clamp(64px, 7vw, 96px);
+  position: relative;
+  z-index: 1;
+}
+.agenda__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 3rem);
+}
+
+/* ----- HEADING ----- Left-aligned, two-line cap, dark inverted pill. */
+.agenda__head {
+  text-align: left;
+  margin-bottom: clamp(36px, 4vw, 56px);
+  max-width: 720px;
+}
+.agenda__heading-dates {
+  display: block;
+  color: rgba(0, 22, 77, 0.5);
+  font-weight: 500;
+  letter-spacing: -0.018em;
+}
+.agenda__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 8px 12px;
+  background: rgba(0, 31, 102, 0.92);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin-bottom: 18px;
+}
+.agenda__pill-mark {
+  display: inline-flex;
+  width: 18px;
+  height: auto;
+  color: var(--signal-orange);
+}
+.agenda__pill-mark svg { width: 100%; height: auto; display: block; }
+.agenda__heading {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(30px, 3.6vw, 50px);
+  line-height: 1.05;
+  letter-spacing: -0.022em;
+  color: var(--signal-blue-deep);
+  text-wrap: balance;
+}
+
+/* ----- TWO-COLUMN BODY ----- */
+.agenda__body {
+  --agenda-top: clamp(96px, 13vh, 140px);
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: clamp(36px, 4vw, 72px);
+  align-items: stretch;
+}
+
+/* ----- LEFT RAIL -----
+   The aside spans the full row height (same as the 300vh stage column),
+   and an inner sticky element holds the day list + progress bar. */
+.agenda__rail {
+  position: relative;
+}
+.agenda__rail-inner {
+  position: sticky;
+  top: var(--agenda-top);
+  display: grid;
+  grid-template-columns: 6px 1fr;
+  gap: clamp(20px, 2vw, 28px);
+  align-items: stretch;
+}
+
+/* The vertical track + orange fill. Track sits muted but visible; the
+   fill carries a soft bloom so the leading edge reads as alive even
+   when the user is between transitions. */
+.agenda__progress {
+  position: relative;
+  width: 6px;
+  background: rgba(0, 22, 77, 0.14);
+  border-radius: 6px;
+  overflow: visible;
+}
+.agenda__progress-fill {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 0%;
+  background: linear-gradient(180deg, var(--signal-orange) 0%, var(--signal-orange-deep) 100%);
+  border-radius: 6px;
+  box-shadow:
+    0 0 14px rgba(255, 147, 50, 0.45),
+    0 0 4px rgba(255, 147, 50, 0.6),
+    0 0 0 1px rgba(229, 117, 26, 0.25);
+  will-change: height;
+}
+/* A tiny bloom dot at the leading edge of the fill. */
+.agenda__progress-fill::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--signal-orange);
+  transform: translateX(-50%);
+  box-shadow: 0 0 12px 2px rgba(255, 147, 50, 0.55);
+  filter: blur(2px);
+  opacity: 0.85;
+  pointer-events: none;
+}
+/* Hide the bloom when there's nothing filled yet. */
+.agenda__progress-fill[style*="height: 0%"]::after,
+.agenda__progress-fill:not([style])::after { display: none; }
+
+.agenda__days {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  border-top: 1px solid rgba(0, 31, 102, 0.08);
 }
-.story__session {
-  display: grid;
-  grid-template-columns: minmax(5.5rem, 7rem) minmax(0, 1fr);
-  gap: clamp(1rem, 2vw, 1.75rem);
-  align-items: baseline;
-  padding: clamp(0.7rem, 1.1vw, 0.95rem) 0;
-  border-bottom: 1px solid rgba(0, 31, 102, 0.08);
-}
-.story__session-time {
-  font-size: clamp(0.75rem, 0.85vw, 0.8125rem);
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--signal-orange);
-  font-variant-numeric: tabular-nums;
-}
-.story__session-title {
-  font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
-  font-weight: 500;
-  line-height: 1.35;
-  letter-spacing: -0.005em;
-  color: var(--signal-blue-deep);
+.agenda__days li + li {
+  border-top: 1px solid rgba(0, 22, 77, 0.10);
 }
 
-/* ---------- Fullscreen message overlay ---------- */
-.message-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: var(--signal-blue);
+.agenda__day {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  padding: clamp(14px, 1.4vw, 18px) 0;
   display: flex;
   flex-direction: column;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.35s var(--ease-out), visibility 0s linear 0.35s;
-  overflow-y: auto;
+  gap: 4px;
+  color: inherit;
+  opacity: 0.55;
+  transition: opacity 240ms ease;
+  font-family: var(--font-sans);
 }
-.message-overlay[aria-hidden="false"] {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.35s var(--ease-out), visibility 0s linear 0s;
+.agenda__day:hover { opacity: 0.85; }
+.agenda__day.is-active { opacity: 1; }
+
+.agenda__day-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(0, 22, 77, 0.55);
+  transition: color 240ms ease;
 }
-.message-overlay__close {
+.agenda__day.is-active .agenda__day-label {
+  color: var(--signal-orange-deep);
+}
+.agenda__day-date {
+  font-size: clamp(17px, 1.3vw, 19px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--signal-blue-deep);
+}
+.agenda__day.is-active .agenda__day-date {
+  font-weight: 600;
+}
+
+/* ----- PAGER (tablet/mobile only) ----- */
+.agenda__pager { display: none; }
+
+/* ----- RIGHT — SCROLL-PINNED STAGE ----- */
+.agenda__stage {
+  position: relative;
+  height: 320vh;
+}
+.agenda__pin {
+  position: sticky;
+  top: var(--agenda-top);
+  height: calc(100vh - var(--agenda-top) - clamp(24px, 3vh, 48px));
+  display: flex;
+  align-items: flex-start;
+}
+.agenda__viewport {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  height: 100%;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.agenda__frame {
   position: absolute;
-  top: clamp(1.25rem, 2vw, 1.75rem);
-  right: clamp(1.25rem, 2vw, 1.75rem);
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--white);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  cursor: pointer;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0 2px 64px;
+  opacity: 0;
+  transform: translateY(72%);
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.agenda__frame.is-current {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.agenda__frame-head {
+  margin-bottom: clamp(14px, 1.6vw, 22px);
+}
+.agenda__frame-summary {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: clamp(18px, 1.7vw, 22px);
+  font-weight: 500;
+  line-height: 1.32;
+  letter-spacing: -0.012em;
+  color: var(--signal-blue-deep);
+  max-width: 48ch;
+  text-wrap: balance;
+}
+
+.agenda__list { width: 100%; }
+
+.agenda__row {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: clamp(16px, 1.8vw, 28px);
+  padding: clamp(10px, 1.1vw, 14px) 0;
+  border-top: 1px solid rgba(0, 22, 77, 0.07);
+  align-items: baseline;
+}
+.agenda__list > .agenda__row:first-child {
+  border-top: 0;
+  padding-top: clamp(6px, 0.8vw, 10px);
+}
+
+.agenda__time {
+  margin: 0;
+  font-size: clamp(13px, 1vw, 15px);
+  font-weight: 500;
+  color: rgba(0, 22, 77, 0.58);
+  font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: 0;
+}
+
+.agenda__main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.agenda__title {
+  margin: 0;
+  font-size: clamp(16px, 1.4vw, 19px);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--signal-blue-deep);
+  text-wrap: balance;
+}
+.agenda__desc {
+  margin: 0;
+  font-size: clamp(13px, 0.95vw, 14px);
+  line-height: 1.5;
+  color: rgba(0, 22, 77, 0.6);
+  max-width: 56ch;
+}
+
+/* ----- VEIL — frosted band at the bottom hinting at the next day -----
+   Sits in the bottom 24% of the viewport so the active day's last
+   session stays clear of it. The next frame (translateY 80% from JS)
+   peeks through this veil — clearly there, but veiled. */
+.agenda__veil {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 20%;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(242, 244, 248, 0) 0%,
+    rgba(242, 244, 248, 0.72) 40%,
+    rgba(242, 244, 248, 0.97) 100%
+  );
+  z-index: 2;
+}
+@supports (backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px)) {
+  .agenda__veil {
+    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(7px);
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 30%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 30%);
+  }
+}
+
+/* ============================================================== */
+/*  RESPONSIVE                                                       */
+/* ============================================================== */
+
+/* Tablet — collapse rail to a horizontal pager above the content. */
+@media (max-width: 960px) {
+  .agenda__body {
+    display: block;
+  }
+  .agenda__rail { display: none; }
+  .agenda__pager {
+    display: block;
+    margin-bottom: clamp(20px, 2.4vw, 28px);
+  }
+  .agenda__pager-track {
+    position: relative;
+    height: 3px;
+    background: rgba(0, 22, 77, 0.10);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .agenda__pager-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0%;
+    background: var(--signal-orange);
+    border-radius: 3px;
+    transition: width 120ms linear;
+  }
+  .agenda__pager-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .agenda__pager-item {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    text-align: left;
+    color: inherit;
+    opacity: 0.55;
+    transition: opacity 240ms ease, background-color 240ms ease;
+    font-family: var(--font-sans);
+  }
+  .agenda__pager-item:hover { opacity: 0.9; }
+  .agenda__pager-item.is-active {
+    opacity: 1;
+    background: rgba(255, 147, 50, 0.10);
+  }
+  .agenda__pager-item span {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(0, 22, 77, 0.55);
+  }
+  .agenda__pager-item.is-active span { color: var(--signal-orange-deep); }
+  .agenda__pager-item em {
+    font-style: normal;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--signal-blue-deep);
+  }
+  .agenda__viewport { max-width: none; height: min(620px, 80vh); }
+}
+
+/* Mobile — drop the pinned stage entirely; stack three day cards. */
+@media (max-width: 640px) {
+  .agenda__head { max-width: none; }
+  .agenda__stage { height: auto; }
+  .agenda__pin { position: static; height: auto; display: block; }
+  .agenda__viewport {
+    position: static;
+    height: auto;
+    overflow: visible;
+    max-width: none;
+  }
+  .agenda__frame {
+    position: static;
+    inset: auto;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    padding: 0 0 clamp(32px, 5vw, 48px);
+  }
+  .agenda__frame + .agenda__frame {
+    border-top: 1px solid rgba(0, 22, 77, 0.10);
+    padding-top: clamp(24px, 4vw, 32px);
+    margin-top: clamp(16px, 3vw, 24px);
+  }
+  .agenda__veil { display: none; }
+  .agenda__row {
+    grid-template-columns: 72px 1fr;
+    gap: 14px;
+    padding: 12px 0;
+  }
+  .agenda__title { font-size: 16px; }
+  .agenda__desc { font-size: 13px; }
+}
+
+/* ----- REDUCED MOTION -----
+   Skip the sticky stage entirely; render all three days as a stacked list. */
+@media (prefers-reduced-motion: reduce) {
+  .agenda__stage { height: auto; }
+  .agenda__pin { position: static; height: auto; display: block; }
+  .agenda__viewport {
+    position: static;
+    height: auto;
+    overflow: visible;
+    max-width: none;
+  }
+  .agenda__frame {
+    position: static;
+    inset: auto;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    padding: 0 0 clamp(40px, 6vw, 64px);
+    transition: none;
+  }
+  .agenda__frame + .agenda__frame {
+    border-top: 1px solid rgba(0, 22, 77, 0.10);
+    padding-top: clamp(28px, 4vw, 40px);
+    margin-top: clamp(20px, 3vw, 28px);
+  }
+  .agenda__veil { display: none; }
+  .agenda__rail-inner { position: static; }
+  .agenda__progress-fill { height: 0% !important; }
+}
+
+
+/* ============================================================== */
+/*  REEL — horizontal scroll-on-hover slider after the agenda.     */
+/*  White ground, 14 cards on a track. As the track scrolls under  */
+/*  a fixed focus zone, cards tilt in perspective and scale, so    */
+/*  the eye lands on whichever card is closest to center. Driven   */
+/*  by a lerped JS scroll target — every transform is composed     */
+/*  from CSS variables (--scroll, --dist) that the loop updates.   */
+/* ============================================================== */
+.reel {
+  background: var(--white);
+  padding: clamp(96px, 11vw, 180px) 0 clamp(96px, 12vw, 180px);
+  overflow: hidden;
+}
+.reel__inner {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 4rem);
+}
+.reel__head {
+  text-align: center;
+  margin-bottom: clamp(48px, 6vw, 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 1.6vw, 22px);
+}
+.reel__heading {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(34px, 4.6vw, 64px);
+  line-height: 1.04;
+  letter-spacing: -0.028em;
+  color: var(--signal-blue-deep);
+  max-width: 22ch;
+  text-wrap: balance;
+}
+.reel__heading em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--signal-orange-deep);
+}
+.reel__hint {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(0, 22, 77, 0.42);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.reel__hint-mark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
-  transition: background 0.2s var(--ease-out);
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(0, 22, 77, 0.06);
+  color: var(--signal-blue-deep);
+  font-size: 14px;
+  line-height: 1;
 }
-.message-overlay__close:hover { background: rgba(255, 255, 255, 0.2); }
-.message-overlay__close svg { width: 22px; height: 22px; }
-.message-overlay__inner {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: clamp(4rem, 9vw, 7rem) var(--gutter) clamp(3rem, 6vw, 5rem);
+
+/* Stage — full-width strip. When the WebGL refit is active, all
+   visible pixels come from the .reel__canvas overlay. The DOM track
+   stays in place for layout / a11y but is hidden visually. */
+.reel__stage {
+  position: relative;
+  width: 100%;
+  height: clamp(320px, 44vh, 480px);
+  overflow: hidden;
+  cursor: ew-resize;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: pan-y;
+}
+.reel__stage:focus-visible {
+  outline: 2px solid var(--signal-orange);
+  outline-offset: 8px;
+}
+
+/* WebGL canvas — overlays the stage 1:1. Added by reel.js. */
+.reel__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* Track — keeps a CSS layout for the reduced-motion / mobile fallback.
+   The 3-up math is preserved so the JS measurement (which reads
+   getComputedStyle on .reel__track) still resolves the same card width. */
+.reel__track {
+  --reel-gap: clamp(16px, 1.8vw, 32px);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--reel-gap);
+  padding-inline: var(--reel-gap);
+}
+
+/* Card — flat rectangles, no per-card 3D transforms. The shader owns
+   the bend now. The CSS still defines the slot size so reel.js can
+   compute layout symmetrically with whatever the browser thinks. */
+.reel__card {
+  --card-w: calc((100% - var(--reel-gap) * 2) / 3);
+  flex: 0 0 var(--card-w);
+  aspect-ratio: 4 / 3;
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+  background: #0c0e1a;
+  box-shadow:
+    0 28px 60px -22px rgba(2, 12, 46, 0.28),
+    0 6px 18px -8px rgba(2, 12, 46, 0.16);
+}
+.reel__card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* When the WebGL refit is active, the DOM track is hidden — the
+   canvas paints everything. Cards stay in the DOM for SR/SEO. */
+.reel__stage--webgl .reel__track {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Branded badge card — dark Signal-blue surface with the chevron
+   mark and "Summit · 2025" caption sitting bottom-left. */
+.reel__card--badge {
+  background: linear-gradient(
+    135deg,
+    var(--signal-blue) 0%,
+    var(--signal-blue-deep) 55%,
+    #000A33 100%
+  );
+  display: flex;
+  align-items: flex-end;
+  padding: clamp(20px, 1.8vw, 28px);
+}
+.reel__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--white);
 }
-.message-overlay__eyebrow {
-  margin: 0 0 1.5rem;
-  font-size: 0.8125rem;
+.reel__badge-mark {
+  width: 16px;
+  height: 9px;
+  color: var(--signal-orange);
+  display: inline-flex;
+}
+.reel__badge-mark svg { width: 100%; height: 100%; }
+
+/* Reduced motion — cards stay flat at rest anyway; this just keeps
+   them flat when the user starts scrolling (the JS skips the morph
+   loop under prefers-reduced-motion). */
+@media (prefers-reduced-motion: reduce) {
+  .reel__card { transform: none; }
+}
+
+/* Responsive — tablet shows two cards instead of three. Below 640px
+   the stage scrolls natively (no JS lerp) so touch users can flick. */
+@media (max-width: 880px) {
+  .reel__card { --card-w: calc((100% - var(--reel-gap)) / 2); }
+  .reel__stage { height: clamp(280px, 50vh, 420px); }
+}
+@media (max-width: 640px) {
+  .reel__stage {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .reel__track {
+    position: relative;
+    inset: auto;
+    transform: none !important;
+    padding-inline: clamp(16px, 6vw, 32px);
+  }
+  .reel__card {
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    scroll-snap-align: center;
+  }
+}
+
+
+/* ============================================================== */
+/*  FAQs PREVIEW — three top questions, link to full FAQs page    */
+/*  Heading + "View all" link on the row, 3-up card grid below.   */
+/* ============================================================== */
+.faqs-preview {
+  background: var(--signal-blue-ink);
+  padding: clamp(80px, 9vw, 140px) 0 clamp(80px, 9vw, 140px);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.faqs-preview__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 3rem);
+}
+.faqs-preview__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 32px;
+  margin-bottom: clamp(40px, 5vw, 64px);
+  flex-wrap: wrap;
+}
+.faqs-preview__heading {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(28px, 3.4vw, 44px);
+  line-height: 1.08;
+  letter-spacing: -0.022em;
+  color: var(--white);
+  max-width: 18ch;
+}
+.faqs-preview__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  color: var(--white);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: background 200ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faqs-preview__more:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+.faqs-preview__more svg {
+  width: 13px;
+  height: 13px;
+  color: var(--signal-orange);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faqs-preview__more:hover svg { transform: translateX(3px); }
+
+.faqs-preview__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(14px, 1.4vw, 22px);
+}
+
+/* FAQ card — Digidop press-card pattern: tall block, hairline border,
+   eyebrow + question stack at top, answer + read-more at bottom. */
+.faq-card {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(24px, 2.6vw, 36px);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  min-height: 320px;
+  transition: background 220ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq-card:hover {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.faq-card__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 32px;
+  font-size: 11.5px;
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--signal-orange);
+  color: rgba(255, 255, 255, 0.55);
 }
-.message-overlay__heading {
-  margin: 0 0 clamp(2rem, 4vw, 3rem);
-  font-family: var(--font-sans);
-  font-size: clamp(1.75rem, 3.4vw, 2.875rem);
+.faq-card__mark {
+  width: 16px;
+  height: 9px;
+  color: var(--signal-orange);
+  display: inline-flex;
+}
+.faq-card__mark svg { width: 100%; height: 100%; }
+.faq-card__q {
+  margin: 0 0 16px;
+  font-size: clamp(18px, 1.6vw, 22px);
   font-weight: 500;
-  line-height: 1.18;
-  letter-spacing: -0.012em;
+  line-height: 1.22;
+  letter-spacing: -0.018em;
+  color: var(--white);
+  text-wrap: balance;
+}
+.faq-card__a {
+  margin: 0 0 24px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.62);
+  flex: 1;
+}
+.faq-card__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--signal-orange);
+  letter-spacing: 0.01em;
+  align-self: flex-start;
+  transition: gap 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq-card__more:hover { gap: 12px; }
+.faq-card__more svg { width: 12px; height: 12px; }
+
+@media (max-width: 880px) {
+  .faqs-preview__grid { grid-template-columns: 1fr; }
+  .faq-card { min-height: 0; }
+}
+
+
+/* ============================================================== */
+/*  FOOTER — compact                                                */
+/*  Logo + tagline | sitemap | contact in three columns.            */
+/*  Tightened vertical rhythm vs. an expansive marketing footer.    */
+/* ============================================================== */
+.footer {
+  background: #000A33;
+  padding: clamp(36px, 4vw, 56px) 0 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.footer__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 3rem);
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: clamp(28px, 4vw, 56px);
+  align-items: start;
+}
+.footer__brand { max-width: 320px; }
+.footer__logo {
+  height: 22px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  margin-bottom: 12px;
+}
+.footer__tagline {
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.58);
+}
+.footer__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--white);
 }
-.message-overlay__body {
-  font-size: clamp(1rem, 1.15vw, 1.125rem);
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.85);
+.footer__badge-mark {
+  width: 14px;
+  height: 8px;
+  color: var(--signal-orange);
+  display: inline-flex;
 }
-.message-overlay__body p { margin: 0 0 1.25rem; }
-.message-overlay__body p:last-child { margin-bottom: 0; }
-.message-overlay__body strong { color: var(--white); }
-body.is-overlay-open { overflow: hidden; }
+.footer__badge-mark svg { width: 100%; height: 100%; }
 
-.btn--dark {
-  background: var(--signal-blue-deep);
-  color: var(--ink);
+.footer__nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
 }
-.btn--dark:hover {
+.footer__col { display: flex; flex-direction: column; gap: 8px; }
+.footer__col-head {
+  margin: 0 0 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+.footer__link {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.78);
+  transition: color 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.footer__link:hover { color: var(--signal-orange); }
+
+.footer__contact-head {
+  margin: 0 0 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+.footer__contact-line {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.78);
+}
+.footer__contact-line--muted {
+  color: rgba(255, 255, 255, 0.46);
+  margin-top: 6px;
+}
+
+.footer__bottom {
+  max-width: 1280px;
+  margin: clamp(24px, 3vw, 36px) auto 0;
+  padding: 14px clamp(1.5rem, 4vw, 3rem) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.footer__legal {
+  margin: 0;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.42);
+  letter-spacing: 0.01em;
+}
+.footer__legal--muted { color: rgba(255, 255, 255, 0.28); }
+
+@media (max-width: 880px) {
+  .footer__inner { grid-template-columns: 1fr; gap: 24px; }
+  .footer__nav { grid-template-columns: 1fr 1fr; max-width: 320px; }
+}
+
+
+/* ============================================================== */
+/*  SUB-PAGES — Agenda / Travel & Hotel / FAQs / Register          */
+/*  Shared layout primitives for the secondary pages.              */
+/*  Dark base, generous editorial spacing, brand accents.          */
+/* ============================================================== */
+
+/* When a page is a sub-page, the nav is solid (not over a video) */
+.nav--solid {
+  position: sticky;
+  background: rgba(0, 22, 77, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Page hero — simple, no video. Title + lede on dark blue. */
+.page-hero {
+  background: var(--signal-blue-ink);
+  padding: calc(var(--nav-h) + clamp(72px, 9vw, 140px)) 0 clamp(56px, 7vw, 96px);
+  position: relative;
+  overflow: hidden;
+}
+.page-hero::before {
+  /* Subtle warm halo at top-right, brand signature */
+  content: "";
+  position: absolute;
+  inset: 0 -10% auto auto;
+  width: 60%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at 80% 20%,
+    rgba(255, 147, 50, 0.14),
+    transparent 55%
+  );
+  pointer-events: none;
+}
+.page-hero__inner {
+  position: relative;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 3rem);
+}
+.page-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 clamp(20px, 2.4vw, 28px);
+  padding: 8px 14px;
+  background: rgba(10, 13, 28, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--white);
+}
+.page-hero__mark {
+  width: 16px;
+  height: 9px;
+  color: var(--signal-orange);
+  display: inline-flex;
+}
+.page-hero__mark svg { width: 100%; height: 100%; }
+
+.page-hero__title {
+  margin: 0 0 clamp(20px, 2.4vw, 32px);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(40px, 5.8vw, 88px);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+  color: var(--white);
+  max-width: 18ch;
+}
+.page-hero__title em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--signal-orange);
+}
+.page-hero__lede {
+  margin: 0;
+  font-size: clamp(16px, 1.3vw, 19px);
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 58ch;
+}
+
+/* Body / content blocks for sub-pages */
+.page-body {
+  background: var(--signal-blue-ink);
+  padding: clamp(40px, 6vw, 80px) 0 clamp(96px, 12vw, 180px);
+}
+.page-body__inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 3rem);
+}
+
+/* Reusable card on dark surface */
+.card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: clamp(24px, 3vw, 40px);
+}
+
+/* Two-column info block (Travel page) */
+.info-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: clamp(24px, 3vw, 48px);
+  padding: clamp(28px, 3vw, 40px) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  align-items: start;
+}
+.info-row:first-of-type { border-top: none; }
+.info-row__label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--signal-orange-deep);
+  margin: 6px 0 0;
+}
+.info-row__body { min-width: 0; }
+.info-row__title {
+  margin: 0 0 8px;
+  font-size: clamp(22px, 2.4vw, 30px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.018em;
+  color: var(--white);
+}
+.info-row__sub {
+  margin: 0 0 14px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.55;
+}
+.info-row__body p {
+  margin: 0 0 12px;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 60ch;
+}
+.info-row__body p:last-child { margin-bottom: 0; }
+.info-row__body ul {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.info-row__body li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.78);
+}
+.info-row__body li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 12px;
+  height: 1px;
   background: var(--signal-orange);
+}
+
+/* Generic prose container */
+.prose p {
+  margin: 0 0 16px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 64ch;
+}
+.prose p:last-child { margin-bottom: 0; }
+.prose ul {
+  margin: 16px 0 24px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.prose ul li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.82);
+}
+.prose ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 12px;
+  height: 1px;
+  background: var(--signal-orange);
+}
+.prose__note {
+  display: block;
+  margin-top: 20px;
+  padding: 16px 18px;
+  background: rgba(255, 147, 50, 0.06);
+  border: 1px solid rgba(255, 147, 50, 0.20);
+  border-radius: 6px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+/* FAQ list — native <details> accordion. Each FAQ is a numbered block
+   with a chevron that rotates open. Click summary to expand/collapse. */
+.faqs {
+  display: flex;
+  flex-direction: column;
+}
+.faq {
+  padding: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.faq:last-of-type { border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+
+.faq__q {
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  gap: clamp(20px, 2.4vw, 36px);
+  align-items: center;
+  padding: clamp(24px, 2.8vw, 32px) clamp(4px, 0.5vw, 8px);
+  margin: 0;
+  font-size: clamp(18px, 1.8vw, 24px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.018em;
+  color: var(--white);
+  cursor: pointer;
+  list-style: none;
+  transition: color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq__q::-webkit-details-marker { display: none; }
+.faq__q::marker { display: none; }
+.faq__q:hover { color: var(--signal-orange); }
+.faq[open] > .faq__q { color: var(--white); }
+
+.faq__num {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--signal-orange-deep);
+  font-variant-numeric: tabular-nums;
+}
+.faq__q-text {
+  min-width: 0;
+}
+.faq__chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--white);
+  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 280ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq__chevron svg { width: 11px; height: 7px; display: block; }
+.faq[open] > .faq__q .faq__chevron {
+  transform: rotate(180deg);
+  background: var(--signal-orange);
+  border-color: var(--signal-orange);
   color: var(--signal-blue-deep);
 }
-.btn--ghost {
-  background: transparent;
-  color: var(--ink);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-}
-.btn--ghost:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.5);
+
+.faq__a {
+  margin: 0;
+  padding: 0 clamp(4px, 0.5vw, 8px) clamp(28px, 3vw, 36px) calc(60px + clamp(20px, 2.4vw, 36px) + clamp(4px, 0.5vw, 8px));
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 70ch;
 }
 
-/* ---------- Initial states for GSAP ---------- */
-html.js-anim .hero__pill,
-html.js-anim .hero__title,
-html.js-anim .hero__details {
-  opacity: 0;
-  transform: translateY(24px);
-}
-html.js-anim .ribbon-layer {
-  opacity: 0;
-}
-html.js-anim .invite__heading,
-html.js-anim .invite__caption,
-html.js-anim .invite__cta-stack {
-  opacity: 0;
-  transform: translateY(24px);
-}
-html.js-anim .speakers__heading,
-html.js-anim .speakers__lede {
-  opacity: 0;
-  transform: translateY(24px);
-}
-
-/* ---------- Mobile-first defaults: simplify the ribbon ---------- */
-.ribbon-layer--mid { display: none; }
-
-/* ---------- Responsive: progressive enhancement ---------- */
-
-/* Tablet+ : restore nav links, slightly larger CTA */
-@media (min-width: 640px) {
-  .nav__links { display: flex; }
-  .nav__cta {
-    padding: 0.7rem 1.25rem;
-    font-size: 0.8125rem;
-    letter-spacing: 0.06em;
+@media (max-width: 720px) {
+  .faq__q {
+    grid-template-columns: auto 1fr auto;
+    gap: 16px;
+  }
+  .faq__a {
+    padding-left: clamp(4px, 0.5vw, 8px);
   }
 }
 
-/* Bring back the layered ribbon depth on wider screens */
-@media (min-width: 960px) {
-  .ribbon-layer--mid { display: block; }
+/* Big register CTA */
+.register-cta {
+  margin-top: clamp(28px, 3.5vw, 44px);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 28px;
+  background: var(--signal-orange);
+  color: var(--signal-blue-deep);
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 999px;
+  transition: background 200ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.register-cta:hover {
+  background: var(--signal-orange-hot);
+  transform: translateY(-1px);
+}
+.register-cta__arrow {
+  width: 14px;
+  height: 14px;
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.register-cta:hover .register-cta__arrow { transform: translateX(3px); }
+
+/* Pricing block (Register page) */
+.pricing {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: clamp(28px, 3vw, 40px);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  margin-bottom: clamp(32px, 4vw, 48px);
+}
+.pricing__label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--signal-orange-deep);
+}
+.pricing__value {
+  margin: 0;
+  font-size: clamp(28px, 3.4vw, 40px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--white);
 }
 
-/* ---------- Reduced motion ---------- */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+@media (max-width: 720px) {
+  .info-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
-  html.js-anim .hero__pill,
-  html.js-anim .hero__title,
-  html.js-anim .hero__details,
-  html.js-anim .ribbon-layer,
-  html.js-anim .invite__heading,
-  html.js-anim .invite__caption,
-  html.js-anim .invite__cta-stack,
-  html.js-anim .speakers__heading,
-  html.js-anim .speakers__lede {
-    opacity: 1;
-    transform: none;
+  .faq {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
 
-/* ---------- Focus ---------- */
-:focus-visible {
-  outline: 2px solid var(--signal-orange);
-  outline-offset: 3px;
-  border-radius: 4px;
+
+/* ============================================================== */
+/*  LIGHT THEME (sub-pages only)                                   */
+/*  body.is-light flips the sub-page surfaces to white with        */
+/*  dark Signal Blue Deep text. Main landing page stays dark.      */
+/* ============================================================== */
+.is-light {
+  background: var(--white);
+  color: var(--signal-blue-deep);
 }
 
-/* ---------- Global version toggle (page-wide V1/V2 pill, fixed bottom-right) ---------- */
+/* Nav: white bg with subtle bottom hairline. Logo shows in brand color. */
+.is-light .nav--solid {
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid rgba(0, 22, 77, 0.08);
+}
+.is-light .nav__logo-img {
+  filter: none;
+  opacity: 1;
+}
+.is-light .nav__link {
+  color: var(--signal-blue-deep);
+  opacity: 0.82;
+}
+.is-light .nav__link:hover { opacity: 1; color: var(--signal-orange-deep); }
+.is-light .nav__cta {
+  background: var(--signal-blue-deep);
+  color: var(--white);
+}
+.is-light .nav__cta:hover {
+  background: var(--signal-orange);
+  color: var(--white);
+}
+
+/* Page hero — white surface with the same orange halo top-right. */
+.is-light .page-hero { background: var(--white); }
+.is-light .page-hero__eyebrow {
+  background: rgba(0, 22, 77, 0.04);
+  border-color: rgba(0, 22, 77, 0.10);
+  color: var(--signal-blue-deep);
+}
+.is-light .page-hero__title { color: var(--signal-blue-deep); }
+.is-light .page-hero__title em { color: var(--signal-orange-deep); }
+.is-light .page-hero__lede { color: rgba(0, 22, 77, 0.62); }
+
+/* Page body */
+.is-light .page-body { background: var(--white); }
+
+/* Info rows (Travel page) */
+.is-light .info-row {
+  border-top-color: rgba(0, 22, 77, 0.10);
+}
+.is-light .info-row__title { color: var(--signal-blue-deep); }
+.is-light .info-row__sub   { color: rgba(0, 22, 77, 0.52); }
+.is-light .info-row__body p { color: rgba(0, 22, 77, 0.78); }
+.is-light .info-row__body li { color: rgba(0, 22, 77, 0.72); }
+.is-light .info-row__body strong { color: var(--signal-blue-deep); }
+
+/* Prose blocks (Agenda + Register pages) */
+.is-light .prose p { color: rgba(0, 22, 77, 0.78); }
+.is-light .prose p strong { color: var(--signal-blue-deep); }
+.is-light .prose ul li { color: rgba(0, 22, 77, 0.78); }
+.is-light .prose__note {
+  background: rgba(255, 147, 50, 0.08);
+  border-color: rgba(255, 147, 50, 0.30);
+  color: rgba(0, 22, 77, 0.82);
+}
+
+/* FAQ accordion */
+.is-light .faq { border-top-color: rgba(0, 22, 77, 0.10); }
+.is-light .faq:last-of-type { border-bottom-color: rgba(0, 22, 77, 0.10); }
+.is-light .faq__q { color: var(--signal-blue-deep); }
+.is-light .faq__q:hover { color: var(--signal-orange-deep); }
+.is-light .faq[open] > .faq__q { color: var(--signal-blue-deep); }
+.is-light .faq__a { color: rgba(0, 22, 77, 0.65); }
+.is-light .faq__chevron {
+  border-color: rgba(0, 22, 77, 0.16);
+  color: var(--signal-blue-deep);
+}
+.is-light .faq[open] > .faq__q .faq__chevron {
+  background: var(--signal-orange);
+  border-color: var(--signal-orange);
+  color: var(--white);
+}
+
+/* Pricing block (Register page) */
+.is-light .pricing {
+  background: rgba(0, 22, 77, 0.04);
+  border-color: rgba(0, 22, 77, 0.10);
+}
+.is-light .pricing__value { color: var(--signal-blue-deep); }
+
+/* Card */
+.is-light .card {
+  background: rgba(0, 22, 77, 0.04);
+  border-color: rgba(0, 22, 77, 0.10);
+}
+
+
+/* ============================================================== */
+/*  VERSION TOGGLE                                                 */
+/* ============================================================== */
 .version-toggle {
   position: fixed;
   right: clamp(1rem, 2vw, 1.5rem);
@@ -1821,10 +2102,6 @@ html.js-anim .speakers__lede {
   border-radius: 999px;
   box-shadow: 0 8px 24px -10px rgba(0, 20, 80, 0.35);
 }
-
-/* Show/hide based on body's data-version */
-body[data-version="v1"] [data-version-show="v2"] { display: none !important; }
-body[data-version="v2"] [data-version-show="v1"] { display: none !important; }
 .version-toggle__btn {
   min-width: 44px;
   height: 36px;
@@ -1841,665 +2118,15 @@ body[data-version="v2"] [data-version-show="v1"] { display: none !important; }
   border: none;
   border-radius: 999px;
   cursor: pointer;
-  transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out);
+  text-decoration: none;
+  transition: background 200ms ease, color 200ms ease;
 }
-.version-toggle__btn:hover {
-  background: rgba(0, 50, 160, 0.06);
-}
+.version-toggle__btn:hover { background: rgba(0, 50, 160, 0.06); }
 .version-toggle__btn.is-active {
   background: var(--signal-orange);
   color: var(--white);
 }
-.version-toggle__btn.is-active:hover {
-  background: var(--signal-orange-hot);
-}
+.version-toggle__btn.is-active:hover { background: var(--signal-orange-hot); }
 @media (prefers-reduced-motion: reduce) {
   .version-toggle__btn { transition: none; }
-}
-
-/* ---------- Section visibility toggle (floats above the version pill) ---------- */
-.section-toggle {
-  position: fixed;
-  right: clamp(1rem, 2vw, 1.5rem);
-  bottom: calc(clamp(1rem, 2vw, 1.5rem) + 52px);
-  z-index: 200;
-  display: inline-flex;
-  padding: 4px;
-  background: var(--white);
-  border: 1px solid rgba(0, 50, 160, 0.18);
-  border-radius: 999px;
-  box-shadow: 0 8px 24px -10px rgba(0, 20, 80, 0.35);
-}
-.section-toggle__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0 0.85rem;
-  height: 36px;
-  font-family: inherit;
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--signal-blue-deep);
-  background: transparent;
-  border: none;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out);
-}
-.section-toggle__btn:hover {
-  background: rgba(0, 50, 160, 0.06);
-}
-.section-toggle__state {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 32px;
-  height: 22px;
-  padding: 0 0.55rem;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--white);
-  background: var(--signal-orange);
-  border-radius: 999px;
-  transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out);
-}
-.section-toggle__btn:not(.is-on) .section-toggle__state {
-  color: rgba(0, 31, 102, 0.55);
-  background: rgba(0, 31, 102, 0.08);
-}
-@media (prefers-reduced-motion: reduce) {
-  .section-toggle__btn,
-  .section-toggle__state { transition: none; }
-}
-
-/* Generic hide hook used by .section-toggle__btn — keeps the section in the
-   DOM (no layout reflow), just visually + interactively removed. */
-.is-section-hidden { display: none !important; }
-
-/* ---------- V2 nav over the hero image (fully transparent until scrolled) ---------- */
-body[data-version="v2"] .nav:not(.is-scrolled) {
-  background: transparent;
-}
-body[data-version="v2"] .nav:not(.is-scrolled) .nav__link {
-  color: rgba(255, 255, 255, 0.78);
-}
-body[data-version="v2"] .nav:not(.is-scrolled) .nav__link:hover,
-body[data-version="v2"] .nav:not(.is-scrolled) .nav__link--active {
-  color: var(--white);
-}
-body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta {
-  background: transparent;
-  color: var(--white);
-  border-color: rgba(255, 255, 255, 0.5);
-}
-body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta:hover {
-  background: var(--white);
-  color: var(--signal-blue-deep);
-}
-
-/* ---------- V2 Hero (full-image bg, just the CTA) ---------- */
-.hero-v2 {
-  position: relative;
-  min-height: 100svh;
-  margin-top: calc(var(--nav-h) * -1);
-  padding-top: var(--nav-h);
-  background-color: var(--signal-blue-deep);
-  background-image: url('assets/hero-bg-v2.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  color: var(--white);
-  isolation: isolate;
-  display: flex;
-  flex-direction: column;
-}
-/* Spacer pushes the black bottom container to the viewport floor, while the
-   hero image continues to fill the upper portion. */
-.hero-v2__spacer {
-  flex: 1;
-}
-
-/* Black container that visually extends the hero image — sits at the bottom
-   of the viewport on first paint and carries the event summary + action row. */
-.hero-v2__bottom {
-  position: relative;
-  z-index: 2;
-  background: #000;
-  color: var(--white);
-  padding: clamp(2rem, 4vw, 3rem) 0 clamp(2rem, 4vw, 3rem);
-}
-.hero-v2__bottom-inner {
-  width: 100%;
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: 0 var(--gutter);
-  display: flex;
-  flex-direction: column;
-  gap: clamp(1.5rem, 3vw, 2.25rem);
-}
-.hero-v2__summary {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: clamp(1.0625rem, 1.4vw, 1.375rem);
-  font-weight: 400;
-  line-height: 1.45;
-  letter-spacing: -0.005em;
-  color: rgba(255, 255, 255, 0.82);
-  max-width: 68ch;
-}
-
-/* Action row: date | Register CTA (600px+) | location.
-   Wraps gracefully on narrow viewports. */
-.hero-v2__action-row {
-  display: flex;
-  align-items: center;
-  gap: clamp(1.25rem, 2.5vw, 2.25rem);
-  flex-wrap: wrap;
-}
-.hero-v2__meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  flex: 0 0 auto;
-}
-.hero-v2__meta-label {
-  margin: 0;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-}
-.hero-v2__meta-value {
-  margin: 0;
-  font-size: clamp(1rem, 1.2vw, 1.125rem);
-  font-weight: 500;
-  letter-spacing: -0.005em;
-  color: var(--white);
-}
-.hero-v2__cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  /* Min 600px width per spec; flexes within reasonable bounds on smaller
-     viewports without breaking the row. */
-  min-width: min(600px, 100%);
-  padding: clamp(1.1rem, 1.5vw, 1.4rem) clamp(1.5rem, 2.25vw, 2.25rem);
-  background: var(--white);
-  color: var(--signal-blue-deep);
-  font-family: inherit;
-  font-weight: 600;
-  font-size: clamp(0.9375rem, 1.1vw, 1.0625rem);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  border-radius: 6px;
-  text-decoration: none;
-  transition: background 0.25s var(--ease-out), color 0.25s var(--ease-out), transform 0.25s var(--ease-out);
-  box-shadow: 0 18px 48px -12px rgba(0, 0, 0, 0.55);
-  flex: 1 1 600px;
-}
-.hero-v2__cta:hover {
-  background: var(--signal-orange);
-  color: var(--signal-blue-deep);
-  transform: translateY(-2px);
-}
-.hero-v2__cta-arrow {
-  font-size: 1.25em;
-  line-height: 0;
-}
-@media (max-width: 760px) {
-  .hero-v2__cta { min-width: 100%; flex: 1 1 100%; order: 0; }
-  .hero-v2__meta { flex: 1 1 calc(50% - 0.75rem); }
-}
-
-/* ---------- V2 Video section (last summit) ---------- */
-.video-v2 {
-  background: var(--white);
-  padding: clamp(3rem, 6vw, 5rem) var(--gutter) clamp(4rem, 7vw, 6rem);
-}
-.video-v2__container {
-  max-width: var(--container);
-  margin: 0 auto;
-}
-.video-v2__heading {
-  margin: 0 0 clamp(2.5rem, 4vw, 3.5rem);
-  font-family: var(--font-sans);
-  font-size: clamp(1.0625rem, 1.5vw, 1.375rem);
-  font-weight: 400;
-  letter-spacing: -0.005em;
-  line-height: 1.45;
-  color: rgba(0, 31, 102, 0.78);
-  max-width: 64ch;
-}
-
-/* V2: rectangular video card with the labeled play-pill anchored bottom-right
-   and always visible (overrides the V1 centered-on-hover behaviour). */
-.video-card--with-label .video-card__media {
-  border-radius: 12px;
-}
-
-/* V2 video card play button becomes a pill with the title label baked in */
-.video-card--with-label .video-card__play {
-  top: auto;
-  left: auto;
-  right: clamp(1rem, 2vw, 1.5rem);
-  bottom: clamp(1rem, 2vw, 1.5rem);
-  width: auto;
-  height: auto;
-  padding: clamp(0.7rem, 1vw, 0.9rem) clamp(1.1rem, 1.5vw, 1.4rem) clamp(0.7rem, 1vw, 0.9rem) clamp(0.85rem, 1.2vw, 1.05rem);
-  border-radius: 999px;
-  gap: 0.65rem;
-  background: var(--signal-orange);
-  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.45);
-  opacity: 1;
-  transform: none;
-  pointer-events: auto;
-}
-.video-card--with-label:hover .video-card__play,
-.video-card--with-label:focus-visible .video-card__play {
-  opacity: 1;
-  transform: none;
-  background: var(--signal-orange-hot);
-}
-.video-card--with-label .video-card__play svg {
-  width: clamp(16px, 1.2vw, 20px);
-  height: clamp(16px, 1.2vw, 20px);
-  flex-shrink: 0;
-}
-.video-card__play-label {
-  font-family: var(--font-sans);
-  font-size: clamp(0.875rem, 1.05vw, 1rem);
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  color: var(--white);
-  white-space: nowrap;
-}
-
-/* ---------- V2 standalone ribbon section ---------- */
-.ribbon-v2 {
-  display: block;
-  background: var(--white);
-  overflow: visible;
-  position: relative;
-  margin: 0;
-  padding: 0;
-  pointer-events: none;
-}
-.ribbon-svg--v2 {
-  display: block;
-  width: 100%;
-  height: clamp(160px, 20vw, 290px);
-  overflow: visible;
-}
-
-/* ---------- V2 Calendar / Agenda (blue, 3-day breakdown) ----------
-   The calendar is the most important block on the V2 page. It's built to
-   maximise scannability: generous padding, large white type, clear hierarchy
-   (Day → header → time → title → body), and no orange accents on the
-   time/date so the eye flows through the content instead of bouncing on
-   color noise. */
-.info-v2 {
-  background: var(--signal-blue);
-  color: var(--white);
-  padding: clamp(4.5rem, 9vw, 8rem) var(--gutter);
-}
-.info-v2__container {
-  max-width: var(--container);
-  margin: 0 auto;
-}
-
-/* Header: eyebrow + heading + lede.
-   Eyebrow now lives on a separator, not as a dot+label pill — quieter and
-   cleaner. Heading is larger; lede has more breathing room. */
-.info-v2__header {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.85rem, 1.5vw, 1.25rem);
-  margin: 0 0 clamp(3rem, 5vw, 4.5rem);
-  padding-bottom: clamp(2rem, 3.5vw, 3rem);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-}
-.info-v2__eyebrow {
-  margin: 0;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-}
-.info-v2__heading {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: clamp(2rem, 4.4vw, 3.75rem);
-  font-weight: 500;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  color: var(--white);
-  max-width: 18ch;
-}
-.info-v2__lede {
-  margin: 0;
-  font-size: clamp(1.0625rem, 1.3vw, 1.25rem);
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.75);
-  max-width: 64ch;
-}
-
-/* Calendar-style 3-column day grid */
-.info-v2__days {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: clamp(2rem, 3.5vw, 3rem);
-}
-@media (min-width: 860px) {
-  .info-v2__days {
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: clamp(1.5rem, 2.25vw, 2rem);
-  }
-}
-.info-v2__day {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-/* Day header — Day 01 dominant, full date below.
-   Bottom rule separates header from the session list. */
-.info-v2__day-head {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  margin: 0 0 clamp(1.5rem, 2.25vw, 2rem);
-  padding: 0 0 clamp(1.25rem, 2vw, 1.75rem);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-}
-.info-v2__day-num {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: clamp(2rem, 3vw, 2.5rem);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  color: var(--white);
-}
-.info-v2__day-date {
-  margin: 0;
-  font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.65);
-  letter-spacing: -0.005em;
-}
-
-/* Sessions list — generously padded, white type, calm separators */
-.info-v2__sessions {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(0.75rem, 1vw, 1rem);
-}
-.info-v2__session {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
-  padding: clamp(1.4rem, 2vw, 1.75rem) clamp(1.25rem, 2vw, 1.75rem);
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  transition: background 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
-}
-.info-v2__session:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.12);
-}
-.info-v2__session--md { padding: clamp(1.65rem, 2.4vw, 2rem) clamp(1.25rem, 2vw, 1.75rem); }
-.info-v2__session--lg { padding: clamp(1.9rem, 2.8vw, 2.4rem) clamp(1.25rem, 2vw, 1.75rem); }
-
-/* Time — white, uppercase, tracked. Replaces the old orange treatment. */
-.info-v2__session-time {
-  margin: 0;
-  font-size: clamp(0.75rem, 0.85vw, 0.8125rem);
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
-  font-variant-numeric: tabular-nums;
-}
-.info-v2__session-title {
-  margin: 0;
-  font-size: clamp(1.0625rem, 1.4vw, 1.3125rem);
-  font-weight: 500;
-  line-height: 1.25;
-  letter-spacing: -0.012em;
-  color: var(--white);
-}
-.info-v2__session-body {
-  margin: 0.35rem 0 0;
-  font-size: clamp(0.9375rem, 1vw, 1rem);
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-/* ---------- V1 CTA grid (Pattern Studio card: button col + image + overlay heading) ---------- */
-.cta-grid {
-  /* Outer section stays white — the inner card carries the brand blue. */
-  background: var(--white);
-  padding: clamp(2rem, 4vw, 4rem) var(--gutter) clamp(3rem, 6vw, 5rem);
-}
-.cta-grid__container {
-  max-width: var(--container);
-  margin: 0 auto;
-}
-.cta-grid__hero {
-  position: relative;
-  box-sizing: border-box;
-  background: var(--signal-blue);
-  color: var(--white);
-  border-radius: 14px;
-  padding: clamp(2.5rem, 5vw, 4rem) clamp(1.75rem, 3.13vw, 60px);
-  isolation: isolate;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: clamp(1.5rem, 3vw, 3rem);
-  flex-wrap: wrap;
-  box-shadow:
-    0 24px 50px -12px rgba(0, 20, 80, 0.28),
-    0 4px 12px -4px rgba(0, 20, 80, 0.18);
-}
-
-.cta-grid__tagline {
-  margin: 0;
-  flex: 1 1 0;
-  min-width: 0;
-  font-family: 'Montserrat', var(--font-sans);
-  font-weight: 500;
-  font-size: clamp(1.5rem, 2.6vw, 2.5rem);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  color: var(--white);
-  text-wrap: balance;
-  max-width: 22ch;
-}
-
-.cta-grid__cta {
-  box-sizing: border-box;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(1rem, 1.4vw, 1.25rem) clamp(1.75rem, 2.6vw, 2.4rem);
-  background: var(--signal-orange);
-  color: var(--signal-blue-deep);
-  text-decoration: none;
-  /* Soft corner radius — not a full pill, gives the button a "card" feel. */
-  border-radius: 10px;
-  border: none;
-  transition: background 0.15s ease, transform 0.2s var(--ease-out), box-shadow 0.25s var(--ease-out);
-  box-shadow: 0 10px 24px -10px rgba(229, 117, 26, 0.55);
-}
-.cta-grid__cta:hover {
-  background: var(--signal-orange-hot);
-  transform: translateY(-2px);
-  box-shadow: 0 16px 32px -12px rgba(229, 117, 26, 0.65);
-}
-.cta-grid__cta-label {
-  font-family: 'Inter', var(--font-sans);
-  font-weight: 600;
-  font-size: clamp(0.875rem, 1vw, 1rem);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  line-height: 1;
-  color: inherit;
-  white-space: nowrap;
-}
-
-@media (max-width: 720px) {
-  .cta-grid__hero {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: clamp(1.75rem, 5vw, 2.5rem);
-  }
-  .cta-grid__tagline {
-    max-width: none;
-    font-size: clamp(1.5rem, 5.5vw, 2rem);
-  }
-  .cta-grid__cta {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-/* ---------- Full-width ribbon strip (3D scene anchored below the footer) ---------- */
-.ribbon-strip {
-  display: block;
-  width: 100%;
-  height: 200px;
-  background: var(--white);
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
-.ribbon-strip__canvas {
-  position: absolute;
-  inset: 0;
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-}
-
-/* ---------- V1 Footer — compact white sitemap bar, anchored to page bottom ---------- */
-.footer {
-  background: var(--white);
-  padding: clamp(0.75rem, 1.5vw, 1.25rem) var(--gutter);
-  border-top: 1px solid rgba(0, 31, 102, 0.08);
-}
-.footer__inner {
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: 0;
-  background: transparent;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: clamp(0.85rem, 1.75vw, 1.5rem);
-  flex-wrap: wrap;
-  border: 0;
-}
-.footer__logo {
-  height: 20px;
-  width: auto;
-  filter: none;
-  opacity: 1;
-}
-.footer__nav {
-  display: flex;
-  gap: clamp(0.85rem, 1.75vw, 1.5rem);
-  flex-wrap: wrap;
-}
-.footer__link {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(0, 31, 102, 0.7);
-  text-decoration: none;
-  transition: color 0.2s var(--ease-out);
-}
-.footer__link:hover { color: var(--signal-orange); }
-.footer__copy {
-  margin: 0;
-  font-size: 0.6875rem;
-  letter-spacing: 0.04em;
-  color: rgba(0, 31, 102, 0.45);
-}
-
-/* ---------- V2 Footer (3D element + sitemap) ---------- */
-.footer-v2 {
-  position: relative;
-  background: var(--white);
-  min-height: 320px;
-  height: clamp(300px, 32vw, 400px);
-  isolation: isolate;
-  overflow: hidden;
-}
-.footer-v2__canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none;
-}
-.footer-v2__inner {
-  position: relative;
-  z-index: 2;
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: clamp(2rem, 4vw, 3rem) var(--gutter);
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: clamp(1.5rem, 3vw, 3rem);
-  flex-wrap: wrap;
-}
-.footer-v2__logo-block {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-.footer-v2__logo {
-  height: 36px;
-  width: auto;
-}
-.footer-v2__tagline {
-  margin: 0;
-  font-size: clamp(0.875rem, 1.05vw, 1rem);
-  font-weight: 500;
-  line-height: 1.45;
-  color: var(--signal-blue-deep);
-  letter-spacing: -0.005em;
-}
-.footer-v2__sitemap {
-  display: flex;
-  gap: clamp(1.25rem, 2.5vw, 2.5rem);
-  flex-wrap: wrap;
-}
-.footer-v2__link {
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--signal-blue-deep);
-  text-decoration: none;
-  padding: 0.25rem 0;
-  border-bottom: 1px solid transparent;
-  transition: color 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
-}
-.footer-v2__link:hover {
-  color: var(--signal-orange);
-  border-bottom-color: var(--signal-orange);
 }
