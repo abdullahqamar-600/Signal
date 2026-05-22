@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" />
 
-  <link rel="stylesheet" href="styles.css?v=3" />
+  <link rel="stylesheet" href="styles.css?v=4" />
 </head>
 <body>
 
@@ -223,188 +223,110 @@
           </h2>
         </header>
 
-        <!-- Horizontal day pager (visible on tablet/mobile only). -->
-        <nav class="agenda__pager" aria-label="Jump to day">
-          <div class="agenda__pager-track" aria-hidden="true">
-            <span class="agenda__pager-fill" data-pager-fill></span>
-          </div>
-          <ol class="agenda__pager-list">
-            <li><button type="button" class="agenda__pager-item is-active" data-day-target="0"><span>Day 1</span><em>Mon &middot; Oct 6</em></button></li>
-            <li><button type="button" class="agenda__pager-item" data-day-target="1"><span>Day 2</span><em>Tue &middot; Oct 7</em></button></li>
-            <li><button type="button" class="agenda__pager-item" data-day-target="2"><span>Day 3</span><em>Wed &middot; Oct 8</em></button></li>
-          </ol>
-        </nav>
+        <div class="agenda__days-grid">
 
-        <!-- Two-column body: left rail (sticky day index + progress bar)
-             and the scroll-pinned stage on the right. -->
-        <div class="agenda__body">
+          <article class="agenda__day-card" data-day="1">
+            <header class="agenda__day-card-head">
+              <p class="agenda__day-card-label">Day 1</p>
+              <p class="agenda__day-card-date">Mon &middot; Oct 6</p>
+              <p class="agenda__day-card-summary">Opening day. Welcome, the state of Signal, and the year ahead.</p>
+            </header>
+            <ol class="agenda__list">
+              <li class="agenda__row">
+                <p class="agenda__time">9:00 AM</p>
+                <p class="agenda__title">Welcome &amp; opening keynote</p>
+                <p class="agenda__desc">Leadership opens the week with the year in context: what&rsquo;s working, what&rsquo;s not, and what to make of the next three days.</p>
+              </li>
+              <li class="agenda__row">
+                <p class="agenda__time">10:30 AM</p>
+                <p class="agenda__title">State of Signal</p>
+                <p class="agenda__desc">A look at 2026: where Signal is today, the bets we&rsquo;re making, and the network&rsquo;s biggest unlocks for the year ahead.</p>
+              </li>
+              <li class="agenda__row">
+                <p class="agenda__time">12:00 PM</p>
+                <p class="agenda__title">Lunch &amp; owner networking</p>
+                <p class="agenda__desc">Open-table lunch on the home office floor. No agenda: just owners, operators, and the leadership team in one room.</p>
+              </li>
+              <li class="agenda__row">
+                <p class="agenda__time">2:00 PM</p>
+                <p class="agenda__title">Recurring revenue at scale</p>
+                <p class="agenda__desc">A two-hour working session with the franchises hitting the highest recurring revenue ratios across the network today.</p>
+              </li>
+              <li class="agenda__row">
+                <p class="agenda__time">4:00 PM</p>
+                <p class="agenda__title">Welcome reception</p>
+                <p class="agenda__desc">Drinks, music, and dinner at the Old Market. A tradition every summit since the very first one in 2021.</p>
+              </li>
+            </ol>
+          </article>
 
-          <!-- LEFT RAIL — sticky, with scroll-progress bar + day list. -->
-          <aside class="agenda__rail" aria-hidden="true">
-            <div class="agenda__rail-inner">
-              <div class="agenda__progress">
-                <span class="agenda__progress-fill" data-progress-fill></span>
-              </div>
-              <ol class="agenda__days">
-                <li>
-                  <button type="button" class="agenda__day is-active" data-day-target="0">
-                    <span class="agenda__day-label">Day 1</span>
-                    <span class="agenda__day-date">Mon &middot; Oct 6</span>
-                  </button>
-                </li>
-                <li>
-                  <button type="button" class="agenda__day" data-day-target="1">
-                    <span class="agenda__day-label">Day 2</span>
-                    <span class="agenda__day-date">Tue &middot; Oct 7</span>
-                  </button>
-                </li>
-                <li>
-                  <button type="button" class="agenda__day" data-day-target="2">
-                    <span class="agenda__day-label">Day 3</span>
-                    <span class="agenda__day-date">Wed &middot; Oct 8</span>
-                  </button>
-                </li>
-              </ol>
-            </div>
-          </aside>
+          <article class="agenda__day-card" data-day="2">
+            <header class="agenda__day-card-head">
+              <p class="agenda__day-card-label">Day 2</p>
+              <p class="agenda__day-card-date">Tue &middot; Oct 7</p>
+              <p class="agenda__day-card-summary">Deep work. Owner-led tracks, operations, and the leadership roundtable.</p>
+            </header>
+            <ol class="agenda__list">
+              <li class="agenda__row">
+                <p class="agenda__time">8:30 AM</p>
+                <p class="agenda__title">Owner-led sessions &middot; Track A</p>
+                <p class="agenda__desc">Three concurrent owner-led tracks. Pick the one closest to the bet you&rsquo;re making for the next twelve months.</p>
+              </li>
+              <li class="agenda__row">
+                <p class="agenda__time">10:30 AM</p>
+                <p class="agenda__title">Operational deep dive</p>
+                <p class="agenda__desc">The systems Signal franchises use to move from steady to standout. Built and led by the operators running them.</p>
+              </li>
+              <li class="agenda__row">
+                <p class="agenda__time">12:00 PM</p>
+                <p class="agenda__title">Lunch &amp; lightning talks</p>
+                <p class="agenda__desc">Five-minute lightning talks from owners, over lunch. Quick wins, hard lessons, and one rotten idea that almost worked.</p>
+              </li>
+              <li class="agenda__row">
+                <p class="agenda__time">1:30 PM</p>
+                <p class="agenda__title">Leadership roundtable</p>
+                <p class="agenda__desc">Closed-door working session with Signal&rsquo;s executive team. Bring the questions you&rsquo;ve been saving all year.</p>
+              </li>
+              <li class="agenda__row">
+                <p class="agenda__time">3:30 PM</p>
+                <p class="agenda__title">Sales &amp; marketing workshop</p>
+                <p class="agenda__desc">A hands-on workshop on the channels driving the most efficient sales for Signal franchises today.</p>
+              </li>
+            </ol>
+          </article>
 
-          <!-- RIGHT — scroll-pinned stage. -->
-          <div class="agenda__stage" data-days="3">
-            <div class="agenda__pin">
-              <div class="agenda__viewport">
+          <article class="agenda__day-card" data-day="3">
+            <header class="agenda__day-card-head">
+              <p class="agenda__day-card-label">Day 3</p>
+              <p class="agenda__day-card-date">Wed &middot; Oct 8</p>
+              <p class="agenda__day-card-summary">Looking forward. Fireside, the 2027 preview, and the close.</p>
+            </header>
+            <ol class="agenda__list">
+              <li class="agenda__row">
+                <p class="agenda__time">9:00 AM</p>
+                <p class="agenda__title">Fireside with leadership</p>
+                <p class="agenda__desc">A 90-minute fireside with Signal&rsquo;s executive team. Honest, on the record, the conversation that closes the summit with momentum.</p>
+              </li>
+              <li class="agenda__row">
+                <p class="agenda__time">11:00 AM</p>
+                <p class="agenda__title">2027 strategy preview</p>
+                <p class="agenda__desc">First look at the 2027 strategy, six months ahead of the public roadmap. For Signal owners and key employees only.</p>
+              </li>
+              <li class="agenda__row">
+                <p class="agenda__time">12:30 PM</p>
+                <p class="agenda__title">Closing lunch</p>
+                <p class="agenda__desc">The last lunch of the summit. Last questions, last handshakes, last reservations to lock in before next year.</p>
+              </li>
+              <li class="agenda__row">
+                <p class="agenda__time">2:00 PM</p>
+                <p class="agenda__title">Tours &amp; open Q&amp;A</p>
+                <p class="agenda__desc">Optional home-office tours and small-group Q&amp;A with the leadership team. Wrap up at your own pace.</p>
+              </li>
+            </ol>
+          </article>
 
-                <!-- ===== DAY 1 ===== -->
-                <article class="agenda__frame is-current" data-day="0">
-                  <header class="agenda__frame-head">
-                    <p class="agenda__frame-summary">Opening day. Welcome, the state of Signal, and the year ahead.</p>
-                  </header>
-                  <div class="agenda__list">
-                    <article class="agenda__row">
-                      <p class="agenda__time">9:00 AM</p>
-                      <div class="agenda__main">
-                        <p class="agenda__title">Welcome &amp; opening keynote</p>
-                        <p class="agenda__desc">Leadership opens the week with the year in context: what&rsquo;s working, what&rsquo;s not, and what to make of the next three days.</p>
-                      </div>
-                    </article>
-                    <article class="agenda__row">
-                      <p class="agenda__time">10:30 AM</p>
-                      <div class="agenda__main">
-                        <p class="agenda__title">State of Signal</p>
-                        <p class="agenda__desc">A look at 2026: where Signal is today, the bets we&rsquo;re making, and the network&rsquo;s biggest unlocks for the year ahead.</p>
-                      </div>
-                    </article>
-                    <article class="agenda__row">
-                      <p class="agenda__time">12:00 PM</p>
-                      <div class="agenda__main">
-                        <p class="agenda__title">Lunch &amp; owner networking</p>
-                        <p class="agenda__desc">Open-table lunch on the home office floor. No agenda: just owners, operators, and the leadership team in one room.</p>
-                      </div>
-                    </article>
-                    <article class="agenda__row">
-                      <p class="agenda__time">2:00 PM</p>
-                      <div class="agenda__main">
-                        <p class="agenda__title">Recurring revenue at scale</p>
-                        <p class="agenda__desc">A two-hour working session with the franchises hitting the highest recurring revenue ratios across the network today.</p>
-                      </div>
-                    </article>
-                    <article class="agenda__row">
-                      <p class="agenda__time">4:00 PM</p>
-                      <div class="agenda__main">
-                        <p class="agenda__title">Welcome reception</p>
-                        <p class="agenda__desc">Drinks, music, and dinner at the Old Market. A tradition every summit since the very first one in 2021.</p>
-                      </div>
-                    </article>
-                  </div>
-                </article>
-
-                <!-- ===== DAY 2 ===== -->
-                <article class="agenda__frame" data-day="1">
-                  <header class="agenda__frame-head">
-                    <p class="agenda__frame-summary">Deep work. Owner-led tracks, operations, and the leadership roundtable.</p>
-                  </header>
-                  <div class="agenda__list">
-                    <article class="agenda__row">
-                      <p class="agenda__time">8:30 AM</p>
-                      <div class="agenda__main">
-                        <p class="agenda__title">Owner-led sessions &middot; Track A</p>
-                        <p class="agenda__desc">Three concurrent owner-led tracks. Pick the one closest to the bet you&rsquo;re making for the next twelve months.</p>
-                      </div>
-                    </article>
-                    <article class="agenda__row">
-                      <p class="agenda__time">10:30 AM</p>
-                      <div class="agenda__main">
-                        <p class="agenda__title">Operational deep dive</p>
-                        <p class="agenda__desc">The systems Signal franchises use to move from steady to standout. Built and led by the operators running them.</p>
-                      </div>
-                    </article>
-                    <article class="agenda__row">
-                      <p class="agenda__time">12:00 PM</p>
-                      <div class="agenda__main">
-                        <p class="agenda__title">Lunch &amp; lightning talks</p>
-                        <p class="agenda__desc">Five-minute lightning talks from owners, over lunch. Quick wins, hard lessons, and one rotten idea that almost worked.</p>
-                      </div>
-                    </article>
-                    <article class="agenda__row">
-                      <p class="agenda__time">1:30 PM</p>
-                      <div class="agenda__main">
-                        <p class="agenda__title">Leadership roundtable</p>
-                        <p class="agenda__desc">Closed-door working session with Signal&rsquo;s executive team. Bring the questions you&rsquo;ve been saving all year.</p>
-                      </div>
-                    </article>
-                    <article class="agenda__row">
-                      <p class="agenda__time">3:30 PM</p>
-                      <div class="agenda__main">
-                        <p class="agenda__title">Sales &amp; marketing workshop</p>
-                        <p class="agenda__desc">A hands-on workshop on the channels driving the most efficient sales for Signal franchises today.</p>
-                      </div>
-                    </article>
-                  </div>
-                </article>
-
-                <!-- ===== DAY 3 ===== -->
-                <article class="agenda__frame" data-day="2">
-                  <header class="agenda__frame-head">
-                    <p class="agenda__frame-summary">Looking forward. Fireside, the 2027 preview, and the close.</p>
-                  </header>
-                  <div class="agenda__list">
-                    <article class="agenda__row">
-                      <p class="agenda__time">9:00 AM</p>
-                      <div class="agenda__main">
-                        <p class="agenda__title">Fireside with leadership</p>
-                        <p class="agenda__desc">A 90-minute fireside with Signal&rsquo;s executive team. Honest, on the record, the conversation that closes the summit with momentum.</p>
-                      </div>
-                    </article>
-                    <article class="agenda__row">
-                      <p class="agenda__time">11:00 AM</p>
-                      <div class="agenda__main">
-                        <p class="agenda__title">2027 strategy preview</p>
-                        <p class="agenda__desc">First look at the 2027 strategy, six months ahead of the public roadmap. For Signal owners and key employees only.</p>
-                      </div>
-                    </article>
-                    <article class="agenda__row">
-                      <p class="agenda__time">12:30 PM</p>
-                      <div class="agenda__main">
-                        <p class="agenda__title">Closing lunch</p>
-                        <p class="agenda__desc">The last lunch of the summit. Last questions, last handshakes, last reservations to lock in before next year.</p>
-                      </div>
-                    </article>
-                    <article class="agenda__row">
-                      <p class="agenda__time">2:00 PM</p>
-                      <div class="agenda__main">
-                        <p class="agenda__title">Tours &amp; open Q&amp;A</p>
-                        <p class="agenda__desc">Optional home-office tours and small-group Q&amp;A with the leadership team. Wrap up at your own pace.</p>
-                      </div>
-                    </article>
-                  </div>
-                </article>
-
-                <!-- Frosted veil over the bottom of the viewport — hints
-                     at the next day sitting beneath the active one. -->
-                <div class="agenda__veil" aria-hidden="true"></div>
-              </div>
-            </div>
-          </div>
         </div>
+
       </div>
     </section>
 
@@ -495,7 +417,7 @@
     <button type="button" class="version-toggle__btn is-active" aria-pressed="true">V3</button>
   </div>
 
-  <script src="script.js?v=5"></script>
+  <script src="script.js?v=6"></script>
   <script type="module" src="reel.js?v=1"></script>
 </body>
 </html>

@@ -784,169 +784,72 @@ main { display: block; }
 }
 .agenda__heading-line { display: block; }
 
-/* ----- TWO-COLUMN BODY ----- */
-.agenda__body {
-  --agenda-top: clamp(96px, 13vh, 140px);
+/* ----- THREE-CARD GRID -----
+   Three day-cards side by side, top-aligned. Equal widths give the
+   layout its visual balance; the inter-card gap carries the structure
+   instead of any visible card chrome. */
+.agenda__days-grid {
   display: grid;
-  grid-template-columns: 232px minmax(0, 1fr);
-  gap: clamp(36px, 4vw, 72px);
-  align-items: stretch;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(28px, 3.4vw, 56px);
+  align-items: start;
 }
 
-/* ----- LEFT RAIL -----
-   The aside spans the full row height (same as the 300vh stage column),
-   and an inner sticky element holds the day list + progress bar. */
-.agenda__rail {
-  position: relative;
-}
-.agenda__rail-inner {
-  position: sticky;
-  top: var(--agenda-top);
-  display: grid;
-  grid-template-columns: 2px 1fr;
-  gap: clamp(22px, 2.4vw, 32px);
-  align-items: stretch;
+.agenda__day-card {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 2.4vw, 32px);
+  min-width: 0;
 }
 
-/* Hairline progress track. Just gradient fill — no bloom, no dot. */
-.agenda__progress {
-  position: relative;
-  width: 2px;
-  background: rgba(0, 22, 77, 0.10);
-  border-radius: 2px;
-  overflow: hidden;
+/* Card header: eyebrow, date, one-line summary. Tight proximity. */
+.agenda__day-card-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-.agenda__progress-fill {
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 0%;
-  background: linear-gradient(180deg, var(--signal-orange) 0%, var(--signal-orange-deep) 100%);
-  border-radius: 2px;
-  will-change: height;
-}
-
-.agenda__days {
-  list-style: none;
+.agenda__day-card-label {
   margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(20px, 2.2vw, 32px);
-}
-
-.agenda__day {
-  appearance: none;
-  background: transparent;
-  border: 0;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  color: inherit;
-  opacity: 0.55;
-  transition: opacity 240ms ease;
-  font-family: var(--font-sans);
-}
-.agenda__day:hover { opacity: 0.85; }
-.agenda__day.is-active { opacity: 1; }
-
-.agenda__day-label {
   font-size: 11.5px;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(0, 22, 77, 0.5);
-  transition: color 240ms ease;
-}
-.agenda__day.is-active .agenda__day-label {
   color: var(--signal-orange-deep);
 }
-.agenda__day-date {
+.agenda__day-card-date {
+  margin: 0;
   font-size: clamp(20px, 1.9vw, 26px);
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.15;
   letter-spacing: -0.018em;
   color: var(--signal-blue-deep);
 }
-.agenda__day.is-active .agenda__day-date {
-  font-weight: 600;
+.agenda__day-card-summary {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(0, 22, 77, 0.6);
+  max-width: 32ch;
 }
 
-/* ----- PAGER (tablet/mobile only) ----- */
-.agenda__pager { display: none; }
-
-/* ----- RIGHT — SCROLL-PINNED STAGE ----- */
-.agenda__stage {
-  position: relative;
-  height: 320vh;
-}
-.agenda__pin {
-  position: sticky;
-  top: var(--agenda-top);
-  height: calc(100vh - var(--agenda-top) - clamp(24px, 3vh, 48px));
-  display: flex;
-  align-items: flex-start;
-}
-.agenda__viewport {
-  position: relative;
-  width: 100%;
-  max-width: 720px;
-  height: 100%;
-  overflow: hidden;
-  isolation: isolate;
-}
-
-.agenda__frame {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 0 2px 64px;
-  opacity: 0;
-  transform: translateY(72%);
-  pointer-events: none;
-  will-change: opacity, transform;
-}
-.agenda__frame.is-current {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.agenda__frame-head {
-  margin-bottom: clamp(14px, 1.6vw, 22px);
-}
-.agenda__frame-summary {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: clamp(20px, 1.9vw, 26px);
-  font-weight: 500;
-  line-height: 1.32;
-  letter-spacing: -0.018em;
-  color: var(--signal-blue-deep);
-  max-width: 48ch;
-  text-wrap: balance;
-}
-
+/* Session list within a card. Each row stacks vertically: time,
+   title, description. Inter-row gap creates the rhythm; no rules. */
 .agenda__list {
+  list-style: none;
+  padding: 0;
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: clamp(22px, 2.6vw, 36px);
+  gap: clamp(20px, 2.4vw, 28px);
 }
-
 .agenda__row {
-  display: grid;
-  grid-template-columns: 92px minmax(0, 1fr);
-  gap: clamp(20px, 2.4vw, 36px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   padding: 0;
   border: 0;
-  align-items: baseline;
+  list-style: none;
 }
-
 .agenda__time {
   margin: 0;
   font-size: 11.5px;
@@ -955,13 +858,6 @@ main { display: block; }
   text-transform: uppercase;
   color: rgba(0, 22, 77, 0.5);
   font-variant-numeric: tabular-nums slashed-zero;
-}
-
-.agenda__main {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
 }
 .agenda__title {
   margin: 0;
@@ -973,181 +869,37 @@ main { display: block; }
   text-wrap: balance;
 }
 .agenda__desc {
-  margin: 0;
+  margin: 2px 0 0;
   font-size: 14px;
   line-height: 1.5;
   color: rgba(0, 22, 77, 0.6);
-  max-width: 56ch;
+  max-width: 36ch;
 }
 
-/* ----- VEIL — frosted band at the bottom hinting at the next day -----
-   Sits in the bottom 24% of the viewport so the active day's last
-   session stays clear of it. The next frame (translateY 80% from JS)
-   peeks through this veil — clearly there, but veiled. */
-.agenda__veil {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 20%;
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgba(242, 244, 248, 0) 0%,
-    rgba(242, 244, 248, 0.72) 40%,
-    rgba(242, 244, 248, 0.97) 100%
-  );
-  z-index: 2;
-}
-@supports (backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px)) {
-  .agenda__veil {
-    -webkit-backdrop-filter: blur(7px);
-    backdrop-filter: blur(7px);
-    mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 30%);
-    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 30%);
-  }
-}
-
-/* ============================================================== */
-/*  RESPONSIVE                                                       */
-/* ============================================================== */
-
-/* Tablet — collapse rail to a horizontal pager above the content. */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 960px) {
-  .agenda__body {
-    display: block;
+  .agenda__days-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(28px, 4vw, 48px);
   }
-  .agenda__rail { display: none; }
-  .agenda__pager {
-    display: block;
-    margin-bottom: clamp(20px, 2.4vw, 28px);
+  .agenda__day-card:last-child {
+    grid-column: 1 / -1;
+    max-width: 50%;
   }
-  .agenda__pager-track {
-    position: relative;
-    height: 3px;
-    background: rgba(0, 22, 77, 0.10);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 14px;
-  }
-  .agenda__pager-fill {
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 0%;
-    background: var(--signal-orange);
-    border-radius: 3px;
-    transition: width 120ms linear;
-  }
-  .agenda__pager-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-  }
-  .agenda__pager-item {
-    appearance: none;
-    background: transparent;
-    border: 0;
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
-    text-align: left;
-    color: inherit;
-    opacity: 0.55;
-    transition: opacity 240ms ease, background-color 240ms ease;
-    font-family: var(--font-sans);
-  }
-  .agenda__pager-item:hover { opacity: 0.9; }
-  .agenda__pager-item.is-active {
-    opacity: 1;
-    background: rgba(255, 147, 50, 0.10);
-  }
-  .agenda__pager-item span {
-    font-size: 11.5px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: rgba(0, 22, 77, 0.55);
-  }
-  .agenda__pager-item.is-active span { color: var(--signal-orange-deep); }
-  .agenda__pager-item em {
-    font-style: normal;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--signal-blue-deep);
-  }
-  .agenda__viewport { max-width: none; height: min(620px, 80vh); }
 }
-
-/* Mobile — drop the pinned stage entirely; stack three day cards. */
 @media (max-width: 640px) {
   .agenda__head { max-width: none; }
-  .agenda__stage { height: auto; }
-  .agenda__pin { position: static; height: auto; display: block; }
-  .agenda__viewport {
-    position: static;
-    height: auto;
-    overflow: visible;
+  .agenda__days-grid {
+    grid-template-columns: 1fr;
+    gap: clamp(40px, 7vw, 56px);
+  }
+  .agenda__day-card:last-child {
     max-width: none;
   }
-  .agenda__frame {
-    position: static;
-    inset: auto;
-    opacity: 1;
-    transform: none;
-    pointer-events: auto;
-    padding: 0 0 clamp(32px, 5vw, 48px);
-  }
-  .agenda__frame + .agenda__frame {
-    border-top: 1px solid rgba(0, 22, 77, 0.10);
-    padding-top: clamp(24px, 4vw, 32px);
-    margin-top: clamp(16px, 3vw, 24px);
-  }
-  .agenda__veil { display: none; }
-  .agenda__row {
-    grid-template-columns: 72px 1fr;
-    gap: 14px;
-    padding: 12px 0;
-  }
-  .agenda__title { font-size: 17px; }
-  .agenda__desc { font-size: 14px; }
-}
-
-/* ----- REDUCED MOTION -----
-   Skip the sticky stage entirely; render all three days as a stacked list. */
-@media (prefers-reduced-motion: reduce) {
-  .agenda__stage { height: auto; }
-  .agenda__pin { position: static; height: auto; display: block; }
-  .agenda__viewport {
-    position: static;
-    height: auto;
-    overflow: visible;
+  .agenda__day-card-summary,
+  .agenda__desc {
     max-width: none;
   }
-  .agenda__frame {
-    position: static;
-    inset: auto;
-    opacity: 1;
-    transform: none;
-    pointer-events: auto;
-    padding: 0 0 clamp(40px, 6vw, 64px);
-    transition: none;
-  }
-  .agenda__frame + .agenda__frame {
-    border-top: 1px solid rgba(0, 22, 77, 0.10);
-    padding-top: clamp(28px, 4vw, 40px);
-    margin-top: clamp(20px, 3vw, 28px);
-  }
-  .agenda__veil { display: none; }
-  .agenda__rail-inner { position: static; }
-  .agenda__progress-fill { height: 0% !important; }
 }
 
 
