@@ -5,6 +5,3 @@
 # Track via Git LFS or host externally before re-enabling.
 *.mov
 
-# Build script dependencies — re-installed locally on demand.
-site/v3/scripts/node_modules/
-site/v3/scripts/package-lock.json
