@@ -157,13 +157,19 @@ import {
     gapPx = parseFloat(ts.gap) || 16;
     const pad = parseFloat(ts.paddingLeft) || gapPx;
     const inner = stageW - pad * 2;
-    // Read the card width fraction from the CSS variable on .reel__card
-    // (currently 40% on desktop, 60% on tablet). Keeps the WebGL meshes
-    // in lockstep with whatever the CSS owns.
+    // Take the card's actual rendered pixel width. getBoundingClientRect
+    // resolves the percentage-based flex-basis to a concrete px value
+    // (parsing flexBasis returns the literal "40%" string in Chrome,
+    // which parseFloat truncates to 40 — that's how the cards ended
+    // up rendering ~10× too small).
     const cardEl = cards[0];
-    let cardCss = parseFloat(getComputedStyle(cardEl).flexBasis);
-    if (!cardCss || Number.isNaN(cardCss)) cardCss = inner * 0.4;
-    cardWPx = cardCss;
+    cardWPx = cardEl.getBoundingClientRect().width;
+    if (!cardWPx || cardWPx < 50) {
+      // Belt: if the rect is uninitialised (mid layout), fall back to
+      // the CSS contract — 40% of inner width on desktop, 60% below.
+      const desktop = window.innerWidth > 880;
+      cardWPx = inner * (desktop ? 0.40 : 0.60);
+    }
     cardHPx = (cardWPx * 3) / 4; // aspect 4:3
     stepPx = cardWPx + gapPx;
 
