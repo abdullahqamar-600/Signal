@@ -213,15 +213,15 @@
     });
   }
 
-  /* Story section — fade + slide each full-viewport panel in once it enters
-     view. Each panel keeps its visible state once shown (no flicker on
-     scroll-back). Reduced-motion users get instant visibility. */
+  /* Story section — fade + slide each chapter (.story__act) in once it
+     enters view. Each chapter keeps its visible state once shown.
+     Reduced-motion users get instant visibility. */
   function initStoryFadeIn() {
-    const panels = document.querySelectorAll('.story__panel');
-    if (!panels.length) return;
+    const acts = document.querySelectorAll('.story__act');
+    if (!acts.length) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce || !('IntersectionObserver' in window)) {
-      panels.forEach((p) => p.classList.add('is-visible'));
+      acts.forEach((a) => a.classList.add('is-visible'));
       return;
     }
     const io = new IntersectionObserver(
@@ -235,38 +235,63 @@
       },
       { rootMargin: '0px 0px -12% 0px', threshold: 0.12 }
     );
-    panels.forEach((p) => io.observe(p));
+    acts.forEach((a) => io.observe(a));
   }
 
-  /* Story section — highlight the sidebar nav item that matches the panel
-     currently most in view. Uses IntersectionObserver. */
-  function initStoryNav() {
-    const links = document.querySelectorAll('.story__nav-link');
-    const panels = document.querySelectorAll('.story__panel');
-    if (!links.length || !panels.length) return;
+  /* Speakers grid — paged horizontal carousel. Arrow buttons scroll the
+     list by exactly one container width; the counter shows current / total
+     pages; disabled state on the arrows when at the bounds. */
+  function initSpeakersGrid() {
+    const root = document.querySelector('.speakers-grid');
+    if (!root) return;
+    const list = root.querySelector('.speakers-grid__list');
+    const prev = root.querySelector('.speakers-grid__arrow[data-dir="prev"]');
+    const next = root.querySelector('.speakers-grid__arrow[data-dir="next"]');
+    const counter = root.querySelector('.speakers-grid__count');
+    if (!list || !prev || !next || !counter) return;
 
-    const linkByTarget = new Map();
-    links.forEach((l) => linkByTarget.set(l.dataset.target, l));
-
-    const setActive = (id) => {
-      links.forEach((l) => l.classList.toggle('is-active', l.dataset.target === id));
+    const items = Array.from(list.querySelectorAll('.speakers-grid__item'));
+    const perPage = () => {
+      // Detect items per page from the actual first-item width vs the list width.
+      const item = items[0];
+      if (!item || !list.clientWidth) return 4;
+      const ir = item.getBoundingClientRect().width;
+      const lr = list.clientWidth;
+      return Math.max(1, Math.round(lr / ir));
+    };
+    const pageCount = () => Math.max(1, Math.ceil(items.length / perPage()));
+    const currentPage = () => {
+      const w = list.clientWidth || 1;
+      return Math.min(pageCount(), Math.round(list.scrollLeft / w) + 1);
     };
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        // Pick the entry with the highest intersection ratio among those intersecting
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActive(visible.target.id);
-      },
-      {
-        // Bias the observation window to the upper-middle of the viewport
-        rootMargin: '-30% 0px -50% 0px',
-        threshold: [0, 0.25, 0.5, 0.75, 1],
-      }
-    );
-    panels.forEach((p) => io.observe(p));
+    const update = () => {
+      const cur = currentPage();
+      const total = pageCount();
+      counter.textContent = `${cur} / ${total}`;
+      counter.dataset.current = String(cur);
+      counter.dataset.total = String(total);
+      prev.disabled = cur <= 1;
+      next.disabled = cur >= total;
+    };
+
+    prev.addEventListener('click', () => {
+      list.scrollBy({ left: -list.clientWidth, behavior: 'smooth' });
+    });
+    next.addEventListener('click', () => {
+      list.scrollBy({ left: list.clientWidth, behavior: 'smooth' });
+    });
+
+    let scrollRaf = 0;
+    list.addEventListener('scroll', () => {
+      if (scrollRaf) return;
+      scrollRaf = requestAnimationFrame(() => {
+        scrollRaf = 0;
+        update();
+      });
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    update();
   }
 
   /* Fullscreen overlay for the CEO message */
@@ -319,9 +344,20 @@
   function initVersionToggles() {
     const toggle = document.querySelector('.version-toggle');
     if (!toggle) return;
+    // Honor ?v=v1|v2 from a V3-page round-trip so the right version lands active.
+    const initialV = new URLSearchParams(location.search).get('v');
+    if (initialV === 'v1' || initialV === 'v2') {
+      document.body.dataset.version = initialV;
+      toggle.querySelectorAll('.version-toggle__btn').forEach((b) => {
+        const active = b.dataset.version === initialV;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-pressed', String(active));
+      });
+    }
     toggle.addEventListener('click', (e) => {
       const btn = e.target.closest('.version-toggle__btn');
       if (!btn) return;
+      if (btn.dataset.href) return; // link buttons navigate via href
       const v = btn.dataset.version;
       document.body.dataset.version = v;
       toggle.querySelectorAll('.version-toggle__btn').forEach((b) => {
@@ -460,8 +496,8 @@
     initTicker();
     initAudioPlayer();
     initMessageOverlay();
-    initStoryNav();
     initStoryFadeIn();
+    initSpeakersGrid();
     initVersionToggles();
     initSectionToggles();
 

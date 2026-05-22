@@ -132,6 +132,123 @@ main { display: block; }
 
 
 /* ============================================================== */
+/*  TRAY NAV — floating frosted pill, fixed bottom-center.         */
+/*  Holds the section links + Register CTA on the right.           */
+/*  Adapts to the background it's sitting over:                    */
+/*    data-theme="dark"  → white text on dark glass                */
+/*    data-theme="light" → blue text on light glass                */
+/* ============================================================== */
+.tray-nav {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(18px, 2.4vw, 28px);
+  transform: translateX(-50%);
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 999px;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  transition: background 250ms ease, border-color 250ms ease, box-shadow 250ms ease;
+}
+.tray-nav__group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Dark theme — over dark sections (hero, summit-details, footer) */
+.tray-nav[data-theme="dark"] {
+  background: rgba(10, 13, 28, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow:
+    0 18px 40px -16px rgba(0, 0, 0, 0.55),
+    0 2px 6px -2px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.tray-nav[data-theme="dark"] .tray-nav__link {
+  color: rgba(255, 255, 255, 0.86);
+}
+.tray-nav[data-theme="dark"] .tray-nav__link:hover,
+.tray-nav[data-theme="dark"] .tray-nav__link.is-active {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Light theme — over light sections (agenda, glimpses) */
+.tray-nav[data-theme="light"] {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(0, 22, 77, 0.10);
+  box-shadow:
+    0 18px 40px -16px rgba(0, 22, 77, 0.18),
+    0 2px 6px -2px rgba(0, 22, 77, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.tray-nav[data-theme="light"] .tray-nav__link {
+  color: rgba(0, 22, 77, 0.78);
+}
+.tray-nav[data-theme="light"] .tray-nav__link:hover,
+.tray-nav[data-theme="light"] .tray-nav__link.is-active {
+  color: var(--signal-blue-ink);
+  background: rgba(0, 22, 77, 0.06);
+}
+
+.tray-nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: color 160ms ease, background 160ms ease;
+}
+.tray-nav__link.is-active::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--signal-orange);
+  box-shadow: 0 0 0 4px rgba(255, 147, 50, 0.18);
+}
+
+/* Register CTA inside the tray — always orange, in both themes */
+.tray-nav__cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--white);
+  background: var(--signal-orange);
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+  margin-left: 4px;
+}
+.tray-nav__cta:hover {
+  background: var(--signal-orange-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px -8px rgba(255, 147, 50, 0.55);
+}
+
+@media (max-width: 720px) {
+  .tray-nav { padding: 5px; gap: 3px; }
+  .tray-nav__group { gap: 0; }
+  .tray-nav__link { padding: 9px 14px; font-size: 13px; }
+  .tray-nav__cta { padding: 9px 16px; font-size: 13px; }
+}
+@media (max-width: 560px) {
+  .tray-nav { display: none; }
+}
+
+
+/* ============================================================== */
 /*  HERO                                                           */
 /* ============================================================== */
 .hero {
@@ -196,14 +313,16 @@ main { display: block; }
 .hero__content {
   position: relative;
   z-index: 2;
-  max-width: var(--container);
+  /* Match the nav__inner shell exactly so the headline's left edge
+     lines up with the logo above it. */
+  max-width: 1480px;
   margin: 0 auto;
-  padding: 0 var(--gutter);
+  padding: 0 clamp(1.5rem, 3vw, 3.25rem);
+  padding-bottom: clamp(110px, 18vh, 220px);
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding-bottom: clamp(40px, 6vw, 88px);
 }
 
 /* Pills sit just above the headline */
@@ -229,23 +348,6 @@ main { display: block; }
   -webkit-backdrop-filter: blur(10px);
   white-space: nowrap;
 }
-/* Strong variant — the date/location pill. Larger, brighter, with a
-   clear date-and-place reading via an internal divider. */
-.hero__pill--strong {
-  padding: 12px 20px 12px 18px;
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(0, 22, 77, 0.10);
-  color: var(--signal-blue-deep);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.005em;
-  box-shadow: 0 12px 32px -16px rgba(0, 22, 77, 0.55);
-  gap: 12px;
-}
-.hero__pill--strong .hero__pill-dot {
-  background: var(--signal-orange);
-  box-shadow: 0 0 0 4px rgba(255, 147, 50, 0.22);
-}
 .hero__pill-mark {
   width: 18px;
   height: 10px;
@@ -253,33 +355,6 @@ main { display: block; }
   display: inline-flex;
 }
 .hero__pill-mark svg { width: 100%; height: 100%; }
-.hero__pill-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: var(--signal-orange);
-  box-shadow: 0 0 0 4px rgba(255, 147, 50, 0.18);
-  flex-shrink: 0;
-}
-.hero__pill-meta {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-}
-.hero__pill-date,
-.hero__pill-place {
-  display: inline-block;
-  white-space: nowrap;
-}
-.hero__pill-place {
-  font-weight: 500;
-  color: rgba(0, 22, 77, 0.72);
-}
-.hero__pill-sep {
-  width: 1px;
-  height: 14px;
-  background: rgba(0, 22, 77, 0.18);
-}
 
 /* Headline — match Digidop ratio/size: ~4 lines, large, semibold,
    tight line-height, white. Brand rule says H1 is uppercase, but the
@@ -289,19 +364,20 @@ main { display: block; }
 .hero__title {
   font-family: var(--font-sans);
   font-weight: 600;
-  font-size: clamp(40px, 6.4vw, 92px);
-  line-height: 1.04;
-  letter-spacing: -0.025em;
+  /* Two short lines. Bigger ceiling than the long-copy version so the
+     two-line headline lands with the weight a hero deserves. */
+  font-size: clamp(48px, 6.6vw, 104px);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
   color: var(--white);
   margin: 0;
-  max-width: 17ch;
-  text-wrap: balance;
+  max-width: 18ch;
 }
 
 @media (max-width: 720px) {
   .hero { min-height: 600px; height: 90vh; }
   .hero__title {
-    font-size: clamp(34px, 8.5vw, 56px);
+    font-size: clamp(32px, 7.6vw, 52px);
     max-width: 100%;
   }
   .hero__pills { gap: 8px; }
@@ -347,29 +423,43 @@ main { display: block; }
 
 
 /* ============================================================== */
-/*  ABOUT — "Since our first summit in 2021..."                    */
-/*  Compact, editorial — matches the Digidop reference proportions */
+/*  SUMMIT DETAILS — Where & When                                   */
+/*  Pill + dates-led headline + 2 facts + Travel CTA + dot-globe   */
+/*  dome anchored at the bottom, intersected by the orange ribbon. */
 /* ============================================================== */
-.about {
+.summit-details {
+  position: relative;
   background: var(--signal-blue-ink);
-  padding: clamp(64px, 8vw, 120px) 0 clamp(96px, 11vw, 160px);
+  padding: clamp(72px, 9vw, 128px) 0 0;
+  overflow: hidden;
+  isolation: isolate;
 }
-.about__inner {
-  max-width: 1180px;
+/* Soft overlay to lift the dome out of the dark blue */
+.summit-details::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 70% at 50% 70%, rgba(0, 80, 200, 0.14), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+.summit-details__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 clamp(1.5rem, 4vw, 4rem);
+  padding: 0 clamp(1.5rem, 4vw, 4rem) clamp(48px, 6vw, 88px);
 }
 
-/* Header row — pill sits inline at the start of the heading.
-   Heading wraps to ~2 lines like the reference (not 4). */
-.about__header {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: start;
-  gap: clamp(14px, 1.6vw, 22px);
-  margin-bottom: clamp(48px, 6vw, 80px);
+/* Header — pill, headline, support copy stacked left-aligned. */
+.summit-details__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(18px, 2vw, 28px);
+  margin-bottom: clamp(32px, 4vw, 56px);
 }
-.about__pill {
+.summit-details__pill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -382,387 +472,656 @@ main { display: block; }
   font-weight: 500;
   letter-spacing: 0.01em;
   white-space: nowrap;
-  /* Lift slightly to sit on the heading's first line */
-  margin-top: 6px;
 }
-.about__pill-mark {
+.summit-details__pill-mark {
   width: 14px;
   height: 8px;
   color: var(--signal-orange);
   display: inline-flex;
 }
-.about__pill-mark svg { width: 100%; height: 100%; }
+.summit-details__pill-mark svg { width: 100%; height: 100%; }
 
-.about__heading {
+.summit-details__heading {
   margin: 0;
   font-family: var(--font-sans);
   font-weight: 500;
-  font-size: clamp(26px, 3.4vw, 46px);
-  line-height: 1.12;
-  letter-spacing: -0.02em;
+  font-size: clamp(34px, 4.6vw, 64px);
+  line-height: 1.08;
+  letter-spacing: -0.022em;
   color: var(--white);
-  max-width: 38ch;
+  max-width: 18ch;
   text-wrap: balance;
 }
-
-/* Body row — photo on left, copy on right.
-   Explicit column widths keep the layout small and inset, not full-width. */
-.about__body {
-  display: grid;
-  grid-template-columns: minmax(0, 360px) minmax(0, 440px);
-  gap: clamp(40px, 6vw, 120px);
-  align-items: start;
-  justify-content: start;
-}
-.about__media { position: relative; }
-.about__photo {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  object-position: center top;
-  display: block;
-  border-radius: 4px;
-}
-.about__copy {
-  padding-top: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-.about__para {
+.summit-details__support {
   margin: 0;
   font-size: 15px;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.74);
-  max-width: 44ch;
+  color: rgba(255, 255, 255, 0.70);
+  max-width: 56ch;
 }
-.about__more {
-  margin-top: clamp(20px, 2.4vw, 32px);
+
+/* Facts row — two items, hairline divider between them */
+.summit-details__facts {
+  list-style: none;
+  margin: 0 0 clamp(28px, 3.4vw, 44px);
+  padding: 0;
+  display: flex;
+  gap: clamp(24px, 4vw, 56px);
+  align-items: stretch;
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  padding-block: clamp(18px, 2.2vw, 28px);
+}
+.summit-details__fact {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  padding-right: clamp(24px, 4vw, 56px);
+}
+.summit-details__fact + .summit-details__fact {
+  padding-left: clamp(24px, 4vw, 56px);
+  border-left: 1px solid rgba(255, 255, 255, 0.10);
+}
+.summit-details__fact-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--signal-orange);
+}
+.summit-details__fact-value {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--white);
+}
+
+/* CTA */
+.summit-details__cta {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  padding: 14px 26px;
+  border-radius: 999px;
+  background: var(--signal-orange);
+  color: var(--white);
   font-size: 14px;
   font-weight: 600;
-  color: var(--white);
   letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: background 200ms ease, transform 200ms ease, box-shadow 200ms ease, gap 200ms ease;
   align-self: flex-start;
-  transition: color 200ms ease, gap 200ms ease;
 }
-.about__more:hover { color: var(--signal-orange); gap: 14px; }
-.about__more-arrow {
-  width: 13px;
-  height: 13px;
+.summit-details__cta:hover {
+  background: var(--signal-orange-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 40px -10px rgba(255, 147, 50, 0.55);
+  gap: 14px;
+}
+.summit-details__cta-arrow {
+  width: 14px;
+  height: 14px;
   flex-shrink: 0;
   transition: transform 250ms ease;
 }
-.about__more:hover .about__more-arrow { transform: translateY(2px); }
+.summit-details__cta:hover .summit-details__cta-arrow { transform: translateX(2px); }
 
+/* Dome — absolutely positioned, centered horizontally, anchored so its
+   vertical center aligns with the ribbon's curve. The ribbon (with a
+   higher z-index) paints over the dome's lower half — that's the cut. */
+.summit-details__dome { display: none; }
+.summit-details__dome .dome {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.dome .dot--water { fill: rgba(255, 255, 255, 0.10); }
+.dome .dot--land  { fill: rgba(255, 255, 255, 0.85); }
+
+/* Omaha marker */
+.dome__marker-halo {
+  fill: var(--signal-orange);
+  opacity: 0.18;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: dome-marker-pulse 2.2s ease-out infinite;
+}
+.dome__marker-ring {
+  fill: none;
+  stroke: var(--signal-orange);
+  stroke-width: 1.5;
+  opacity: 0.7;
+}
+.dome__marker-core {
+  fill: var(--signal-orange-hot);
+  filter: drop-shadow(0 0 6px rgba(255, 179, 122, 0.9));
+}
+.dome__marker-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  fill: rgba(255, 255, 255, 0.78);
+}
+@keyframes dome-marker-pulse {
+  0%   { transform: scale(1);   opacity: 0.18; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dome__marker-halo { animation: none; }
+}
+
+/* Responsive */
 @media (max-width: 880px) {
-  .about__header {
-    grid-template-columns: 1fr;
-    gap: 16px;
+  .summit-details__heading {
+    font-size: clamp(28px, 7vw, 38px);
   }
-  .about__pill { margin-top: 0; align-self: flex-start; }
-  .about__body {
-    grid-template-columns: 1fr;
-    gap: 32px;
+  .summit-details__facts {
+    flex-direction: column;
+    gap: 0;
   }
-  .about__media { max-width: 360px; }
+  .summit-details__fact {
+    padding-right: 0;
+    padding-block: 14px;
+  }
+  .summit-details__fact + .summit-details__fact {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+  }
+  .summit-details__dome {
+    width: clamp(280px, 86vw, 420px);
+    bottom: calc(-1 * clamp(80px, 18vw, 160px));
+  }
+  .summit-details__inner {
+    padding-bottom: clamp(260px, 70vw, 400px);
+  }
+}
+@media (max-width: 560px) {
+  .summit-details__inner {
+    padding-bottom: clamp(280px, 78vw, 360px);
+  }
+  .summit-details__dome { bottom: calc(-1 * clamp(60px, 14vw, 120px)); }
 }
 
 
 /* ============================================================== */
-/*  RIBBON TRANSITION (bottom of about section)                    */
+/*  RIBBON TRANSITION (bottom of summit-details section)           */
 /*  V1's signature orange ribbon — used here as the curved seam    */
 /*  between the dark Signal Blue Ink section above and the         */
 /*  grey #F2F4F8 section below. The SVG's "ribbon-bg-below" path   */
 /*  paints grey from the lower contour downward so the next        */
 /*  section meets it with no visible join.                         */
 /* ============================================================== */
-.about__transition {
-  /* Dock the ribbon to the bottom edge of the about section so its
-     grey "below the curve" fill meets the next grey section flush. */
-  margin-top: clamp(56px, 8vw, 96px);
-  margin-bottom: calc(-1 * clamp(96px, 11vw, 160px)); /* cancel about's bottom padding */
+.summit-details__transition {
+  position: relative;
   width: 100%;
   line-height: 0;
-  /* overflow visible so the halo bloom can extend past the SVG box —
-     same trick V1 uses on .hero__ribbon. */
   overflow: visible;
-  position: relative;
-  z-index: 1;
+  /* Sits above the dome so the ribbon's paint occludes the dome's
+     lower half — the masking happens via stacking, not clip-path. */
+  z-index: 2;
 }
-.about__transition .ribbon-svg {
+.summit-details__transition .ribbon-svg {
   display: block;
   width: 100%;
-  /* Mirrors V1: chunky, visible ribbon height that scales with viewport.
-     V1 uses clamp(180px, 23vw, 310px) below 960px and
-     clamp(230px, 26vw, 360px) at ≥960px — matched 1:1 here. */
   height: clamp(180px, 23vw, 310px);
   overflow: visible;
 }
 @media (min-width: 960px) {
-  .about__transition .ribbon-svg {
+  .summit-details__transition .ribbon-svg {
     height: clamp(230px, 26vw, 360px);
   }
 }
-/* Ribbon layer hook — kept generic so the glow halo paints above the
-   SVG box without being clipped. */
-.about__transition .ribbon-layer { will-change: transform, opacity; }
+.summit-details__transition .ribbon-layer { will-change: transform, opacity; }
 
 /* ============================================================== */
 /*  AGENDA — 3-day session breakdown                                */
-/*  Editorial tabular layout. Strict brand palette, breathing       */
-/*  spacing rhythm, hierarchy via scale + weight contrast.          */
+/*  Left rail of days + scroll-progress bar; right side is a sticky */
+/*  stage that cross-fades each day in turn. A frosted-glass veil   */
+/*  sits at the bottom of the viewport, hinting at the next day.    */
 /* ============================================================== */
 .agenda {
   background: #F2F4F8;
   color: var(--signal-blue-deep);
-  /* Slightly more breathing top so the section enters more confidently
-     after the ribbon transition. Bottom kept generous as a closing pause. */
-  padding: clamp(96px, 11vw, 180px) 0 clamp(112px, 13vw, 200px);
+  padding: clamp(56px, 6vw, 96px) 0 clamp(56px, 6vw, 96px);
   position: relative;
   z-index: 1;
 }
 .agenda__inner {
-  max-width: 1040px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 clamp(1.5rem, 4vw, 3rem);
 }
 
-/* Section heading — large, refined.
-   One italic word for personality (matches Signal's invite-section voice).
-   Tighter line-height tightens the silhouette of the two-line block. */
+/* ----- HEADING ----- Left-aligned, smaller, with a dark inverted pill. */
 .agenda__head {
-  text-align: center;
-  margin-bottom: clamp(80px, 10vw, 152px);
+  text-align: left;
+  margin-bottom: clamp(28px, 3vw, 44px);
+  max-width: 30ch;
 }
+.agenda__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px 8px 12px;
+  background: rgba(0, 31, 102, 0.92);
+  color: #fff;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin-bottom: 18px;
+}
+.agenda__pill-mark {
+  display: inline-flex;
+  width: 18px;
+  height: auto;
+  color: var(--signal-orange);
+}
+.agenda__pill-mark svg { width: 100%; height: auto; display: block; }
 .agenda__heading {
   margin: 0;
   font-family: var(--font-sans);
   font-weight: 500;
-  font-size: clamp(34px, 4.8vw, 68px);
-  line-height: 1.02;
-  letter-spacing: -0.028em;
+  font-size: clamp(28px, 3.4vw, 44px);
+  line-height: 1.08;
+  letter-spacing: -0.018em;
   color: var(--signal-blue-deep);
-  max-width: 32ch;
-  margin-inline: auto;
+  text-wrap: balance;
 }
-.agenda__heading em {
-  font-style: italic;
-  font-weight: 500;
+
+/* ----- TWO-COLUMN BODY ----- */
+.agenda__body {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: clamp(32px, 4vw, 64px);
+  align-items: stretch;
+}
+
+/* ----- LEFT RAIL -----
+   The aside spans the full row height (same as the 300vh stage column),
+   and an inner sticky element holds the day list + progress bar. */
+.agenda__rail {
+  position: relative;
+}
+.agenda__rail-inner {
+  position: sticky;
+  top: clamp(80px, 12vh, 120px);
+  display: grid;
+  grid-template-columns: 4px 1fr;
+  gap: clamp(20px, 2vw, 28px);
+  align-items: stretch;
+}
+
+/* The thin vertical track + orange fill. Height matches the day list. */
+.agenda__progress {
+  position: relative;
+  width: 4px;
+  background: rgba(0, 22, 77, 0.10);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.agenda__progress-fill {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 0%;
+  background: var(--signal-orange);
+  border-radius: 4px;
+  transition: height 120ms linear;
+  will-change: height;
+}
+
+.agenda__days {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.agenda__days li + li {
+  border-top: 1px solid rgba(0, 22, 77, 0.10);
+}
+
+.agenda__day {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  padding: clamp(14px, 1.4vw, 18px) 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: inherit;
+  opacity: 0.55;
+  transition: opacity 240ms ease;
+  font-family: var(--font-sans);
+}
+.agenda__day:hover { opacity: 0.85; }
+.agenda__day.is-active { opacity: 1; }
+
+.agenda__day-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(0, 22, 77, 0.55);
+  transition: color 240ms ease;
+}
+.agenda__day.is-active .agenda__day-label {
   color: var(--signal-orange-deep);
 }
-
-.agenda__list {
-  width: 100%;
+.agenda__day-date {
+  font-size: clamp(17px, 1.3vw, 19px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--signal-blue-deep);
+}
+.agenda__day.is-active .agenda__day-date {
+  font-weight: 600;
 }
 
-/* ----- SCROLL-PINNED STAGE -----
-   The stage is tall (one viewport per day). Inside, .agenda__pin
-   sticky-positions at 0 and the three .agenda__frame children
-   overlap, so scrolling drives the cross-fade between days. */
+/* ----- PAGER (tablet/mobile only) ----- */
+.agenda__pager { display: none; }
+
+/* ----- RIGHT — SCROLL-PINNED STAGE ----- */
 .agenda__stage {
   position: relative;
-  /* 3 days × 100vh provides scroll distance for the cross-fade
-     choreography. */
   height: 300vh;
 }
 .agenda__pin {
   position: sticky;
   top: 0;
   height: 100vh;
-  display: grid;
+  display: flex;
+  align-items: center;
 }
+.agenda__viewport {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  height: min(640px, 82vh);
+  overflow: hidden;
+  isolation: isolate;
+}
+
 .agenda__frame {
-  grid-column: 1;
-  grid-row: 1;
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  padding: clamp(48px, 6vw, 88px) 0 clamp(32px, 4vw, 56px);
+  padding: 4px 4px 56px;
   opacity: 0;
+  transform: translateY(28px);
   pointer-events: none;
-  transition: opacity 420ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity;
+  transition:
+    opacity 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
 }
 .agenda__frame.is-current {
   opacity: 1;
+  transform: translateY(0);
   pointer-events: auto;
 }
+.agenda__frame.is-leaving {
+  opacity: 0;
+  transform: translateY(-40px);
+}
 
-/* ----- DAY HEAD inside the frame -----
-   Centered chapter mark. Date eyebrow above the Day numeral. */
-.agenda__day-head {
+.agenda__frame-head {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+  align-items: baseline;
   gap: 14px;
-  padding: 0 0 clamp(40px, 5vw, 72px);
-  margin: 0;
-  /* The frame fades in/out as a whole; the head doesn't need its own
-     entrance animation. */
+  padding-bottom: clamp(14px, 1.4vw, 18px);
+  margin-bottom: clamp(8px, 1vw, 12px);
+  border-bottom: 1px solid rgba(0, 22, 77, 0.12);
 }
-.agenda__day-num {
+.agenda__frame-num {
   margin: 0;
-  font-size: clamp(36px, 4.4vw, 60px);
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.03em;
-  color: var(--signal-blue-deep);
-  font-variant-numeric: lining-nums;
-}
-.agenda__day-date {
-  margin: 0;
-  font-size: clamp(11px, 0.85vw, 12.5px);
+  font-size: clamp(20px, 1.9vw, 26px);
   font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: 0.22em;
+  letter-spacing: -0.015em;
+  color: var(--signal-blue-deep);
+}
+.agenda__frame-date {
+  margin: 0;
+  font-size: clamp(13px, 1vw, 14px);
+  font-weight: 500;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--signal-orange-deep);
+  color: rgba(0, 22, 77, 0.50);
 }
 
-/* ----- SESSION ROW -----
-   3-col grid [time | tag+title | description].
-   Hidden by default; JS toggles .is-revealed based on scroll progress
-   inside the active day frame. Each row enters with a fade + slide
-   from below and exits in reverse stagger as the next day takes over. */
+.agenda__list { width: 100%; }
+
 .agenda__row {
   display: grid;
-  grid-template-columns: 116px minmax(0, 1.55fr) minmax(0, 1fr);
-  gap: clamp(28px, 3.6vw, 60px);
-  padding: clamp(22px, 2.4vw, 32px) clamp(14px, 1.8vw, 24px);
-  margin: 0 calc(-1 * clamp(14px, 1.8vw, 24px));
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: clamp(16px, 1.8vw, 28px);
+  padding: clamp(10px, 1.1vw, 14px) 0;
   border-top: 1px solid rgba(0, 22, 77, 0.07);
-  align-items: start;
-  border-radius: 12px;
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 520ms cubic-bezier(0.22, 1, 0.36, 1),
-              transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
-              background-color 280ms cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1),
-              border-color 280ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
+  align-items: baseline;
 }
-.agenda__row.is-revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-/* First row of each frame has no top hairline. */
-.agenda__list > .agenda__row:first-child { border-top-color: transparent; }
-
-/* Hover interaction — preserved from the prior pass. */
-.agenda__list:hover .agenda__row.is-revealed:not(:hover) { opacity: 0.42; }
-.agenda__row.is-revealed:hover {
-  background: rgba(255, 255, 255, 0.55);
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 22, 77, 0.08),
-    0 14px 32px -22px rgba(0, 22, 77, 0.18);
-  border-top-color: transparent;
-}
-.agenda__row.is-revealed:hover + .agenda__row { border-top-color: transparent; }
-
-/* Reduced-motion fallback: drop the sticky stage entirely, show
-   everything as a regular stacked list with no animation. */
-@media (prefers-reduced-motion: reduce) {
-  .agenda__stage { height: auto; }
-  .agenda__pin { position: static; height: auto; display: block; }
-  .agenda__frame {
-    position: static;
-    opacity: 1;
-    pointer-events: auto;
-    padding-bottom: clamp(40px, 6vw, 80px);
-  }
-  .agenda__row {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
+.agenda__list > .agenda__row:first-child {
+  border-top: 0;
+  padding-top: clamp(6px, 0.8vw, 10px);
 }
 
-/* Left column — time. Tabular nums + slashed zero keep the column
-   optically aligned. */
 .agenda__time {
   margin: 0;
-  padding-top: 8px;
-  font-size: clamp(15px, 1.2vw, 17px);
+  font-size: clamp(13px, 1vw, 15px);
   font-weight: 500;
-  letter-spacing: 0;
-  color: rgba(0, 22, 77, 0.55);
+  color: rgba(0, 22, 77, 0.58);
   font-variant-numeric: tabular-nums slashed-zero;
+  letter-spacing: 0;
 }
 
-/* Middle column — category tag + session title */
 .agenda__main {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
   min-width: 0;
-}
-.agenda__tag {
-  margin: 0;
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--signal-orange-deep);
 }
 .agenda__title {
   margin: 0;
-  font-size: clamp(20px, 2vw, 27px);
+  font-size: clamp(16px, 1.4vw, 19px);
   font-weight: 500;
-  line-height: 1.18;
-  letter-spacing: -0.022em;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
   color: var(--signal-blue-deep);
   text-wrap: balance;
 }
-
-/* Right column — descriptive sub-copy. Slightly more leading
-   for readability; opacity nudged up so the copy is comfortable
-   to scan without competing with the title. */
 .agenda__desc {
   margin: 0;
-  padding-top: 8px;
-  font-size: clamp(14px, 1.02vw, 15.5px);
-  line-height: 1.62;
-  color: rgba(0, 22, 77, 0.66);
-  max-width: 42ch;
+  font-size: clamp(13px, 0.95vw, 14px);
+  line-height: 1.5;
+  color: rgba(0, 22, 77, 0.6);
+  max-width: 56ch;
 }
 
-@media (max-width: 880px) {
-  .agenda__day-head {
-    padding: 48px 14px 24px;
-    margin: 0 -14px;
+/* ----- VEIL — frosted band at the bottom hinting at the next day ----- */
+.agenda__veil {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 38%;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(242, 244, 248, 0) 0%,
+    rgba(242, 244, 248, 0.65) 45%,
+    rgba(242, 244, 248, 0.95) 100%
+  );
+  -webkit-backdrop-filter: blur(0px);
+  backdrop-filter: blur(0px);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 55%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 55%);
+  z-index: 2;
+}
+@supports (backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px)) {
+  .agenda__veil {
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
   }
-  .agenda__day-num { font-size: 26px; }
-  .agenda__day-date { font-size: 12px; }
-  .agenda__row {
-    grid-template-columns: 90px 1fr;
-    gap: 12px 20px;
-    padding: 24px 14px;
-    margin: 0 -14px;
+}
+
+/* ============================================================== */
+/*  RESPONSIVE                                                       */
+/* ============================================================== */
+
+/* Tablet — collapse rail to a horizontal pager above the content. */
+@media (max-width: 960px) {
+  .agenda__body {
+    display: block;
   }
-  .agenda__time { font-size: 16px; }
-  .agenda__title { font-size: 20px; }
-  .agenda__desc {
-    grid-column: 1 / -1;
-    padding-top: 8px;
+  .agenda__rail { display: none; }
+  .agenda__pager {
+    display: block;
+    margin-bottom: clamp(20px, 2.4vw, 28px);
+  }
+  .agenda__pager-track {
+    position: relative;
+    height: 3px;
+    background: rgba(0, 22, 77, 0.10);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .agenda__pager-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0%;
+    background: var(--signal-orange);
+    border-radius: 3px;
+    transition: width 120ms linear;
+  }
+  .agenda__pager-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .agenda__pager-item {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    text-align: left;
+    color: inherit;
+    opacity: 0.55;
+    transition: opacity 240ms ease, background-color 240ms ease;
+    font-family: var(--font-sans);
+  }
+  .agenda__pager-item:hover { opacity: 0.9; }
+  .agenda__pager-item.is-active {
+    opacity: 1;
+    background: rgba(255, 147, 50, 0.10);
+  }
+  .agenda__pager-item span {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(0, 22, 77, 0.55);
+  }
+  .agenda__pager-item.is-active span { color: var(--signal-orange-deep); }
+  .agenda__pager-item em {
+    font-style: normal;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--signal-blue-deep);
+  }
+  .agenda__viewport { max-width: none; height: min(620px, 80vh); }
+}
+
+/* Mobile — drop the pinned stage entirely; stack three day cards. */
+@media (max-width: 640px) {
+  .agenda__head { max-width: none; }
+  .agenda__stage { height: auto; }
+  .agenda__pin { position: static; height: auto; display: block; }
+  .agenda__viewport {
+    position: static;
+    height: auto;
+    overflow: visible;
     max-width: none;
   }
+  .agenda__frame {
+    position: static;
+    inset: auto;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    padding: 0 0 clamp(32px, 5vw, 48px);
+  }
+  .agenda__frame + .agenda__frame {
+    border-top: 1px solid rgba(0, 22, 77, 0.10);
+    padding-top: clamp(24px, 4vw, 32px);
+    margin-top: clamp(16px, 3vw, 24px);
+  }
+  .agenda__veil { display: none; }
+  .agenda__row {
+    grid-template-columns: 72px 1fr;
+    gap: 14px;
+    padding: 12px 0;
+  }
+  .agenda__title { font-size: 16px; }
+  .agenda__desc { font-size: 13px; }
+}
+
+/* ----- REDUCED MOTION -----
+   Skip the sticky stage entirely; render all three days as a stacked list. */
+@media (prefers-reduced-motion: reduce) {
+  .agenda__stage { height: auto; }
+  .agenda__pin { position: static; height: auto; display: block; }
+  .agenda__viewport {
+    position: static;
+    height: auto;
+    overflow: visible;
+    max-width: none;
+  }
+  .agenda__frame {
+    position: static;
+    inset: auto;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    padding: 0 0 clamp(40px, 6vw, 64px);
+    transition: none;
+  }
+  .agenda__frame + .agenda__frame {
+    border-top: 1px solid rgba(0, 22, 77, 0.10);
+    padding-top: clamp(28px, 4vw, 40px);
+    margin-top: clamp(20px, 3vw, 28px);
+  }
+  .agenda__veil { display: none; }
+  .agenda__rail-inner { position: static; }
+  .agenda__progress-fill { height: 0% !important; }
 }
 
 
 /* ============================================================== */
 /*  GLIMPSES — masonry photo grid (after the agenda).              */
-/*  Dark base, varied tile sizes (tall / wide / square),           */
-/*  one branded "Summit · 2025" badge tile in the mix.             */
+/*  White base, varied tile sizes (tall / wide / square),           */
+/*  one dark branded "Summit · 2025" badge tile in the mix.        */
+/*  Heading flips to Signal Blue Deep on the lighter ground.       */
 /* ============================================================== */
 .glimpses {
-  background: var(--signal-blue-ink);
+  background: var(--white);
   padding: clamp(96px, 11vw, 180px) 0 clamp(96px, 12vw, 180px);
 }
 .glimpses__inner {
@@ -781,27 +1140,32 @@ main { display: block; }
   font-size: clamp(34px, 4.6vw, 64px);
   line-height: 1.04;
   letter-spacing: -0.028em;
-  color: var(--white);
+  color: var(--signal-blue-deep);
   max-width: 22ch;
 }
 .glimpses__heading em {
   font-style: italic;
   font-weight: 500;
-  color: var(--signal-orange);
+  color: var(--signal-orange-deep);
 }
 
+/* Digidop-style asymmetric masonry — 6-column grid for finer span
+   granularity. Five span variants (feature / wide / big / tall / sq)
+   create the rhythm of dominant outer tiles + smaller middle tiles
+   that the reference is known for. */
 .glimpses__grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: clamp(220px, 22vw, 320px);
-  gap: clamp(10px, 1vw, 16px);
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-rows: clamp(110px, 10vw, 160px);
+  grid-auto-flow: dense;
+  gap: clamp(8px, 0.8vw, 14px);
 }
 .glimpses__tile {
   margin: 0;
   position: relative;
   overflow: hidden;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(0, 22, 77, 0.04);
 }
 .glimpses__tile img {
   width: 100%;
@@ -812,9 +1176,17 @@ main { display: block; }
 }
 .glimpses__tile:hover img { transform: scale(1.04); }
 
-.glimpses__tile--tall { grid-row: span 2; }
-.glimpses__tile--wide { grid-row: span 1; }
-.glimpses__tile--sq   { grid-row: span 1; }
+/* Five span variants — each captures a distinct role in the masonry:
+   feature: dominant tall portrait at 33% width × 3 row heights
+   wide:    landscape banner at 50% width × 2 row heights
+   big:     medium square block at 33% × 2
+   tall:    slim tall portrait at 17% × 2
+   sq:      small square at 17% × 1 (default) */
+.glimpses__tile--feature { grid-column: span 2; grid-row: span 3; }
+.glimpses__tile--wide    { grid-column: span 3; grid-row: span 2; }
+.glimpses__tile--big     { grid-column: span 2; grid-row: span 2; }
+.glimpses__tile--tall    { grid-column: span 1; grid-row: span 2; }
+.glimpses__tile--sq      { /* default 1 × 1 */ }
 
 /* Badge tile — a dark surface with the Signal mark and "Summit · 2025"
    text. Sits among the photos to brand the grid. */
@@ -854,172 +1226,159 @@ main { display: block; }
 @media (max-width: 880px) {
   .glimpses__grid {
     grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: 180px;
+    grid-auto-rows: 150px;
   }
-  .glimpses__tile--wide { grid-column: span 2; }
-  .glimpses__tile--tall { grid-row: span 2; }
+  /* On mobile, normalize all wider tiles to 1 or 2 column spans. */
+  .glimpses__tile--feature { grid-column: span 1; grid-row: span 2; }
+  .glimpses__tile--wide    { grid-column: span 2; grid-row: span 1; }
+  .glimpses__tile--big     { grid-column: span 2; grid-row: span 2; }
+  .glimpses__tile--tall    { grid-column: span 1; grid-row: span 2; }
 }
 
 
 /* ============================================================== */
-/*  FINAL CTA — closing register prompt above the footer            */
-/*  Two-column on desktop: heading + button on the left,            */
-/*  three meta blocks stacked on the right.                         */
+/*  FAQs PREVIEW — three top questions, link to full FAQs page    */
+/*  Heading + "View all" link on the row, 3-up card grid below.   */
 /* ============================================================== */
-.cta {
-  position: relative;
+.faqs-preview {
   background: var(--signal-blue-ink);
-  padding: clamp(96px, 11vw, 160px) 0 clamp(96px, 11vw, 160px);
-  overflow: hidden;
+  padding: clamp(80px, 9vw, 140px) 0 clamp(80px, 9vw, 140px);
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
-.cta::before {
-  /* Warm halo top-right, brand signature accent */
-  content: "";
-  position: absolute;
-  inset: -20% -10% auto auto;
-  width: 70%;
-  height: 80%;
-  background: radial-gradient(
-    ellipse at 75% 25%,
-    rgba(255, 147, 50, 0.16),
-    transparent 55%
-  );
-  pointer-events: none;
-}
-.cta__inner {
-  position: relative;
+.faqs-preview__inner {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 clamp(1.5rem, 4vw, 3rem);
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: clamp(48px, 6vw, 96px);
-  align-items: center;
 }
-.cta__copy { max-width: 560px; }
-.cta__eyebrow {
+.faqs-preview__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 32px;
+  margin-bottom: clamp(40px, 5vw, 64px);
+  flex-wrap: wrap;
+}
+.faqs-preview__heading {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(28px, 3.4vw, 44px);
+  line-height: 1.08;
+  letter-spacing: -0.022em;
+  color: var(--white);
+  max-width: 18ch;
+}
+.faqs-preview__more {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  margin: 0 0 clamp(20px, 2.4vw, 28px);
-  padding: 8px 14px;
+  gap: 8px;
+  padding: 10px 18px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 999px;
-  font-size: 12.5px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
   color: var(--white);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: background 200ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-.cta__mark {
+.faqs-preview__more:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+.faqs-preview__more svg {
+  width: 13px;
+  height: 13px;
+  color: var(--signal-orange);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faqs-preview__more:hover svg { transform: translateX(3px); }
+
+.faqs-preview__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(14px, 1.4vw, 22px);
+}
+
+/* FAQ card — Digidop press-card pattern: tall block, hairline border,
+   eyebrow + question stack at top, answer + read-more at bottom. */
+.faq-card {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(24px, 2.6vw, 36px);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  min-height: 320px;
+  transition: background 220ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq-card:hover {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.faq-card__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 32px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+.faq-card__mark {
   width: 16px;
   height: 9px;
   color: var(--signal-orange);
   display: inline-flex;
 }
-.cta__mark svg { width: 100%; height: 100%; }
-.cta__heading {
-  margin: 0 0 clamp(16px, 1.8vw, 24px);
-  font-family: var(--font-sans);
+.faq-card__mark svg { width: 100%; height: 100%; }
+.faq-card__q {
+  margin: 0 0 16px;
+  font-size: clamp(18px, 1.6vw, 22px);
   font-weight: 500;
-  font-size: clamp(36px, 5vw, 72px);
-  line-height: 1.02;
-  letter-spacing: -0.028em;
+  line-height: 1.22;
+  letter-spacing: -0.018em;
   color: var(--white);
-  max-width: 12ch;
+  text-wrap: balance;
 }
-.cta__heading em {
-  font-style: italic;
-  font-weight: 500;
-  color: var(--signal-orange);
+.faq-card__a {
+  margin: 0 0 24px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.62);
+  flex: 1;
 }
-.cta__lede {
-  margin: 0 0 clamp(28px, 3vw, 40px);
-  font-size: clamp(15px, 1.2vw, 17px);
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.72);
-  max-width: 48ch;
-}
-.cta__btn {
+.faq-card__more {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 28px;
-  background: var(--signal-orange);
-  color: var(--signal-blue-deep);
-  font-size: 15px;
+  gap: 8px;
+  font-size: 13px;
   font-weight: 600;
-  border-radius: 999px;
-  transition: background 220ms cubic-bezier(0.22, 1, 0.36, 1),
-              transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  color: var(--signal-orange);
+  letter-spacing: 0.01em;
+  align-self: flex-start;
+  transition: gap 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-.cta__btn:hover {
-  background: var(--signal-orange-hot);
-  transform: translateY(-1px);
-}
-.cta__btn-arrow {
-  width: 14px;
-  height: 14px;
-  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-.cta__btn:hover .cta__btn-arrow { transform: translateX(3px); }
-
-.cta__meta {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(20px, 2.6vw, 32px);
-  padding-left: clamp(0px, 3vw, 48px);
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
-}
-.cta__meta-block {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.cta__meta-label {
-  margin: 0;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--signal-orange-deep);
-}
-.cta__meta-value {
-  margin: 0;
-  font-size: clamp(17px, 1.5vw, 21px);
-  font-weight: 500;
-  letter-spacing: -0.015em;
-  color: var(--white);
-}
-.cta__meta-sub {
-  margin: 0;
-  font-size: 13.5px;
-  line-height: 1.45;
-  color: rgba(255, 255, 255, 0.55);
-}
+.faq-card__more:hover { gap: 12px; }
+.faq-card__more svg { width: 12px; height: 12px; }
 
 @media (max-width: 880px) {
-  .cta__inner {
-    grid-template-columns: 1fr;
-    gap: 48px;
-  }
-  .cta__meta {
-    padding-left: 0;
-    border-left: none;
-    padding-top: 32px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-  }
+  .faqs-preview__grid { grid-template-columns: 1fr; }
+  .faq-card { min-height: 0; }
 }
 
 
 /* ============================================================== */
-/*  FOOTER                                                          */
-/*  Logo + tagline + brand badge | sitemap | contact                */
+/*  FOOTER — compact                                                */
+/*  Logo + tagline | sitemap | contact in three columns.            */
+/*  Tightened vertical rhythm vs. an expansive marketing footer.    */
 /* ============================================================== */
 .footer {
   background: #000A33;
-  padding: clamp(72px, 9vw, 120px) 0 28px;
+  padding: clamp(36px, 4vw, 56px) 0 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 .footer__inner {
@@ -1028,39 +1387,39 @@ main { display: block; }
   padding: 0 clamp(1.5rem, 4vw, 3rem);
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr;
-  gap: clamp(40px, 5vw, 72px);
+  gap: clamp(28px, 4vw, 56px);
   align-items: start;
 }
 .footer__brand { max-width: 320px; }
 .footer__logo {
-  height: 26px;
+  height: 22px;
   width: auto;
   filter: brightness(0) invert(1);
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 .footer__tagline {
-  margin: 0 0 24px;
-  font-size: 13px;
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.62);
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.58);
 }
 .footer__badge {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
+  gap: 8px;
+  padding: 6px 12px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--white);
 }
 .footer__badge-mark {
-  width: 16px;
-  height: 9px;
+  width: 14px;
+  height: 8px;
   color: var(--signal-orange);
   display: inline-flex;
 }
@@ -1069,64 +1428,64 @@ main { display: block; }
 .footer__nav {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 32px;
+  gap: 24px;
 }
-.footer__col { display: flex; flex-direction: column; gap: 12px; }
+.footer__col { display: flex; flex-direction: column; gap: 8px; }
 .footer__col-head {
-  margin: 0 0 6px;
-  font-size: 11px;
+  margin: 0 0 4px;
+  font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.40);
+  color: rgba(255, 255, 255, 0.38);
 }
 .footer__link {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.82);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.78);
   transition: color 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .footer__link:hover { color: var(--signal-orange); }
 
 .footer__contact-head {
-  margin: 0 0 14px;
-  font-size: 11px;
+  margin: 0 0 8px;
+  font-size: 10.5px;
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.40);
+  color: rgba(255, 255, 255, 0.38);
 }
 .footer__contact-line {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.82);
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.78);
 }
 .footer__contact-line--muted {
-  color: rgba(255, 255, 255, 0.50);
-  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.46);
+  margin-top: 6px;
 }
 
 .footer__bottom {
   max-width: 1280px;
-  margin: clamp(48px, 6vw, 72px) auto 0;
-  padding: 22px clamp(1.5rem, 4vw, 3rem) 0;
+  margin: clamp(24px, 3vw, 36px) auto 0;
+  padding: 14px clamp(1.5rem, 4vw, 3rem) 0;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 .footer__legal {
   margin: 0;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.46);
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.42);
   letter-spacing: 0.01em;
 }
-.footer__legal--muted { color: rgba(255, 255, 255, 0.32); }
+.footer__legal--muted { color: rgba(255, 255, 255, 0.28); }
 
 @media (max-width: 880px) {
-  .footer__inner { grid-template-columns: 1fr; }
+  .footer__inner { grid-template-columns: 1fr; gap: 24px; }
   .footer__nav { grid-template-columns: 1fr 1fr; max-width: 320px; }
 }
 
@@ -1348,34 +1707,87 @@ main { display: block; }
   color: rgba(255, 255, 255, 0.86);
 }
 
-/* FAQ list */
+/* FAQ list — native <details> accordion. Each FAQ is a numbered block
+   with a chevron that rotates open. Click summary to expand/collapse. */
 .faqs {
   display: flex;
   flex-direction: column;
 }
 .faq {
-  padding: clamp(28px, 3vw, 40px) 0;
+  padding: 0;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  display: grid;
-  grid-template-columns: 1fr 1.6fr;
-  gap: clamp(24px, 3vw, 56px);
-  align-items: start;
 }
-.faq:first-of-type { border-top: none; }
+.faq:last-of-type { border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+
 .faq__q {
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  gap: clamp(20px, 2.4vw, 36px);
+  align-items: center;
+  padding: clamp(24px, 2.8vw, 32px) clamp(4px, 0.5vw, 8px);
   margin: 0;
   font-size: clamp(18px, 1.8vw, 24px);
   font-weight: 500;
-  line-height: 1.25;
+  line-height: 1.3;
   letter-spacing: -0.018em;
   color: var(--white);
+  cursor: pointer;
+  list-style: none;
+  transition: color 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
+.faq__q::-webkit-details-marker { display: none; }
+.faq__q::marker { display: none; }
+.faq__q:hover { color: var(--signal-orange); }
+.faq[open] > .faq__q { color: var(--white); }
+
+.faq__num {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--signal-orange-deep);
+  font-variant-numeric: tabular-nums;
+}
+.faq__q-text {
+  min-width: 0;
+}
+.faq__chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--white);
+  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 280ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.faq__chevron svg { width: 11px; height: 7px; display: block; }
+.faq[open] > .faq__q .faq__chevron {
+  transform: rotate(180deg);
+  background: var(--signal-orange);
+  border-color: var(--signal-orange);
+  color: var(--signal-blue-deep);
+}
+
 .faq__a {
   margin: 0;
+  padding: 0 clamp(4px, 0.5vw, 8px) clamp(28px, 3vw, 36px) calc(60px + clamp(20px, 2.4vw, 36px) + clamp(4px, 0.5vw, 8px));
   font-size: 15.5px;
   line-height: 1.65;
-  color: rgba(255, 255, 255, 0.74);
-  max-width: 60ch;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 70ch;
+}
+
+@media (max-width: 720px) {
+  .faq__q {
+    grid-template-columns: auto 1fr auto;
+    gap: 16px;
+  }
+  .faq__a {
+    padding-left: clamp(4px, 0.5vw, 8px);
+  }
 }
 
 /* Big register CTA */
@@ -1440,6 +1852,104 @@ main { display: block; }
     grid-template-columns: 1fr;
     gap: 12px;
   }
+}
+
+
+/* ============================================================== */
+/*  LIGHT THEME (sub-pages only)                                   */
+/*  body.is-light flips the sub-page surfaces to white with        */
+/*  dark Signal Blue Deep text. Main landing page stays dark.      */
+/* ============================================================== */
+.is-light {
+  background: var(--white);
+  color: var(--signal-blue-deep);
+}
+
+/* Nav: white bg with subtle bottom hairline. Logo shows in brand color. */
+.is-light .nav--solid {
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid rgba(0, 22, 77, 0.08);
+}
+.is-light .nav__logo-img {
+  filter: none;
+  opacity: 1;
+}
+.is-light .nav__link {
+  color: var(--signal-blue-deep);
+  opacity: 0.82;
+}
+.is-light .nav__link:hover { opacity: 1; color: var(--signal-orange-deep); }
+.is-light .nav__cta {
+  background: var(--signal-blue-deep);
+  color: var(--white);
+}
+.is-light .nav__cta:hover {
+  background: var(--signal-orange);
+  color: var(--white);
+}
+
+/* Page hero — white surface with the same orange halo top-right. */
+.is-light .page-hero { background: var(--white); }
+.is-light .page-hero__eyebrow {
+  background: rgba(0, 22, 77, 0.04);
+  border-color: rgba(0, 22, 77, 0.10);
+  color: var(--signal-blue-deep);
+}
+.is-light .page-hero__title { color: var(--signal-blue-deep); }
+.is-light .page-hero__title em { color: var(--signal-orange-deep); }
+.is-light .page-hero__lede { color: rgba(0, 22, 77, 0.62); }
+
+/* Page body */
+.is-light .page-body { background: var(--white); }
+
+/* Info rows (Travel page) */
+.is-light .info-row {
+  border-top-color: rgba(0, 22, 77, 0.10);
+}
+.is-light .info-row__title { color: var(--signal-blue-deep); }
+.is-light .info-row__sub   { color: rgba(0, 22, 77, 0.52); }
+.is-light .info-row__body p { color: rgba(0, 22, 77, 0.78); }
+.is-light .info-row__body li { color: rgba(0, 22, 77, 0.72); }
+.is-light .info-row__body strong { color: var(--signal-blue-deep); }
+
+/* Prose blocks (Agenda + Register pages) */
+.is-light .prose p { color: rgba(0, 22, 77, 0.78); }
+.is-light .prose p strong { color: var(--signal-blue-deep); }
+.is-light .prose ul li { color: rgba(0, 22, 77, 0.78); }
+.is-light .prose__note {
+  background: rgba(255, 147, 50, 0.08);
+  border-color: rgba(255, 147, 50, 0.30);
+  color: rgba(0, 22, 77, 0.82);
+}
+
+/* FAQ accordion */
+.is-light .faq { border-top-color: rgba(0, 22, 77, 0.10); }
+.is-light .faq:last-of-type { border-bottom-color: rgba(0, 22, 77, 0.10); }
+.is-light .faq__q { color: var(--signal-blue-deep); }
+.is-light .faq__q:hover { color: var(--signal-orange-deep); }
+.is-light .faq[open] > .faq__q { color: var(--signal-blue-deep); }
+.is-light .faq__a { color: rgba(0, 22, 77, 0.65); }
+.is-light .faq__chevron {
+  border-color: rgba(0, 22, 77, 0.16);
+  color: var(--signal-blue-deep);
+}
+.is-light .faq[open] > .faq__q .faq__chevron {
+  background: var(--signal-orange);
+  border-color: var(--signal-orange);
+  color: var(--white);
+}
+
+/* Pricing block (Register page) */
+.is-light .pricing {
+  background: rgba(0, 22, 77, 0.04);
+  border-color: rgba(0, 22, 77, 0.10);
+}
+.is-light .pricing__value { color: var(--signal-blue-deep); }
+
+/* Card */
+.is-light .card {
+  background: rgba(0, 22, 77, 0.04);
+  border-color: rgba(0, 22, 77, 0.10);
 }
 
 

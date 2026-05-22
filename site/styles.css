@@ -5,10 +5,15 @@
   --signal-blue: #0032A0;
   --signal-blue-deep: #001F66;
   --white: #FFFFFF;
+  /* Cool grey — replaces the first blue band of V1. Darker than a
+     hairline tint so the band reads as a deliberate surface against
+     the white sections, while still letting the orange ribbon pop. */
+  --signal-grey: #DDE3EC;
+  --signal-grey-deep: #CFD6E2;
 
-  --bg: var(--signal-blue);
-  --ink: var(--white);
-  --ink-muted: rgba(255, 255, 255, 0.78);
+  --bg: var(--white);
+  --ink: var(--signal-blue-deep);
+  --ink-muted: rgba(0, 31, 102, 0.65);
 
   --font-sans: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
 
@@ -103,7 +108,7 @@ img, svg { display: block; max-width: 100%; }
 }
 .nav.is-scrolled .nav__link { color: rgba(255, 255, 255, 0.72); }
 .nav.is-scrolled .nav__link:hover,
-.nav.is-scrolled .nav__link--active { color: var(--ink); }
+.nav.is-scrolled .nav__link--active { color: var(--white); }
 
 /* ---------- Buttons ---------- */
 .btn {
@@ -388,9 +393,9 @@ img, svg { display: block; max-width: 100%; }
   color: var(--white);
 }
 
-/* ---------- Logo marquee (standalone section between Invite and Video, on blue) ---------- */
+/* ---------- Logo marquee (standalone section between hero and video, on grey) ---------- */
 .logos-strip {
-  background: var(--signal-blue);
+  background: var(--signal-grey);
   padding: clamp(1.5rem, 3vw, 2.5rem) var(--gutter);
 }
 .logos-strip__container {
@@ -402,12 +407,12 @@ img, svg { display: block; max-width: 100%; }
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
           mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
 }
-/* Inside the logos strip, tint the logos a light blue tone against the signal-blue bg. */
+/* On the grey strip, logos read as a soft Signal-blue silhouette. */
 .logos-strip .logos__item {
-  filter: brightness(0) invert(1);  /* white silhouettes */
-  opacity: 0.45;                    /* lightened so they read as a soft blue against #0032A0 */
+  filter: brightness(0) saturate(100%) invert(13%) sepia(76%) saturate(2898%) hue-rotate(218deg) brightness(95%) contrast(105%);
+  opacity: 0.35;
 }
-.logos-strip .logos__item:hover { opacity: 0.85; }
+.logos-strip .logos__item:hover { opacity: 0.7; }
 .logos__track {
   display: inline-flex;
   width: max-content;
@@ -472,6 +477,11 @@ img, svg { display: block; max-width: 100%; }
 .hero__container { margin-bottom: 0; }
 
 .ribbon-layer { will-change: transform, opacity; }
+
+/* Override the inline fill on the ribbon's lower-contour band so the
+   area beneath the orange ribbon flows into the grey section below it
+   instead of the original Signal blue. */
+.ribbon-bg-below { fill: var(--signal-grey); }
 
 /* ---------- Page loading screen ---------- */
 /* Hidden by default — no JS means the loader stays out of the way and the
@@ -591,64 +601,79 @@ html.js-anim .page-loader {
   color: rgba(255, 255, 255, 0.72);
 }
 
-/* ---------- Invite section (Figma Config-style: heading top, CTAs bottom) ---------- */
+/* ---------- Invite section (3rd section on grey) ---------- */
 .invite {
-  background: var(--signal-blue);
-  padding: clamp(3rem, 7vw, 6rem) var(--gutter) clamp(3rem, 6vw, 5rem);
+  background: var(--signal-grey);
+  padding: clamp(3.5rem, 7vw, 6rem) var(--gutter) clamp(4rem, 8vw, 7rem);
+  position: relative;
 }
 .invite__container {
-  max-width: var(--container);
+  /* ~20% tighter than the standard 1280px container so the content
+     feels more contained and the row of info reads as a tighter group. */
+  max-width: 1024px;
   margin: 0 auto;
 }
 .invite__heading {
-  margin: 0 0 clamp(3.5rem, 8vw, 7rem);
+  margin: 0 0 clamp(2.5rem, 5vw, 4rem);
   font-family: var(--font-sans);
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  font-weight: 400;
-  line-height: 1.15;
-  letter-spacing: -0.012em;
-  color: var(--ink);
-  max-width: 30ch;
+  font-size: clamp(1.875rem, 3.4vw, 3rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.014em;
+  color: var(--signal-blue-deep);
+  max-width: none;
+  text-wrap: balance;
+}
+/* Brand-native emphasis: orange on a key word, same Montserrat family. */
+.invite__heading em {
+  font-style: normal;
+  color: var(--signal-orange);
 }
 .invite__bottom {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: clamp(1.5rem, 3vw, 2.25rem);
+  gap: clamp(1.75rem, 3vw, 2.5rem);
 }
 .invite__row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(1.5rem, 3vw, 2.5rem);
-  align-items: end;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  align-items: start;
 }
 @media (min-width: 768px) {
   .invite__row {
-    /* Caption gets more horizontal room so it stays on two lines max,
-       date + location columns are narrower; the gaps stay equal. */
-    grid-template-columns: 1.6fr 1fr 1fr;
+    /* Caption gets ~50% of the row so the full sentence lands on
+       exactly two lines; the two meta blocks share the remainder. */
+    grid-template-columns: 1.8fr 1fr 1fr;
   }
 }
 .invite__caption {
   margin: 0;
   font-size: clamp(0.9375rem, 1vw, 1rem);
-  line-height: 1.55;
-  color: var(--ink-muted);
+  line-height: 1.5;
+  color: rgba(0, 31, 102, 0.65);
+  /* Sized so the caption sentence wraps to exactly two lines — matching
+     the two-line rhythm of the date and location blocks beside it. */
+  max-width: 44ch;
+  text-wrap: balance;
 }
 .invite__meta { margin: 0; }
 .invite__meta-value {
   margin: 0;
-  font-size: clamp(0.9375rem, 1vw, 1rem);
-  font-weight: 500;
-  line-height: 1.5;
-  color: var(--ink);
+  font-size: clamp(0.9375rem, 1vw, 1.0625rem);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--signal-blue-deep);
 }
 .invite__meta-sub {
-  margin: 0;
-  font-size: clamp(0.9375rem, 1vw, 1rem);
-  line-height: 1.55;
-  color: var(--ink-muted);
+  margin: 0.2rem 0 0;
+  font-size: clamp(0.875rem, 0.95vw, 0.9375rem);
+  line-height: 1.5;
+  color: rgba(0, 31, 102, 0.6);
 }
+/* CTAs: vertical stack, full container width — Register Now on top,
+   View Agenda beneath. */
 .invite__cta-stack {
   display: flex;
   flex-direction: column;
@@ -665,17 +690,102 @@ html.js-anim .page-loader {
   font-size: clamp(0.95rem, 1.05vw, 1.0625rem);
   letter-spacing: 0.04em;
 }
-/* ---------- Video section: half blue (top) / half white (bottom) ---------- */
+/* ---------- Video section: 2nd section, editorial frame on grey ---------- */
 .video-section {
-  padding: clamp(4rem, 7vw, 6rem) var(--gutter);
-  /* Equal top/bottom padding so the video's vertical center lands at the split */
-  background: linear-gradient(to bottom, var(--signal-blue) 0%, var(--signal-blue) 50%, var(--white) 50%, var(--white) 100%);
+  background: var(--signal-grey);
+  padding: clamp(3rem, 5.5vw, 5rem) clamp(1rem, 2vw, 2rem) clamp(2.75rem, 5vw, 4.5rem);
 }
 .video-section__container {
-  max-width: var(--container);
+  /* Wider than the standard container so the video reads as a feature. */
+  max-width: 1560px;
   margin: 0 auto;
   display: flex;
+  flex-direction: column;
+}
+
+/* Editorial frame above the card: eyebrow + duration on a thin rule. */
+.video-section__frame {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 clamp(0.25rem, 1vw, 0.75rem) clamp(0.85rem, 1.4vw, 1.15rem);
+  border-bottom: 1px solid rgba(0, 31, 102, 0.10);
+  margin: 0 0 clamp(1.25rem, 2vw, 1.75rem);
+}
+.video-section__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0;
+  font-size: clamp(0.7rem, 0.85vw, 0.8125rem);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--signal-blue-deep);
+}
+.video-section__mark {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
+  width: 22px;
+  height: 12px;
+  color: var(--signal-orange);
+}
+.video-section__mark svg { width: 100%; height: 100%; display: block; }
+.video-section__eyebrow-label { color: var(--signal-blue-deep); }
+.video-section__eyebrow-divider {
+  width: 28px;
+  height: 1px;
+  background: rgba(0, 31, 102, 0.22);
+  display: inline-block;
+}
+.video-section__eyebrow-meta {
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: rgba(0, 31, 102, 0.55);
+}
+.video-section__duration {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: clamp(0.7rem, 0.85vw, 0.8125rem);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--signal-orange);
+  font-variant-numeric: tabular-nums;
+}
+.video-section__duration span {
+  font-size: 0.6em;
+  transform: translateY(-1px);
+}
+
+/* Caption below the video card. */
+.video-section__caption {
+  margin: clamp(1rem, 1.6vw, 1.35rem) 0 0;
+  font-size: clamp(0.875rem, 1vw, 0.9375rem);
+  color: rgba(0, 31, 102, 0.6);
+  letter-spacing: 0.005em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.video-section__caption span {
+  font-weight: 600;
+  color: var(--signal-blue-deep);
+  transition: color 0.2s var(--ease-out);
+}
+.video-section__container:hover .video-section__caption span { color: var(--signal-orange); }
+
+@media (max-width: 640px) {
+  .video-section__frame {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 }
 .video-card {
   position: relative;
@@ -744,6 +854,44 @@ html.js-anim .page-loader {
   background: var(--signal-orange-hot);
 }
 .video-card__play svg { width: 40%; height: 40%; display: block; transform: translateX(2%); }
+
+/* Always-visible variant for the framed grey-section layout. The play
+   button sits at 0.92 opacity by default, lifts to full + halo on hover.
+   Soft expanding ring uses a pseudo-element so the button itself stays
+   crisp while the halo can pulse independently. */
+.video-card__play--always {
+  opacity: 0.96;
+  transform: translate(-50%, -50%) scale(1);
+  background: var(--signal-orange);
+  box-shadow:
+    0 0 0 8px rgba(255, 147, 50, 0.10),
+    0 18px 36px rgba(229, 117, 26, 0.32);
+}
+.video-card__play--always::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 147, 50, 0.35);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out), transform 0.6s var(--ease-out);
+}
+.video-card:hover .video-card__play--always,
+.video-card:focus-visible .video-card__play--always {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.06);
+}
+.video-card:hover .video-card__play--always::before,
+.video-card:focus-visible .video-card__play--always::before {
+  opacity: 1;
+  transform: scale(1.18);
+}
+@media (prefers-reduced-motion: reduce) {
+  .video-card__play--always,
+  .video-card__play--always::before {
+    transition: none;
+  }
+}
 
 /* ---------- Message section (two equal cards on white) ---------- */
 /* ---------- Event hook section (brand-aligned: white surface, Montserrat
@@ -1033,167 +1181,473 @@ html.js-anim .page-loader {
 .message-section__expand[aria-expanded="true"] .message-section__expand-icon--expand { display: none; }
 .message-section__expand[aria-expanded="true"] .message-section__expand-icon--collapse { display: inline-block; }
 
-/* ---------- Story section (sticky day nav + scrolling agenda panels) ---------- */
-.story {
-  background: var(--signal-blue);
-  color: var(--white);
-  padding: clamp(3rem, 6vw, 5rem) 0 clamp(3rem, 5vw, 4rem);
+/* ---------- Speakers grid (3×3 portrait cards on white, name overlaid) ---------- */
+.speakers-grid {
+  background: var(--white);
+  color: var(--signal-blue-deep);
+  padding: clamp(3.5rem, 6vw, 5rem) 0 clamp(3rem, 5vw, 4rem);
 }
-.story__layout {
+.speakers-grid__container {
   max-width: var(--container);
   margin: 0 auto;
   padding: 0 var(--gutter);
+}
+
+/* Centered editorial intro — heading sits above a quiet lede.
+   Mirrors the reference's centered title + subtitle. */
+.speakers-grid__intro {
+  text-align: center;
+  margin: 0 auto clamp(2.5rem, 4vw, 3.5rem);
+  max-width: 56ch;
+}
+.speakers-grid__heading {
+  margin: 0 0 clamp(0.65rem, 1.25vw, 1rem);
+  font-family: var(--font-sans);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--signal-blue-deep);
+  text-wrap: balance;
+}
+.speakers-grid__lede {
+  margin: 0;
+  font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
+  line-height: 1.55;
+  color: rgba(0, 31, 102, 0.65);
+}
+
+/* 3×3 grid of portrait cards. */
+.speakers-grid__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.85rem, 1.5vw, 1.5rem);
+}
+
+.speakers-grid__item {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--signal-grey);
+  border: 1px solid rgba(0, 31, 102, 0.06);
+  isolation: isolate;
+  transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
+}
+.speakers-grid__item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 40px -22px rgba(0, 20, 80, 0.25);
+}
+
+.speakers-grid__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Slight desaturation by default — faces become fully alive on hover. */
+  filter: saturate(0.7) contrast(1.02);
+  transition: filter 0.5s var(--ease-out), transform 0.6s var(--ease-out);
+  z-index: 0;
+}
+.speakers-grid__item:hover .speakers-grid__photo {
+  filter: saturate(1) contrast(1);
+  transform: scale(1.03);
+}
+
+/* Caption sits in the bottom-left of the card, over a soft white gradient
+   that fades up from the photo so the text remains legible regardless of
+   what's behind it. */
+.speakers-grid__item::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 55%;
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.96) 0%,
+    rgba(255, 255, 255, 0.82) 30%,
+    rgba(255, 255, 255, 0.0) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+.speakers-grid__caption {
+  position: absolute;
+  left: clamp(1rem, 1.75vw, 1.5rem);
+  right: clamp(1rem, 1.75vw, 1.5rem);
+  bottom: clamp(0.9rem, 1.5vw, 1.25rem);
+  z-index: 2;
+}
+.speakers-grid__name {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: clamp(1rem, 1.25vw, 1.25rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  color: var(--signal-blue-deep);
+}
+.speakers-grid__role {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-sans);
+  font-size: clamp(0.8125rem, 0.9vw, 0.9375rem);
+  font-weight: 500;
+  line-height: 1.35;
+  color: rgba(0, 31, 102, 0.62);
+}
+
+@media (max-width: 720px) {
+  .speakers-grid__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 480px) {
+  .speakers-grid__list {
+    grid-template-columns: 1fr;
+  }
+  .speakers-grid__item { aspect-ratio: 4 / 4.5; }
+}
+
+/* ---------- Speakers section (WebGL 3D wheel of portraits) ---------- */
+.speakers {
+  background: var(--white);
+  color: var(--signal-blue-deep);
+  padding: clamp(3.5rem, 6vw, 5rem) 0 clamp(3rem, 5vw, 4rem);
+  position: relative;
+  overflow: hidden;
+}
+.speakers__container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* Intro mirrors story section's intro rhythm */
+.speakers__intro {
+  padding-bottom: clamp(1.75rem, 3vw, 2.5rem);
+  margin-bottom: clamp(1.5rem, 2.5vw, 2.25rem);
+  border-bottom: 1px solid rgba(0, 31, 102, 0.12);
+}
+.speakers__heading {
+  margin: 0 0 clamp(0.65rem, 1vw, 0.95rem);
+  font-family: var(--font-sans);
+  font-size: clamp(1.875rem, 3.6vw, 3.25rem);
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  color: var(--signal-blue-deep);
+  max-width: 22ch;
+  text-wrap: balance;
+}
+.speakers__lede {
+  margin: 0;
+  font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
+  line-height: 1.55;
+  color: rgba(0, 31, 102, 0.65);
+  max-width: 56ch;
+}
+
+/* Stage holds the canvas + absolutely-positioned captions. */
+.speakers__stage {
+  position: relative;
+  width: 100%;
+  /* Tall enough to hold the wheel + captions beneath the planes. */
+  aspect-ratio: 16 / 9;
+  /* Cap height so the stage doesn't dominate on tall narrow viewports. */
+  max-height: 640px;
+  margin: 0 auto;
+  touch-action: pan-y;       /* allow vertical page scroll on touch; horizontal handled by JS */
+  user-select: none;
+  cursor: grab;
+}
+.speakers__stage:active { cursor: grabbing; }
+
+.speakers__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Caption layer — absolutely positioned children, JS writes their transforms.
+   The `<ul>` itself is a positioning context overlaid on the canvas. */
+.speakers__captions {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+  z-index: 1;
+}
+.speakers__caption {
+  position: absolute;
+  /* Each caption is anchored top-left (0,0) of the stage. JS sets
+     transform: translate3d(x, y, 0) translate(-50%, 0) to center it
+     under the projected plane position. */
+  top: 0;
+  left: 0;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.speakers__caption-name {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: clamp(0.875rem, 1vw, 1rem);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  color: var(--signal-blue-deep);
+}
+.speakers__caption-role {
+  margin: 0.25rem 0 0;
+  font-family: var(--font-sans);
+  font-size: clamp(0.625rem, 0.75vw, 0.75rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(0, 31, 102, 0.55);
+}
+
+/* Reduced motion: static front-facing scene, all captions visible at low opacity */
+@media (prefers-reduced-motion: reduce) {
+  .speakers__caption { opacity: 0.7 !important; }
+}
+
+@media (max-width: 720px) {
+  .speakers__stage {
+    aspect-ratio: 4 / 5;
+    max-height: none;
+  }
+  .speakers__caption-name { font-size: 0.875rem; }
+  .speakers__caption-role { font-size: 0.625rem; letter-spacing: 0.12em; }
+}
+
+/* ---------- Story section (Days & breakdown — editorial chapters on white) ---------- */
+.story {
+  background: var(--white);
+  color: var(--signal-blue-deep);
+  padding: clamp(3.5rem, 6vw, 5rem) 0 clamp(3rem, 5vw, 4rem);
+}
+.story__container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* Section intro — mirrors the video section's eyebrow + ribbon-Z mark,
+   then a confident editorial heading sitting above a hairline rule. */
+.story__intro {
+  padding-bottom: clamp(1.75rem, 3vw, 2.5rem);
+  margin-bottom: clamp(2rem, 3.5vw, 3rem);
+  border-bottom: 1px solid rgba(0, 31, 102, 0.12);
+}
+.story__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0 0 clamp(1rem, 1.75vw, 1.5rem);
+  font-size: clamp(0.7rem, 0.85vw, 0.8125rem);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--signal-blue-deep);
+}
+.story__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 12px;
+  color: var(--signal-orange);
+}
+.story__mark svg { width: 100%; height: 100%; display: block; }
+.story__heading {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: clamp(1.875rem, 3.6vw, 3.25rem);
+  font-weight: 500;
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  color: var(--signal-blue-deep);
+  max-width: 22ch;
+  text-wrap: balance;
+}
+
+/* Each day is a chapter card that STICKS to the top of the viewport while
+   the next one scrolls up to overlap it. Because all three acts share
+   `.story__container` as their containing block and stick at the same top
+   offset, day 02 paints over day 01 once it reaches sticky position, then
+   day 03 paints over day 02 — a clean stacking-cards scroll effect. */
+.story__act {
+  position: sticky;
+  top: calc(var(--nav-h) + clamp(0.5rem, 1vw, 1rem));
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(2rem, 4vw, 3rem);
-}
-@media (min-width: 960px) {
-  .story__layout {
-    grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr);
-    gap: clamp(3rem, 6vw, 5rem);
-    align-items: start;
-  }
-}
-
-.story__sidebar {
-  display: flex;
-  flex-direction: column;
-}
-@media (min-width: 960px) {
-  .story__sidebar {
-    position: sticky;
-    top: calc(var(--nav-h) + clamp(1.5rem, 3vw, 2.5rem));
-    align-self: start;
-  }
-}
-
-.story__nav {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(1.25rem, 2.5vw, 2rem);
-}
-.story__nav-link {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  padding: 0;
-  color: rgba(255, 255, 255, 0.4);
-  transition: color 0.2s var(--ease-out);
-}
-.story__nav-link:hover { color: rgba(255, 255, 255, 0.7); }
-.story__nav-link.is-active { color: var(--white); }
-.story__nav-day {
-  font-size: clamp(1.25rem, 1.6vw, 1.625rem);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: inherit;
-}
-.story__nav-date {
-  font-size: clamp(0.9375rem, 1.1vw, 1.0625rem);
-  font-weight: 500;
-  color: inherit;
-  opacity: 0.7;
-}
-
-/* --- Panels: each panel takes a full viewport height. Content centers
-        vertically; fade + slide-in animation triggers as the panel enters
-        view (via initStoryFadeIn observer). --- */
-.story__panels {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-.story__panel {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: clamp(2.75rem, 4.5vw, 4rem);
-  padding: clamp(4rem, 7vw, 6rem) 0;
-  min-height: 100svh;
+  gap: clamp(1.5rem, 3vw, 2.25rem);
+  padding: clamp(2.25rem, 3.5vw, 3rem) clamp(1.25rem, 2.5vw, 2rem);
+  /* Opaque card surface so each act fully covers the one beneath when stacked. */
+  background: var(--white);
+  border-top: 1px solid rgba(0, 31, 102, 0.10);
   scroll-margin-top: calc(var(--nav-h) + 1rem);
+  /* Generous flow-space gives the user real scroll distance with each
+     card pinned before the next slides up to overlap. */
+  min-height: clamp(420px, 60vh, 560px);
+  /* Soft elevation that increases as a card sits over the previous one —
+     reads as a real stack of cards. */
+  box-shadow: 0 -1px 0 rgba(0, 31, 102, 0.04), 0 -16px 32px -24px rgba(0, 31, 102, 0.18);
   opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.85s var(--ease-out), transform 0.85s var(--ease-out);
+  transform: translateY(20px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
 }
-.story__panel.is-visible {
-  opacity: 1;
-  transform: translateY(0);
+.story__act:first-of-type {
+  border-top: 0;
+  box-shadow: none;
 }
+.story__act.is-visible { opacity: 1; transform: translateY(0); }
 @media (prefers-reduced-motion: reduce) {
-  .story__panel {
+  .story__act {
+    position: relative;
+    top: auto;
+    min-height: auto;
     opacity: 1;
     transform: none;
     transition: none;
   }
 }
-.story__panel-head { max-width: 56ch; }
-.story__panel-title {
-  margin: 0 0 1rem;
-  font-family: var(--font-sans);
-  font-size: clamp(2rem, 3vw, 3rem);
-  font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.018em;
-  color: var(--white);
+@media (min-width: 820px) {
+  .story__act {
+    grid-template-columns: minmax(180px, 26%) minmax(0, 1fr);
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: start;
+  }
 }
-.story__panel-body {
+/* Compact viewports: fall back to natural stacking, no overlap. */
+@media (max-width: 720px) {
+  .story__act {
+    position: relative;
+    top: auto;
+    min-height: auto;
+  }
+}
+
+/* Aside: small orange eyebrow, the giant numeral, then the weekday + date. */
+.story__act-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+.story__act-eyebrow {
+  margin: 0 0 clamp(0.5rem, 1vw, 0.75rem);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--signal-orange);
+}
+.story__act-num {
   margin: 0;
-  font-size: clamp(1.0625rem, 1.25vw, 1.25rem);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(0.35rem, 0.6vw, 0.55rem);
+  font-family: var(--font-sans);
+  color: var(--signal-blue-deep);
+}
+/* Small "Day" label sitting just above the numeral, locking them
+   together as a single display unit. */
+.story__act-num-label {
+  font-size: clamp(0.8125rem, 0.95vw, 0.9375rem);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: rgba(0, 31, 102, 0.55);
+}
+/* The display moment: huge numeral acting as the chapter mark. */
+.story__act-num-digits {
+  font-size: clamp(5rem, 9.5vw, 9.5rem);
+  font-weight: 600;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  color: var(--signal-blue-deep);
+  font-variant-numeric: tabular-nums;
+}
+.story__act-day {
+  margin: clamp(0.5rem, 1vw, 0.85rem) 0 0;
+  font-size: clamp(0.9375rem, 1vw, 1.0625rem);
+  font-weight: 500;
+  line-height: 1.35;
+  color: rgba(0, 31, 102, 0.6);
+}
+
+/* Body: title, lead paragraph, then schedule list. */
+.story__act-body {
+  min-width: 0;
+}
+.story__act-title {
+  margin: 0 0 clamp(0.65rem, 1vw, 0.85rem);
+  font-family: var(--font-sans);
+  font-size: clamp(1.5rem, 2.3vw, 2rem);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.018em;
+  color: var(--signal-blue-deep);
+  max-width: 24ch;
+  text-wrap: balance;
+}
+.story__act-lead {
+  margin: 0 0 clamp(1.5rem, 2.5vw, 2.25rem);
+  font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(0, 31, 102, 0.65);
   max-width: 52ch;
 }
 
-/* --- Sessions with a left timeline rail + dot per row --- */
+/* Schedule: a clean two-column program list. Time + title rows separated
+   by hairline rules — same rhythm as the invite section's WHEN/WHERE block. */
 .story__sessions {
-  position: relative;
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-}
-/* Vertical timeline rail — orange, minimal weight */
-.story__sessions::before {
-  content: "";
-  position: absolute;
-  left: 2.5px;                  /* centers under the 6px dot */
-  top: 1.05rem;
-  bottom: 1.05rem;
-  width: 1px;
-  background: rgba(255, 147, 50, 0.45);
+  border-top: 1px solid rgba(0, 31, 102, 0.08);
 }
 .story__session {
-  position: relative;
   display: grid;
-  grid-template-columns: 6px 140px 1fr;
-  align-items: center;
-  gap: clamp(1rem, 1.75vw, 1.5rem);
-  padding: clamp(0.85rem, 1.4vw, 1.15rem) 0;
-}
-.story__session::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--signal-orange);
-  align-self: center;
-  position: relative;
-  z-index: 1;
+  grid-template-columns: minmax(5.5rem, 7rem) minmax(0, 1fr);
+  gap: clamp(1rem, 2vw, 1.75rem);
+  align-items: baseline;
+  padding: clamp(0.7rem, 1.1vw, 0.95rem) 0;
+  border-bottom: 1px solid rgba(0, 31, 102, 0.08);
 }
 .story__session-time {
-  font-size: clamp(0.875rem, 1vw, 1rem);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: rgba(255, 255, 255, 0.62);
+  font-size: clamp(0.75rem, 0.85vw, 0.8125rem);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--signal-orange);
   font-variant-numeric: tabular-nums;
 }
 .story__session-title {
-  font-size: clamp(1.0625rem, 1.25vw, 1.25rem);
+  font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
   font-weight: 500;
   line-height: 1.35;
   letter-spacing: -0.005em;
-  color: var(--white);
+  color: var(--signal-blue-deep);
 }
 
 /* ---------- Fullscreen message overlay ---------- */
@@ -1300,6 +1754,11 @@ html.js-anim .invite__cta-stack {
   opacity: 0;
   transform: translateY(24px);
 }
+html.js-anim .speakers__heading,
+html.js-anim .speakers__lede {
+  opacity: 0;
+  transform: translateY(24px);
+}
 
 /* ---------- Mobile-first defaults: simplify the ribbon ---------- */
 .ribbon-layer--mid { display: none; }
@@ -1334,7 +1793,9 @@ html.js-anim .invite__cta-stack {
   html.js-anim .ribbon-layer,
   html.js-anim .invite__heading,
   html.js-anim .invite__caption,
-  html.js-anim .invite__cta-stack {
+  html.js-anim .invite__cta-stack,
+  html.js-anim .speakers__heading,
+  html.js-anim .speakers__lede {
     opacity: 1;
     transform: none;
   }
@@ -1824,10 +2285,9 @@ body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta:hover {
 
 /* ---------- V1 CTA grid (Pattern Studio card: button col + image + overlay heading) ---------- */
 .cta-grid {
-  /* Upper half on Signal blue (continues the section above), lower half on
-     white — the inner white card floats across the seam like the reference. */
-  background: linear-gradient(to bottom, var(--signal-blue) 50%, var(--white) 50%);
-  padding: clamp(2rem, 4vw, 4rem) var(--gutter);
+  /* Outer section stays white — the inner card carries the brand blue. */
+  background: var(--white);
+  padding: clamp(2rem, 4vw, 4rem) var(--gutter) clamp(3rem, 6vw, 5rem);
 }
 .cta-grid__container {
   max-width: var(--container);
@@ -1836,149 +2296,124 @@ body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta:hover {
 .cta-grid__hero {
   position: relative;
   box-sizing: border-box;
-  background: var(--white);
-  border-radius: 12px;
-  /* 60px padding on a 1920 view; clamps down on smaller viewports */
-  padding: clamp(1.75rem, 3.13vw, 60px);
+  background: var(--signal-blue);
+  color: var(--white);
+  border-radius: 14px;
+  padding: clamp(2.5rem, 5vw, 4rem) clamp(1.75rem, 3.13vw, 60px);
   isolation: isolate;
   display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  /* Generous breathing room between the left content column (button +
-     overlay heading) and the 3D ribbon scene on the right. */
-  gap: clamp(2rem, 5vw, 6rem);
-  aspect-ratio: 1426 / 698;
-  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(1.5rem, 3vw, 3rem);
+  flex-wrap: wrap;
+  box-shadow:
+    0 24px 50px -12px rgba(0, 20, 80, 0.28),
+    0 4px 12px -4px rgba(0, 20, 80, 0.18);
 }
-/* Left button column */
-.cta-grid__button-col {
-  width: clamp(140px, 13.5vw, 192px);
-  flex: none;
-  z-index: 1;
+
+.cta-grid__tagline {
+  margin: 0;
+  flex: 1 1 0;
+  min-width: 0;
+  font-family: 'Montserrat', var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(1.5rem, 2.6vw, 2.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  text-wrap: balance;
+  max-width: 22ch;
 }
+
 .cta-grid__cta {
   box-sizing: border-box;
-  display: flex;
+  flex-shrink: 0;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  padding: 14px 24px;
-  background: #00206A;
-  color: var(--white);
+  padding: clamp(1rem, 1.4vw, 1.25rem) clamp(1.75rem, 2.6vw, 2.4rem);
+  background: var(--signal-orange);
+  color: var(--signal-blue-deep);
   text-decoration: none;
-  border-radius: 0;
+  /* Soft corner radius — not a full pill, gives the button a "card" feel. */
+  border-radius: 10px;
   border: none;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, transform 0.2s var(--ease-out), box-shadow 0.25s var(--ease-out);
+  box-shadow: 0 10px 24px -10px rgba(229, 117, 26, 0.55);
 }
-.cta-grid__cta:hover { background: #001A55; }
+.cta-grid__cta:hover {
+  background: var(--signal-orange-hot);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px -12px rgba(229, 117, 26, 0.65);
+}
 .cta-grid__cta-label {
   font-family: 'Inter', var(--font-sans);
-  font-weight: 400;
-  font-size: clamp(0.9375rem, 1.15vw, 1.25rem);
-  line-height: 1.2;
-  color: var(--white);
+  font-weight: 600;
+  font-size: clamp(0.875rem, 1vw, 1rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: inherit;
   white-space: nowrap;
 }
-/* Right image area — fills remaining width inside .cta-grid__hero */
-.cta-grid__image {
+
+@media (max-width: 720px) {
+  .cta-grid__hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: clamp(1.75rem, 5vw, 2.5rem);
+  }
+  .cta-grid__tagline {
+    max-width: none;
+    font-size: clamp(1.5rem, 5.5vw, 2rem);
+  }
+  .cta-grid__cta {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ---------- Full-width ribbon strip (3D scene anchored below the footer) ---------- */
+.ribbon-strip {
+  display: block;
+  width: 100%;
+  height: 200px;
+  background: var(--white);
   position: relative;
   overflow: hidden;
-  flex: 1;
-  height: 100%;
-  z-index: 0;
+  isolation: isolate;
 }
-.cta-grid__canvas {
+.ribbon-strip__canvas {
   position: absolute;
   inset: 0;
   width: 100% !important;
   height: 100% !important;
   display: block;
 }
-/* Overlay heading card pinned to the top-left of the hero. The container is
-   transparent — the tagline sits directly on the white card behind it, in the
-   cleared top-left negative space of the 3D ribbon grid. */
-.cta-grid__heading-card {
-  position: absolute;
-  box-sizing: border-box;
-  top: clamp(1.75rem, 3.13vw, 60px);
-  left: clamp(1.75rem, 3.13vw, 60px);
-  width: clamp(280px, 28vw, 391px);
-  padding: 18px 16px 28px;
-  background: transparent;
-  border-radius: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  z-index: 2;
-}
-.cta-grid__tagline {
-  margin: 0;
-  font-family: 'Montserrat', var(--font-sans);
-  font-weight: 500;
-  font-size: clamp(1.5rem, 2.4vw, 2.5rem);
-  line-height: 1.12;
-  letter-spacing: -0.018em;
-  color: var(--signal-blue-deep);
-  text-wrap: balance;
-}
 
-/* Mobile + tablet (< 960px): stack vertically — heading → button → scene.
-   The heading card stops being an absolute overlay; the canvas becomes a
-   square block beneath the CTA. The JS pairs with this breakpoint to drop
-   the grid down to ~8×8 and disable the L-cutout. */
-@media (max-width: 959px) {
-  .cta-grid__hero {
-    flex-direction: column;
-    align-items: stretch;
-    aspect-ratio: auto;
-    gap: clamp(1.25rem, 3vw, 2rem);
-    padding: clamp(1.5rem, 4vw, 2rem);
-  }
-  .cta-grid__heading-card {
-    position: static;
-    order: 1;
-    width: 100%;
-    padding: 0;
-    background: transparent;
-    border-radius: 0;
-  }
-  .cta-grid__button-col {
-    order: 2;
-    width: 100%;
-    max-width: 220px;
-  }
-  .cta-grid__image {
-    order: 3;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1 / 1;
-    flex: none;
-  }
-  .cta-grid__tagline {
-    font-size: clamp(1.5rem, 5.5vw, 2rem);
-  }
-}
-
-/* ---------- V1 Footer — compact sitemap bar on white ---------- */
+/* ---------- V1 Footer — compact white sitemap bar, anchored to page bottom ---------- */
 .footer {
   background: var(--white);
-  padding: clamp(1rem, 2vw, 1.75rem) var(--gutter) clamp(1.5rem, 3vw, 2.5rem);
+  padding: clamp(0.75rem, 1.5vw, 1.25rem) var(--gutter);
+  border-top: 1px solid rgba(0, 31, 102, 0.08);
 }
 .footer__inner {
   max-width: var(--container);
   margin: 0 auto;
-  padding: 0.75rem clamp(1rem, 1.75vw, 1.5rem);
-  background: var(--white);
+  padding: 0;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: clamp(1rem, 2vw, 2rem);
+  gap: clamp(0.85rem, 1.75vw, 1.5rem);
   flex-wrap: wrap;
+  border: 0;
 }
 .footer__logo {
-  height: 22px;
+  height: 20px;
   width: auto;
+  filter: none;
+  opacity: 1;
 }
 .footer__nav {
   display: flex;
@@ -1990,7 +2425,7 @@ body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta:hover {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--signal-blue-deep);
+  color: rgba(0, 31, 102, 0.7);
   text-decoration: none;
   transition: color 0.2s var(--ease-out);
 }
@@ -1999,7 +2434,7 @@ body[data-version="v2"] .nav:not(.is-scrolled) .nav__cta:hover {
   margin: 0;
   font-size: 0.6875rem;
   letter-spacing: 0.04em;
-  color: rgba(0, 31, 102, 0.5);
+  color: rgba(0, 31, 102, 0.45);
 }
 
 /* ---------- V2 Footer (3D element + sitemap) ---------- */

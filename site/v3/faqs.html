@@ -11,23 +11,24 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" />
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body class="is-light">
 
   <header class="nav nav--solid">
     <div class="nav__inner">
       <a class="nav__logo" href="index.html" aria-label="Signal — home">
         <img src="../assets/signal-logo.png" alt="Signal" class="nav__logo-img" />
       </a>
-      <nav class="nav__center" aria-label="Primary">
-        <a href="agenda.html" class="nav__link">Agenda</a>
-        <a href="travel.html" class="nav__link">Travel &amp; Hotel</a>
-        <a href="faqs.html" class="nav__link">FAQs</a>
-      </nav>
-      <nav class="nav__right" aria-label="Utilities">
-        <a href="register.html" class="nav__cta">Register</a>
-      </nav>
-    </div>
+</div>
   </header>
+
+  <nav class="tray-nav" aria-label="Sections" data-theme="dark">
+    <div class="tray-nav__group">
+      <a href="agenda.html" class="tray-nav__link">Agenda</a>
+      <a href="travel.html" class="tray-nav__link">Travel &amp; Hotel</a>
+      <a href="faqs.html" class="tray-nav__link is-active" aria-current="page">FAQs</a>
+    </div>
+    <a href="register.html" class="tray-nav__cta">Register</a>
+  </nav>
 
   <main>
     <section class="page-hero">
@@ -51,54 +52,110 @@
       <div class="page-body__inner">
         <div class="faqs">
 
-          <div class="faq">
-            <h2 class="faq__q">Who should attend?</h2>
+          <details class="faq" open>
+            <summary class="faq__q">
+              <span class="faq__num">01</span>
+              <span class="faq__q-text">Who should attend?</span>
+              <span class="faq__chevron" aria-hidden="true">
+                <svg viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </summary>
             <p class="faq__a">
               Leadership Summit is designed primarily for Signal franchise owners, executive directors, directors, and other key employees within franchise organizations.
             </p>
-          </div>
+          </details>
 
-          <div class="faq">
-            <h2 class="faq__q">Can I bring members of my leadership team?</h2>
+          <details class="faq">
+            <summary class="faq__q">
+              <span class="faq__num">02</span>
+              <span class="faq__q-text">Can I bring members of my leadership team?</span>
+              <span class="faq__chevron" aria-hidden="true">
+                <svg viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </summary>
             <p class="faq__a">
               Yes. Leadership Summit was intentionally expanded to allow franchise leadership teams to attend together.
             </p>
-          </div>
+          </details>
 
-          <div class="faq">
-            <h2 class="faq__q">What types of sessions will be offered?</h2>
+          <details class="faq">
+            <summary class="faq__q">
+              <span class="faq__num">03</span>
+              <span class="faq__q-text">What types of sessions will be offered?</span>
+              <span class="faq__chevron" aria-hidden="true">
+                <svg viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </summary>
             <p class="faq__a">
               Sessions will include executive team updates, leadership development, sales and operational breakout trainings, franchise owner-led best practices, and interactive discussions built around the day-to-day realities of running a Signal franchise.
             </p>
-          </div>
+          </details>
 
-          <div class="faq">
-            <h2 class="faq__q">What is included with registration?</h2>
+          <details class="faq">
+            <summary class="faq__q">
+              <span class="faq__num">04</span>
+              <span class="faq__q-text">What is included with registration?</span>
+              <span class="faq__chevron" aria-hidden="true">
+                <svg viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </summary>
             <p class="faq__a">
               Registration includes access to Summit sessions, breakout trainings, networking opportunities, and scheduled activities. Hotel accommodations are not included. Additional registration details will be shared during the registration process.
             </p>
-          </div>
+          </details>
 
-          <div class="faq">
-            <h2 class="faq__q">Do I need to attend all three days?</h2>
+          <details class="faq">
+            <summary class="faq__q">
+              <span class="faq__num">05</span>
+              <span class="faq__q-text">Do I need to attend all three days?</span>
+              <span class="faq__chevron" aria-hidden="true">
+                <svg viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </summary>
             <p class="faq__a">
               We strongly recommend participating in the full Summit to take part in the complete schedule of events.
             </p>
-          </div>
+          </details>
 
-          <div class="faq">
-            <h2 class="faq__q">Is the October 5 kickoff required?</h2>
+          <details class="faq">
+            <summary class="faq__q">
+              <span class="faq__num">06</span>
+              <span class="faq__q-text">Is the October 5 kickoff required?</span>
+              <span class="faq__chevron" aria-hidden="true">
+                <svg viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </summary>
             <p class="faq__a">
               No, but arriving by X:XX on October 5 allows you to participate in the Kids Against Hunger event and evening at Vala&rsquo;s Pumpkin Patch.
             </p>
-          </div>
+          </details>
 
-          <div class="faq">
-            <h2 class="faq__q">Where will Leadership Summit be held?</h2>
+          <details class="faq">
+            <summary class="faq__q">
+              <span class="faq__num">07</span>
+              <span class="faq__q-text">Where will Leadership Summit be held?</span>
+              <span class="faq__chevron" aria-hidden="true">
+                <svg viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </summary>
             <p class="faq__a">
               Leadership Summit will take place at Signal Home Office in Omaha, Nebraska.
             </p>
-          </div>
+          </details>
 
         </div>
       </div>
