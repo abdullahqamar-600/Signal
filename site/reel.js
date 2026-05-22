@@ -372,8 +372,12 @@ import {
   let lastInputTs = 0;
 
   const SNAP_MS = 110;
-  const SPRING_STIFFNESS = 0.085;
-  const SPRING_DAMPING = 0.78;
+  // Spring tuned just barely above critical damping — converges fast,
+  // with at most a tiny overshoot before settling. Previous values
+  // (0.085 / 0.78) were significantly under-critical, which produced
+  // the visible jitter as the strip bounced past each snap point.
+  const SPRING_STIFFNESS = 0.10;
+  const SPRING_DAMPING = 0.58;
   const MORPH_LERP = 0.20;
   const VEL_SMOOTH = 0.18;
   const MAX_VEL_PX = 14;        // velocity (px/frame) that maps to full morph
@@ -424,29 +428,39 @@ import {
     const now = performance.now();
     const since = now - lastInputTs;
 
-    // Snap once the user has been quiet and scroll has caught up.
-    if (since > SNAP_MS && Math.abs(scroll - target) < 0.8 && Math.abs(scrollVel) < 0.5) {
+    // Snap once the user has been quiet and the strip has lost most
+    // of its velocity. Tight thresholds keep the snap from
+    // re-triggering on the spring's tail oscillation.
+    if (since > SNAP_MS && Math.abs(scrollVel) < 0.3) {
       const n = nearestSnap(scroll);
       if (Math.abs(n - target) > 0.5) target = n;
     }
 
-    // Spring physics replaces the linear lerp. Slight overshoot when
-    // the user releases a fast scrub → settles in 200–300 ms.
+    // Spring physics — critically-damped-ish. Converges quickly with
+    // at most one micro overshoot, then settles.
     const accel = (target - scroll) * SPRING_STIFFNESS;
     scrollVel = (scrollVel + accel) * SPRING_DAMPING;
     scroll += scrollVel;
-    if (Math.abs(scrollVel) < 0.02 && Math.abs(target - scroll) < 0.05) {
+    // Generous settle window: once velocity is essentially zero and
+    // scroll is within half a pixel, lock to the exact target so any
+    // sub-pixel oscillation is eliminated.
+    if (Math.abs(scrollVel) < 0.08 && Math.abs(target - scroll) < 0.5) {
       scroll = target;
       scrollVel = 0;
     }
 
     // Velocity-coupled morph. Take the smoothed magnitude of delta-scroll
     // and map it to [0, 1]. A flick produces a stronger bend than a slow
-    // wheel nudge — the cards behave like a physical material.
+    // wheel nudge — the cards behave like a physical material. A small
+    // dead zone (~0.4 px/frame) keeps micro-oscillations from driving
+    // the bend after the spring settles.
     const instVel = Math.abs(scroll - prevScroll);
     prevScroll = scroll;
     velSmoothed += (instVel - velSmoothed) * VEL_SMOOTH;
-    const morphFromVel = clamp01(velSmoothed / MAX_VEL_PX);
+    const DEAD_ZONE = 0.4;
+    const morphFromVel = velSmoothed <= DEAD_ZONE
+      ? 0
+      : clamp01((velSmoothed - DEAD_ZONE) / MAX_VEL_PX);
 
     // Entry morph: starts at 0.55, decays linearly to 0 across entry.
     let entryProgressGlobal = 1;
