@@ -9,7 +9,9 @@
   --signal-orange-deep: #E5751A;
   --signal-blue:        #0032A0;
   --signal-blue-deep:   #001F66;
-  --signal-blue-ink:    #00164D;
+  /* Matched to the deep midnight navy of the globe image (assets/globe.png)
+     so the section bg blends seamlessly into the globe horizon band. */
+  --signal-blue-ink:    #020C2E;
   --white:              #FFFFFF;
 
   --font-sans:          'Montserrat', system-ui, -apple-system, sans-serif;
@@ -302,10 +304,10 @@ main { display: block; }
   pointer-events: none;
   background: linear-gradient(
     to bottom,
-    rgba(0, 22, 77, 0)    0%,
-    rgba(0, 22, 77, 0.08) 35%,
-    rgba(0, 22, 77, 0.35) 65%,
-    rgba(0, 22, 77, 0.85) 88%,
+    rgba(2, 12, 46, 0)    0%,
+    rgba(2, 12, 46, 0.08) 35%,
+    rgba(2, 12, 46, 0.35) 65%,
+    rgba(2, 12, 46, 0.85) 88%,
     var(--signal-blue-ink) 100%
   );
 }
@@ -448,16 +450,16 @@ main { display: block; }
   z-index: 1;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 0 clamp(1.5rem, 4vw, 4rem) clamp(48px, 6vw, 88px);
+  padding: 0 clamp(1.5rem, 4vw, 4rem) clamp(24px, 3vw, 56px);
 }
 
-/* Header — pill, headline, support copy stacked left-aligned. */
+/* Header — headline + one-line support copy stacked left-aligned. */
 .summit-details__header {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: clamp(18px, 2vw, 28px);
-  margin-bottom: clamp(32px, 4vw, 56px);
+  gap: clamp(14px, 1.6vw, 22px);
+  margin-bottom: clamp(36px, 4vw, 64px);
 }
 .summit-details__pill {
   display: inline-flex;
@@ -485,42 +487,54 @@ main { display: block; }
   margin: 0;
   font-family: var(--font-sans);
   font-weight: 500;
-  font-size: clamp(34px, 4.6vw, 64px);
-  line-height: 1.08;
+  font-size: clamp(30px, 4vw, 56px);
+  line-height: 1.05;
   letter-spacing: -0.022em;
   color: var(--white);
-  max-width: 18ch;
-  text-wrap: balance;
+}
+.summit-details__heading-dates {
+  display: block;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+  letter-spacing: -0.018em;
 }
 .summit-details__support {
   margin: 0;
   font-size: 15px;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.70);
-  max-width: 56ch;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.68);
+  max-width: 52ch;
 }
 
-/* Facts row — two items, hairline divider between them */
+/* Facts + CTA row — single horizontal band, no dividers above/below.
+   On the left: 2–3 facts with a single thin separator between them.
+   On the right: the Travel & Hotel CTA, vertically centered. */
+.summit-details__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(24px, 4vw, 64px);
+  flex-wrap: wrap;
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  padding-top: clamp(22px, 2.6vw, 32px);
+}
 .summit-details__facts {
   list-style: none;
-  margin: 0 0 clamp(28px, 3.4vw, 44px);
+  margin: 0;
   padding: 0;
   display: flex;
-  gap: clamp(24px, 4vw, 56px);
-  align-items: stretch;
-  border-top: 1px solid rgba(255, 255, 255, 0.10);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
-  padding-block: clamp(18px, 2.2vw, 28px);
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+  flex-wrap: wrap;
 }
 .summit-details__fact {
   display: flex;
   flex-direction: column;
   gap: 6px;
   position: relative;
-  padding-right: clamp(24px, 4vw, 56px);
 }
 .summit-details__fact + .summit-details__fact {
-  padding-left: clamp(24px, 4vw, 56px);
+  padding-left: clamp(28px, 4vw, 56px);
   border-left: 1px solid rgba(255, 255, 255, 0.10);
 }
 .summit-details__fact-label {
@@ -537,7 +551,31 @@ main { display: block; }
   color: var(--white);
 }
 
-/* CTA */
+/* Full-bleed globe horizon. Sits below the content, above the ribbon.
+   The image already carries the brand-blue field and the orange marker;
+   we just give it a height band and crop with object-fit. */
+.summit-details__globe {
+  position: relative;
+  width: 100%;
+  margin-top: clamp(32px, 5vw, 72px);
+  /* Bleed the image fractionally into the ribbon below so the seam
+     reads as one continuous horizon rather than two stacked elements. */
+  margin-bottom: clamp(-80px, -8vw, -40px);
+  line-height: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.summit-details__globe img {
+  display: block;
+  width: 100%;
+  height: clamp(220px, 26vw, 380px);
+  object-fit: cover;
+  /* Anchor on the orange marker (right of center in the source image)
+     so it stays visible as the viewport narrows. */
+  object-position: 60% center;
+}
+
+/* CTA — sits at the right of the row, anchored next to the facts. */
 .summit-details__cta {
   display: inline-flex;
   align-items: center;
@@ -551,7 +589,7 @@ main { display: block; }
   letter-spacing: 0.01em;
   text-decoration: none;
   transition: background 200ms ease, transform 200ms ease, box-shadow 200ms ease, gap 200ms ease;
-  align-self: flex-start;
+  flex-shrink: 0;
 }
 .summit-details__cta:hover {
   background: var(--signal-orange-deep);
@@ -616,34 +654,27 @@ main { display: block; }
 /* Responsive */
 @media (max-width: 880px) {
   .summit-details__heading {
-    font-size: clamp(28px, 7vw, 38px);
+    font-size: clamp(28px, 7vw, 40px);
+  }
+  .summit-details__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(20px, 3vw, 28px);
   }
   .summit-details__facts {
     flex-direction: column;
     gap: 0;
+    width: 100%;
   }
   .summit-details__fact {
-    padding-right: 0;
     padding-block: 14px;
+    width: 100%;
   }
   .summit-details__fact + .summit-details__fact {
     padding-left: 0;
     border-left: none;
     border-top: 1px solid rgba(255, 255, 255, 0.10);
   }
-  .summit-details__dome {
-    width: clamp(280px, 86vw, 420px);
-    bottom: calc(-1 * clamp(80px, 18vw, 160px));
-  }
-  .summit-details__inner {
-    padding-bottom: clamp(260px, 70vw, 400px);
-  }
-}
-@media (max-width: 560px) {
-  .summit-details__inner {
-    padding-bottom: clamp(280px, 78vw, 360px);
-  }
-  .summit-details__dome { bottom: calc(-1 * clamp(60px, 14vw, 120px)); }
 }
 
 
@@ -686,7 +717,7 @@ main { display: block; }
 .agenda {
   background: #F2F4F8;
   color: var(--signal-blue-deep);
-  padding: clamp(56px, 6vw, 96px) 0 clamp(56px, 6vw, 96px);
+  padding: clamp(72px, 8vw, 120px) 0 clamp(64px, 7vw, 96px);
   position: relative;
   z-index: 1;
 }
@@ -696,11 +727,17 @@ main { display: block; }
   padding: 0 clamp(1.5rem, 4vw, 3rem);
 }
 
-/* ----- HEADING ----- Left-aligned, smaller, with a dark inverted pill. */
+/* ----- HEADING ----- Left-aligned, two-line cap, dark inverted pill. */
 .agenda__head {
   text-align: left;
-  margin-bottom: clamp(28px, 3vw, 44px);
-  max-width: 30ch;
+  margin-bottom: clamp(36px, 4vw, 56px);
+  max-width: 720px;
+}
+.agenda__heading-dates {
+  display: block;
+  color: rgba(0, 22, 77, 0.5);
+  font-weight: 500;
+  letter-spacing: -0.018em;
 }
 .agenda__pill {
   display: inline-flex;
@@ -726,18 +763,19 @@ main { display: block; }
   margin: 0;
   font-family: var(--font-sans);
   font-weight: 500;
-  font-size: clamp(28px, 3.4vw, 44px);
-  line-height: 1.08;
-  letter-spacing: -0.018em;
+  font-size: clamp(30px, 3.6vw, 50px);
+  line-height: 1.05;
+  letter-spacing: -0.022em;
   color: var(--signal-blue-deep);
   text-wrap: balance;
 }
 
 /* ----- TWO-COLUMN BODY ----- */
 .agenda__body {
+  --agenda-top: clamp(96px, 13vh, 140px);
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
-  gap: clamp(32px, 4vw, 64px);
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: clamp(36px, 4vw, 72px);
   align-items: stretch;
 }
 
@@ -749,30 +787,54 @@ main { display: block; }
 }
 .agenda__rail-inner {
   position: sticky;
-  top: clamp(80px, 12vh, 120px);
+  top: var(--agenda-top);
   display: grid;
-  grid-template-columns: 4px 1fr;
+  grid-template-columns: 6px 1fr;
   gap: clamp(20px, 2vw, 28px);
   align-items: stretch;
 }
 
-/* The thin vertical track + orange fill. Height matches the day list. */
+/* The vertical track + orange fill. Track sits muted but visible; the
+   fill carries a soft bloom so the leading edge reads as alive even
+   when the user is between transitions. */
 .agenda__progress {
   position: relative;
-  width: 4px;
-  background: rgba(0, 22, 77, 0.10);
-  border-radius: 4px;
-  overflow: hidden;
+  width: 6px;
+  background: rgba(0, 22, 77, 0.14);
+  border-radius: 6px;
+  overflow: visible;
 }
 .agenda__progress-fill {
   position: absolute;
   inset: 0 0 auto 0;
   height: 0%;
-  background: var(--signal-orange);
-  border-radius: 4px;
-  transition: height 120ms linear;
+  background: linear-gradient(180deg, var(--signal-orange) 0%, var(--signal-orange-deep) 100%);
+  border-radius: 6px;
+  box-shadow:
+    0 0 14px rgba(255, 147, 50, 0.45),
+    0 0 4px rgba(255, 147, 50, 0.6),
+    0 0 0 1px rgba(229, 117, 26, 0.25);
   will-change: height;
 }
+/* A tiny bloom dot at the leading edge of the fill. */
+.agenda__progress-fill::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--signal-orange);
+  transform: translateX(-50%);
+  box-shadow: 0 0 12px 2px rgba(255, 147, 50, 0.55);
+  filter: blur(2px);
+  opacity: 0.85;
+  pointer-events: none;
+}
+/* Hide the bloom when there's nothing filled yet. */
+.agenda__progress-fill[style*="height: 0%"]::after,
+.agenda__progress-fill:not([style])::after { display: none; }
 
 .agenda__days {
   list-style: none;
@@ -831,20 +893,20 @@ main { display: block; }
 /* ----- RIGHT — SCROLL-PINNED STAGE ----- */
 .agenda__stage {
   position: relative;
-  height: 300vh;
+  height: 320vh;
 }
 .agenda__pin {
   position: sticky;
-  top: 0;
-  height: 100vh;
+  top: var(--agenda-top);
+  height: calc(100vh - var(--agenda-top) - clamp(24px, 3vh, 48px));
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 }
 .agenda__viewport {
   position: relative;
   width: 100%;
   max-width: 720px;
-  height: min(640px, 82vh);
+  height: 100%;
   overflow: hidden;
   isolation: isolate;
 }
@@ -854,13 +916,10 @@ main { display: block; }
   inset: 0;
   display: flex;
   flex-direction: column;
-  padding: 4px 4px 56px;
+  padding: 0 2px 64px;
   opacity: 0;
-  transform: translateY(28px);
+  transform: translateY(72%);
   pointer-events: none;
-  transition:
-    opacity 420ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform;
 }
 .agenda__frame.is-current {
@@ -868,33 +927,20 @@ main { display: block; }
   transform: translateY(0);
   pointer-events: auto;
 }
-.agenda__frame.is-leaving {
-  opacity: 0;
-  transform: translateY(-40px);
-}
 
 .agenda__frame-head {
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  padding-bottom: clamp(14px, 1.4vw, 18px);
-  margin-bottom: clamp(8px, 1vw, 12px);
-  border-bottom: 1px solid rgba(0, 22, 77, 0.12);
+  margin-bottom: clamp(14px, 1.6vw, 22px);
 }
-.agenda__frame-num {
+.agenda__frame-summary {
   margin: 0;
-  font-size: clamp(20px, 1.9vw, 26px);
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  color: var(--signal-blue-deep);
-}
-.agenda__frame-date {
-  margin: 0;
-  font-size: clamp(13px, 1vw, 14px);
+  font-family: var(--font-sans);
+  font-size: clamp(18px, 1.7vw, 22px);
   font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: rgba(0, 22, 77, 0.50);
+  line-height: 1.32;
+  letter-spacing: -0.012em;
+  color: var(--signal-blue-deep);
+  max-width: 48ch;
+  text-wrap: balance;
 }
 
 .agenda__list { width: 100%; }
@@ -944,30 +990,31 @@ main { display: block; }
   max-width: 56ch;
 }
 
-/* ----- VEIL — frosted band at the bottom hinting at the next day ----- */
+/* ----- VEIL — frosted band at the bottom hinting at the next day -----
+   Sits in the bottom 24% of the viewport so the active day's last
+   session stays clear of it. The next frame (translateY 80% from JS)
+   peeks through this veil — clearly there, but veiled. */
 .agenda__veil {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 38%;
+  height: 20%;
   pointer-events: none;
   background: linear-gradient(
     to bottom,
     rgba(242, 244, 248, 0) 0%,
-    rgba(242, 244, 248, 0.65) 45%,
-    rgba(242, 244, 248, 0.95) 100%
+    rgba(242, 244, 248, 0.72) 40%,
+    rgba(242, 244, 248, 0.97) 100%
   );
-  -webkit-backdrop-filter: blur(0px);
-  backdrop-filter: blur(0px);
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 55%);
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 55%);
   z-index: 2;
 }
 @supports (backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px)) {
   .agenda__veil {
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(7px);
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 30%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 30%);
   }
 }
 
@@ -1149,47 +1196,41 @@ main { display: block; }
   color: var(--signal-orange-deep);
 }
 
-/* Digidop-style asymmetric masonry — 6-column grid for finer span
-   granularity. Five span variants (feature / wide / big / tall / sq)
-   create the rhythm of dominant outer tiles + smaller middle tiles
-   that the reference is known for. */
-.glimpses__grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-auto-rows: clamp(110px, 10vw, 160px);
-  grid-auto-flow: dense;
-  gap: clamp(8px, 0.8vw, 14px);
+/* Scattered editorial collage. Each tile sits at an absolute (left, top)
+   inside the collage box, with its own rotate baked in and a parallax
+   translateY driven from script.js via the --ty custom property. */
+.glimpses__collage {
+  position: relative;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  min-height: 820px;
 }
 .glimpses__tile {
+  position: absolute;
   margin: 0;
-  position: relative;
   overflow: hidden;
-  border-radius: 6px;
   background: rgba(0, 22, 77, 0.04);
+  box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.12);
+  /* Inline `--rot` and `--ty` are set per-tile; transform composes them.
+     translate first, rotate second so the parallax stays viewport-aligned. */
+  transform: translate3d(0, var(--ty, 0px), 0) rotate(var(--rot, 0deg));
+  will-change: transform;
 }
 .glimpses__tile img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-.glimpses__tile:hover img { transform: scale(1.04); }
 
-/* Five span variants — each captures a distinct role in the masonry:
-   feature: dominant tall portrait at 33% width × 3 row heights
-   wide:    landscape banner at 50% width × 2 row heights
-   big:     medium square block at 33% × 2
-   tall:    slim tall portrait at 17% × 2
-   sq:      small square at 17% × 1 (default) */
-.glimpses__tile--feature { grid-column: span 2; grid-row: span 3; }
-.glimpses__tile--wide    { grid-column: span 3; grid-row: span 2; }
-.glimpses__tile--big     { grid-column: span 2; grid-row: span 2; }
-.glimpses__tile--tall    { grid-column: span 1; grid-row: span 2; }
-.glimpses__tile--sq      { /* default 1 × 1 */ }
+/* Stacking by depth — back layer sits behind, front layer in front. */
+.glimpses__tile[data-depth="back"]  { z-index: 1; }
+.glimpses__tile[data-depth="mid"]   { z-index: 2; }
+.glimpses__tile[data-depth="front"] { z-index: 3; box-shadow: 4px 8px 24px rgba(0, 0, 0, 0.16); }
 
-/* Badge tile — a dark surface with the Signal mark and "Summit · 2025"
-   text. Sits among the photos to brand the grid. */
+/* Badge tile — dark Signal-blue surface with the orange chevron mark and
+   "Summit · 2025" text. Same absolute footprint as the photos around it. */
 .glimpses__tile--badge {
   background: linear-gradient(
     135deg,
@@ -1199,7 +1240,7 @@ main { display: block; }
   );
   display: flex;
   align-items: flex-end;
-  padding: clamp(18px, 1.6vw, 24px);
+  padding: 18px;
 }
 .glimpses__badge {
   display: inline-flex;
@@ -1223,16 +1264,34 @@ main { display: block; }
 }
 .glimpses__badge-mark svg { width: 100%; height: 100%; }
 
+/* On tablet, scale the cluster down so it still reads as a single
+   composition without overflowing. The absolute positions stay; we just
+   shrink the whole box via transform-origin top center. */
+@media (max-width: 1100px) {
+  .glimpses__collage { transform: scale(0.86); transform-origin: top center; }
+}
 @media (max-width: 880px) {
-  .glimpses__grid {
+  .glimpses__collage { transform: scale(0.72); }
+}
+
+/* Mobile — drop the absolute layout; render as a simple stacked column
+   so the photos are actually viewable. Parallax disabled here too. */
+@media (max-width: 640px) {
+  .glimpses__collage {
+    min-height: 0;
+    transform: none;
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: 150px;
+    gap: 10px;
   }
-  /* On mobile, normalize all wider tiles to 1 or 2 column spans. */
-  .glimpses__tile--feature { grid-column: span 1; grid-row: span 2; }
-  .glimpses__tile--wide    { grid-column: span 2; grid-row: span 1; }
-  .glimpses__tile--big     { grid-column: span 2; grid-row: span 2; }
-  .glimpses__tile--tall    { grid-column: span 1; grid-row: span 2; }
+  .glimpses__tile {
+    position: static !important;
+    width: auto !important;
+    height: 180px !important;
+    transform: none !important;
+  }
+  .glimpses__tile[style*="height: 240px"],
+  .glimpses__tile[style*="height: 220px"] { height: 220px !important; }
 }
 
 

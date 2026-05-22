@@ -133,6 +133,9 @@
     scrollable = Math.max(1, stageH - viewH);
   }
 
+  // Smooth-step (ease-in-out cubic). t in [0,1].
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
   function update() {
     const rect = stage.getBoundingClientRect();
     const scrolled = clamp(-rect.top, 0, scrollable);
@@ -143,11 +146,18 @@
     let local = clamp(dayFloat - activeIndex, 0, 1);
     if (overall >= 1) { activeIndex = dayCount - 1; local = 1; }
 
-    // Crossfade window inside each day's segment. The last day never
-    // fades out — it stays through the end of the stage.
+    // Transition window — last 28% of each day's segment. During this
+    // window the active day slides up and out while the next day rises
+    // through the veil into the active slot. The last day never leaves.
     const isLastDay = activeIndex === dayCount - 1;
-    const fadeStart = 0.82;
-    const fadeT = isLastDay ? 0 : clamp((local - fadeStart) / (1 - fadeStart), 0, 1);
+    const transStart = 0.72;
+    const transRaw = isLastDay ? 0 : clamp((local - transStart) / (1 - transStart), 0, 1);
+    const t = ease(transRaw);
+
+    // Resting peek of the next day under the veil. Pushed deep enough
+    // that the active day's last session sits above the veil, not under it.
+    const PEEK_Y   = 80;   // % translate when fully "next" (below active)
+    const PEEK_OP  = 0.18; // opacity of the next day under the veil
 
     for (let i = 0; i < dayCount; i++) {
       const frame = frames[i];
@@ -155,29 +165,32 @@
       const isNext = i === activeIndex + 1;
 
       if (isActive) {
+        // Active: slides from translateY(0) → translateY(-100%), fades to 0.
+        const ty = -t * 100;
+        const op = 1 - t;
         frame.classList.add('is-current');
-        frame.classList.toggle('is-leaving', fadeT > 0.01);
-        frame.style.opacity = String(1 - fadeT);
-        frame.style.transform = `translateY(${-fadeT * 40}px)`;
-        frame.style.zIndex = '1';
+        frame.style.opacity = String(op);
+        frame.style.transform = `translate3d(0, ${ty}%, 0)`;
+        frame.style.zIndex = '2';
       } else if (isNext) {
-        // The "next" day rises from below into the active slot as the
-        // active one fades out. While fadeT == 0, it sits just out of
-        // sight beneath the veil (translateY +28px, opacity 0).
-        frame.classList.remove('is-current', 'is-leaving');
-        frame.style.opacity = String(fadeT);
-        frame.style.transform = `translateY(${(1 - fadeT) * 28}px)`;
-        frame.style.zIndex = '0';
+        // Next: starts at translateY(72%) op 0.22 (peeking under veil),
+        // slides to translateY(0) op 1 as t → 1.
+        const ty = PEEK_Y * (1 - t);
+        const op = PEEK_OP + (1 - PEEK_OP) * t;
+        frame.classList.remove('is-current');
+        frame.style.opacity = String(op);
+        frame.style.transform = `translate3d(0, ${ty}%, 0)`;
+        frame.style.zIndex = '1';
       } else {
-        frame.classList.remove('is-current', 'is-leaving');
+        frame.classList.remove('is-current');
         frame.style.opacity = '0';
-        frame.style.transform = 'translateY(28px)';
+        frame.style.transform = `translate3d(0, ${PEEK_Y}%, 0)`;
         frame.style.zIndex = '0';
       }
     }
 
-    // Day index highlight follows the day most visible.
-    const highlightedIndex = fadeT > 0.5 && !isLastDay ? activeIndex + 1 : activeIndex;
+    // Day index highlight follows the day most visible. Switch at t > 0.55.
+    const highlightedIndex = t > 0.55 && !isLastDay ? activeIndex + 1 : activeIndex;
     railButtons.forEach((btn, i) => {
       btn.classList.toggle('is-active', i === highlightedIndex);
     });
@@ -185,7 +198,8 @@
       btn.classList.toggle('is-active', i === highlightedIndex);
     });
 
-    // Progress bar.
+    // Progress bar — eased slightly so the fill doesn't feel mechanical
+    // when the user nudges the wheel. Linear is fine for the pager.
     const pct = clamp(overall * 100, 0, 100);
     if (progressFill) progressFill.style.height = pct + '%';
     if (pagerFill) pagerFill.style.width = pct + '%';
@@ -205,5 +219,83 @@
   window.addEventListener('resize', () => { measure(); update(); });
 
   measure();
+  update();
+})();
+
+/* ---------- Glimpses collage parallax ----------
+   Each tile in the .glimpses__collage carries data-speed (0.04–0.30) and
+   data-rotate (-8..+8). On scroll, every tile gets a translateY equal to
+   the section's offset from viewport center, multiplied by its speed.
+   Background (slower) tiles drift behind; foreground (faster) tiles glide
+   in front, simulating depth. Rotation stays baked in via CSS variable. */
+(function () {
+  'use strict';
+
+  const collage = document.querySelector('.glimpses__collage');
+  if (!collage) return;
+  const section = collage.closest('.glimpses');
+  if (!section) return;
+
+  const tiles = Array.from(collage.querySelectorAll('.glimpses__tile'));
+  if (!tiles.length) return;
+
+  // Bake each tile's rotation into a CSS custom property once. The CSS
+  // transform is `translate3d(0, var(--ty), 0) rotate(var(--rot))`, so
+  // we don't fight the rotate on every frame.
+  tiles.forEach((t) => {
+    const rot = parseFloat(t.dataset.rotate || '0');
+    t.style.setProperty('--rot', rot + 'deg');
+  });
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) {
+    tiles.forEach((t) => t.style.setProperty('--ty', '0px'));
+    return;
+  }
+
+  // On mobile we use a static grid; parallax would fight it. Bail out.
+  const mqMobile = window.matchMedia('(max-width: 640px)');
+  let active = !mqMobile.matches;
+
+  function update() {
+    if (!active) return;
+    const r = section.getBoundingClientRect();
+    // Distance from the section's center to the viewport's center. When the
+    // section is below the fold, delta is negative; as it scrolls up, delta
+    // grows positive. Multiplied by per-tile speed for the parallax offset.
+    const sectionCenter = r.top + r.height / 2;
+    const delta = (window.innerHeight / 2 - sectionCenter);
+    for (let i = 0; i < tiles.length; i++) {
+      const t = tiles[i];
+      const speed = parseFloat(t.dataset.speed || '0');
+      t.style.setProperty('--ty', (delta * speed).toFixed(1) + 'px');
+    }
+  }
+
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { update(); ticking = false; });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', () => {
+    active = !mqMobile.matches;
+    if (!active) {
+      tiles.forEach((t) => t.style.setProperty('--ty', '0px'));
+    } else {
+      update();
+    }
+  });
+  // mqMobile change covers the case where the viewport crosses the breakpoint.
+  if (mqMobile.addEventListener) {
+    mqMobile.addEventListener('change', (e) => {
+      active = !e.matches;
+      if (!active) tiles.forEach((t) => t.style.setProperty('--ty', '0px'));
+      else update();
+    });
+  }
+
   update();
 })();
