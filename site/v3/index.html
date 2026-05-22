@@ -411,74 +411,29 @@
 
 
     <!-- ============================================================== -->
-    <!-- GLIMPSES — masonry gallery of moments from past summits.        -->
-    <!-- Mixed aspect ratios + sizes, branded badge tile.                -->
+    <!-- REEL — horizontal scroll-on-hover slider. Cards tilt + scale    -->
+    <!-- in 3D as they pass through the focus zone. Lerped scroll for    -->
+    <!-- buttery feel. Uses the same image set as the old glimpses grid. -->
     <!-- ============================================================== -->
-    <section class="glimpses" aria-label="A glimpse into the Summit">
-      <div class="glimpses__inner">
-        <header class="glimpses__head">
-          <h2 class="glimpses__heading">Owners. Operators.<br />The good kind of <em>late nights</em>.</h2>
+    <section class="reel" aria-label="A glimpse into the Summit">
+      <div class="reel__inner">
+        <header class="reel__head">
+          <h2 class="reel__heading">Owners. Operators.<br />The good kind of <em>late nights</em>.</h2>
+          <p class="reel__hint" aria-hidden="true">
+            <span class="reel__hint-mark">↔</span>
+            Hover and scroll
+          </p>
         </header>
+      </div>
 
-        <!--
-          Scattered editorial collage. Each tile is absolutely positioned
-          with its own size, rotation, and parallax speed. Center-weighted
-          cluster: dense in the middle, looser at the edges.
-          data-speed drives translateY on scroll, set from script.js.
-        -->
-        <div class="glimpses__collage">
-          <figure class="glimpses__tile" style="left: 6%;  top: 110px; width: 150px; height: 120px;" data-rotate="-6" data-speed="0.24" data-depth="back">
-            <img src="assets/glimpses/g13.jpeg" alt="" loading="lazy" />
-          </figure>
-          <figure class="glimpses__tile" style="left: 22%; top: 60px;  width: 180px; height: 240px;" data-rotate="-3" data-speed="0.08" data-depth="back">
-            <img src="assets/glimpses/g1.jpeg" alt="" loading="lazy" />
-          </figure>
-          <figure class="glimpses__tile" style="left: 38%; top: 130px; width: 300px; height: 200px;" data-rotate="2"  data-speed="0.05" data-depth="back">
-            <img src="assets/glimpses/g2.jpeg" alt="" loading="lazy" />
-          </figure>
-          <figure class="glimpses__tile" style="left: 64%; top: 80px;  width: 270px; height: 200px;" data-rotate="-3" data-speed="0.06" data-depth="back">
-            <img src="assets/glimpses/g3.jpeg" alt="" loading="lazy" />
-          </figure>
-
-          <figure class="glimpses__tile" style="left: 13%; top: 280px; width: 240px; height: 160px;" data-rotate="-5" data-speed="0.20" data-depth="mid">
-            <img src="assets/glimpses/g6.jpeg" alt="" loading="lazy" />
-          </figure>
-          <figure class="glimpses__tile" style="left: 30%; top: 320px; width: 200px; height: 160px;" data-rotate="-4" data-speed="0.12" data-depth="mid">
-            <img src="assets/glimpses/g7.jpeg" alt="" loading="lazy" />
-          </figure>
-          <figure class="glimpses__tile glimpses__tile--badge" style="left: 43%; top: 290px; width: 220px; height: 140px;" data-rotate="-2" data-speed="0.18" data-depth="front">
-            <span class="glimpses__badge">
-              <span class="glimpses__badge-mark" aria-hidden="true">
-                <svg viewBox="0 0 117 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M98.5 32.5L117 0H83.6759C76.7307 0 70.2827 3.6031 66.6427 9.51805L55.4286 27.741C53.6086 30.6984 50.3847 32.5 46.912 32.5H18L0 65H33.5253C40.6318 65 47.2046 61.229 50.7912 55.0939L61.1044 37.453C62.8977 34.3855 66.1841 32.5 69.7374 32.5H98.5Z" fill="currentColor"/>
-                </svg>
-              </span>
-              <span class="glimpses__badge-text">Signal&nbsp;Summit&nbsp;&middot;&nbsp;2025</span>
-            </span>
-          </figure>
-          <figure class="glimpses__tile" style="left: 56%; top: 250px; width: 180px; height: 240px;" data-rotate="3"  data-speed="0.14" data-depth="mid">
-            <img src="assets/glimpses/g5.jpeg" alt="" loading="lazy" />
-          </figure>
-          <figure class="glimpses__tile" style="left: 72%; top: 320px; width: 170px; height: 220px;" data-rotate="-4" data-speed="0.10" data-depth="mid">
-            <img src="assets/glimpses/g8.jpeg" alt="" loading="lazy" />
-          </figure>
-
-          <figure class="glimpses__tile" style="left: 4%;  top: 460px; width: 150px; height: 120px;" data-rotate="6"  data-speed="0.28" data-depth="front">
-            <img src="assets/glimpses/g10.jpeg" alt="" loading="lazy" />
-          </figure>
-          <figure class="glimpses__tile" style="left: 36%; top: 440px; width: 170px; height: 140px;" data-rotate="5"  data-speed="0.22" data-depth="front">
-            <img src="assets/glimpses/g4.jpeg" alt="" loading="lazy" />
-          </figure>
-          <figure class="glimpses__tile" style="left: 48%; top: 470px; width: 210px; height: 170px;" data-rotate="2"  data-speed="0.16" data-depth="mid">
-            <img src="assets/glimpses/g9.jpeg" alt="" loading="lazy" />
-          </figure>
-
-          <figure class="glimpses__tile" style="left: 22%; top: 590px; width: 240px; height: 160px;" data-rotate="-3" data-speed="0.30" data-depth="front">
-            <img src="assets/glimpses/g11.jpeg" alt="" loading="lazy" />
-          </figure>
-          <figure class="glimpses__tile" style="left: 52%; top: 640px; width: 140px; height: 180px;" data-rotate="-6" data-speed="0.20" data-depth="front">
-            <img src="assets/glimpses/g12.jpeg" alt="" loading="lazy" />
-          </figure>
+      <div class="reel__stage" data-reel role="region" tabindex="0" aria-label="Image carousel, scroll horizontally">
+        <div class="reel__track" data-reel-track>
+          <figure class="reel__card" data-idx="0"><img src="assets/glimpses/g1.jpeg" alt="Summit moment" loading="lazy" /></figure>
+          <figure class="reel__card" data-idx="1"><img src="assets/glimpses/g2.jpeg" alt="Summit moment" loading="lazy" /></figure>
+          <figure class="reel__card" data-idx="2"><img src="assets/glimpses/g3.jpeg" alt="Summit moment" loading="lazy" /></figure>
+          <figure class="reel__card" data-idx="3"><img src="assets/glimpses/g5.jpeg" alt="Summit moment" loading="lazy" /></figure>
+          <figure class="reel__card" data-idx="4"><img src="assets/glimpses/g7.jpeg" alt="Summit moment" loading="lazy" /></figure>
+          <figure class="reel__card" data-idx="5"><img src="assets/glimpses/g9.jpeg" alt="Summit moment" loading="lazy" /></figure>
         </div>
       </div>
     </section>
@@ -546,5 +501,6 @@
   </div>
 
   <script src="script.js?v=5"></script>
+  <script type="module" src="reel.js?v=1"></script>
 </body>
 </html>

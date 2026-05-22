@@ -1162,26 +1162,33 @@ main { display: block; }
 
 
 /* ============================================================== */
-/*  GLIMPSES — masonry photo grid (after the agenda).              */
-/*  White base, varied tile sizes (tall / wide / square),           */
-/*  one dark branded "Summit · 2025" badge tile in the mix.        */
-/*  Heading flips to Signal Blue Deep on the lighter ground.       */
+/*  REEL — horizontal scroll-on-hover slider after the agenda.     */
+/*  White ground, 14 cards on a track. As the track scrolls under  */
+/*  a fixed focus zone, cards tilt in perspective and scale, so    */
+/*  the eye lands on whichever card is closest to center. Driven   */
+/*  by a lerped JS scroll target — every transform is composed     */
+/*  from CSS variables (--scroll, --dist) that the loop updates.   */
 /* ============================================================== */
-.glimpses {
+.reel {
   background: var(--white);
   padding: clamp(96px, 11vw, 180px) 0 clamp(96px, 12vw, 180px);
+  overflow: hidden;
 }
-.glimpses__inner {
+.reel__inner {
   max-width: 1480px;
   margin: 0 auto;
   padding: 0 clamp(1.5rem, 4vw, 4rem);
 }
-.glimpses__head {
+.reel__head {
   text-align: center;
-  margin-bottom: clamp(56px, 7vw, 96px);
+  margin-bottom: clamp(48px, 6vw, 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 1.6vw, 22px);
 }
-.glimpses__heading {
-  margin: 0 auto;
+.reel__heading {
+  margin: 0;
   font-family: var(--font-sans);
   font-weight: 500;
   font-size: clamp(34px, 4.6vw, 64px);
@@ -1189,49 +1196,113 @@ main { display: block; }
   letter-spacing: -0.028em;
   color: var(--signal-blue-deep);
   max-width: 22ch;
+  text-wrap: balance;
 }
-.glimpses__heading em {
+.reel__heading em {
   font-style: italic;
   font-weight: 500;
   color: var(--signal-orange-deep);
 }
+.reel__hint {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(0, 22, 77, 0.42);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.reel__hint-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(0, 22, 77, 0.06);
+  color: var(--signal-blue-deep);
+  font-size: 14px;
+  line-height: 1;
+}
 
-/* Scattered editorial collage. Each tile sits at an absolute (left, top)
-   inside the collage box, with its own rotate baked in and a parallax
-   translateY driven from script.js via the --ty custom property. */
-.glimpses__collage {
+/* Stage — full-width strip. When the WebGL refit is active, all
+   visible pixels come from the .reel__canvas overlay. The DOM track
+   stays in place for layout / a11y but is hidden visually. */
+.reel__stage {
   position: relative;
   width: 100%;
-  max-width: 1180px;
-  margin: 0 auto;
-  min-height: 820px;
-}
-.glimpses__tile {
-  position: absolute;
-  margin: 0;
+  height: clamp(320px, 44vh, 480px);
   overflow: hidden;
-  background: rgba(0, 22, 77, 0.04);
-  box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.12);
-  /* Inline `--rot` and `--ty` are set per-tile; transform composes them.
-     translate first, rotate second so the parallax stays viewport-aligned. */
-  transform: translate3d(0, var(--ty, 0px), 0) rotate(var(--rot, 0deg));
-  will-change: transform;
+  cursor: ew-resize;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: pan-y;
 }
-.glimpses__tile img {
+.reel__stage:focus-visible {
+  outline: 2px solid var(--signal-orange);
+  outline-offset: 8px;
+}
+
+/* WebGL canvas — overlays the stage 1:1. Added by reel.js. */
+.reel__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+/* Track — keeps a CSS layout for the reduced-motion / mobile fallback.
+   The 3-up math is preserved so the JS measurement (which reads
+   getComputedStyle on .reel__track) still resolves the same card width. */
+.reel__track {
+  --reel-gap: clamp(16px, 1.8vw, 32px);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--reel-gap);
+  padding-inline: var(--reel-gap);
+}
+
+/* Card — flat rectangles, no per-card 3D transforms. The shader owns
+   the bend now. The CSS still defines the slot size so reel.js can
+   compute layout symmetrically with whatever the browser thinks. */
+.reel__card {
+  --card-w: calc((100% - var(--reel-gap) * 2) / 3);
+  flex: 0 0 var(--card-w);
+  aspect-ratio: 4 / 3;
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+  background: #0c0e1a;
+  box-shadow:
+    0 28px 60px -22px rgba(2, 12, 46, 0.28),
+    0 6px 18px -8px rgba(2, 12, 46, 0.16);
+}
+.reel__card img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
-/* Stacking by depth — back layer sits behind, front layer in front. */
-.glimpses__tile[data-depth="back"]  { z-index: 1; }
-.glimpses__tile[data-depth="mid"]   { z-index: 2; }
-.glimpses__tile[data-depth="front"] { z-index: 3; box-shadow: 4px 8px 24px rgba(0, 0, 0, 0.16); }
+/* When the WebGL refit is active, the DOM track is hidden — the
+   canvas paints everything. Cards stay in the DOM for SR/SEO. */
+.reel__stage--webgl .reel__track {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
 
-/* Badge tile — dark Signal-blue surface with the orange chevron mark and
-   "Summit · 2025" text. Same absolute footprint as the photos around it. */
-.glimpses__tile--badge {
+/* Branded badge card — dark Signal-blue surface with the chevron
+   mark and "Summit · 2025" caption sitting bottom-left. */
+.reel__card--badge {
   background: linear-gradient(
     135deg,
     var(--signal-blue) 0%,
@@ -1240,15 +1311,15 @@ main { display: block; }
   );
   display: flex;
   align-items: flex-end;
-  padding: 18px;
+  padding: clamp(20px, 1.8vw, 28px);
 }
-.glimpses__badge {
+.reel__badge {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   padding: 8px 14px;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(0, 0, 0, 0.32);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 999px;
   font-size: 11.5px;
   font-weight: 600;
@@ -1256,42 +1327,46 @@ main { display: block; }
   text-transform: uppercase;
   color: var(--white);
 }
-.glimpses__badge-mark {
+.reel__badge-mark {
   width: 16px;
   height: 9px;
   color: var(--signal-orange);
   display: inline-flex;
 }
-.glimpses__badge-mark svg { width: 100%; height: 100%; }
+.reel__badge-mark svg { width: 100%; height: 100%; }
 
-/* On tablet, scale the cluster down so it still reads as a single
-   composition without overflowing. The absolute positions stay; we just
-   shrink the whole box via transform-origin top center. */
-@media (max-width: 1100px) {
-  .glimpses__collage { transform: scale(0.86); transform-origin: top center; }
+/* Reduced motion — cards stay flat at rest anyway; this just keeps
+   them flat when the user starts scrolling (the JS skips the morph
+   loop under prefers-reduced-motion). */
+@media (prefers-reduced-motion: reduce) {
+  .reel__card { transform: none; }
 }
+
+/* Responsive — tablet shows two cards instead of three. Below 640px
+   the stage scrolls natively (no JS lerp) so touch users can flick. */
 @media (max-width: 880px) {
-  .glimpses__collage { transform: scale(0.72); }
+  .reel__card { --card-w: calc((100% - var(--reel-gap)) / 2); }
+  .reel__stage { height: clamp(280px, 50vh, 420px); }
 }
-
-/* Mobile — drop the absolute layout; render as a simple stacked column
-   so the photos are actually viewable. Parallax disabled here too. */
 @media (max-width: 640px) {
-  .glimpses__collage {
-    min-height: 0;
-    transform: none;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+  .reel__stage {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
   }
-  .glimpses__tile {
-    position: static !important;
-    width: auto !important;
-    height: 180px !important;
+  .reel__track {
+    position: relative;
+    inset: auto;
     transform: none !important;
+    padding-inline: clamp(16px, 6vw, 32px);
   }
-  .glimpses__tile[style*="height: 240px"],
-  .glimpses__tile[style*="height: 220px"] { height: 220px !important; }
+  .reel__card {
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    scroll-snap-align: center;
+  }
 }
 
 
