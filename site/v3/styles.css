@@ -1,0 +1,1488 @@
+/* ============================================================== */
+/*  Signal Leadership Summit 2026 — V3                            */
+/*  Hero pass: full-bleed video, twin pills, big headline         */
+/* ============================================================== */
+
+:root {
+  --signal-orange:      #FF9332;
+  --signal-orange-hot:  #FFB37A;
+  --signal-orange-deep: #E5751A;
+  --signal-blue:        #0032A0;
+  --signal-blue-deep:   #001F66;
+  --signal-blue-ink:    #00164D;
+  --white:              #FFFFFF;
+
+  --font-sans:          'Montserrat', system-ui, -apple-system, sans-serif;
+  --container:          1280px;
+  --gutter:             clamp(1.25rem, 4vw, 3rem);
+  --nav-h:              88px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--signal-blue-ink);
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* `clip` (not `hidden`) so position:sticky descendants work.
+     overflow:hidden promotes a scroll container which breaks sticky. */
+  overflow-x: clip;
+}
+
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+main { display: block; }
+
+
+/* ============================================================== */
+/*  NAV — sits over the video, transparent, white text             */
+/* ============================================================== */
+.nav {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 30;
+  height: var(--nav-h);
+  background: transparent;
+}
+.nav__inner {
+  max-width: 1480px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 3vw, 3.25rem);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 24px;
+}
+.nav__logo {
+  display: inline-flex;
+  align-items: center;
+}
+.nav__logo-img {
+  height: 26px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  opacity: 0.96;
+}
+.nav__center {
+  justify-self: start;
+  margin-left: 36px;
+  display: flex;
+  gap: clamp(20px, 2.4vw, 36px);
+  align-items: center;
+}
+.nav__right {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 2vw, 30px);
+}
+.nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--white);
+  opacity: 0.92;
+  white-space: nowrap;
+  transition: opacity 160ms ease;
+}
+.nav__link:hover { opacity: 1; }
+.nav__link--has-menu .nav__caret {
+  width: 9px;
+  height: 5px;
+  opacity: 0.82;
+  margin-top: 1px;
+}
+.nav__lang {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--white);
+  opacity: 0.86;
+  letter-spacing: 0.02em;
+}
+.nav__cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 22px;
+  background: var(--white);
+  color: #0B0F1A;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 999px;
+  transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+.nav__cta:hover {
+  background: var(--signal-orange);
+  color: var(--white);
+}
+
+@media (max-width: 880px) {
+  .nav__center { display: none; }
+  .nav__right .nav__link:not(.nav__link--has-menu) { display: none; }
+  .nav__lang { display: none; }
+}
+
+
+/* ============================================================== */
+/*  HERO                                                           */
+/* ============================================================== */
+.hero {
+  position: relative;
+  width: 100%;
+  /* Same proportions as the Digidop hero (≈ 100vh on desktop) */
+  min-height: 760px;
+  height: 100vh;
+  max-height: 1080px;
+  overflow: hidden;
+  isolation: isolate;
+  background: #000;
+}
+
+.hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  /* Slight saturation pull keeps the warm midtones reading against the blue overlay */
+  filter: saturate(1.05);
+}
+
+/* Top vignette — keeps nav legible no matter what frame the loop is on.
+   Neutral dark (no blue tint) so the video reads true. */
+.hero__overlay--top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 220px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0.15) 60%,
+    rgba(0, 0, 0, 0)    100%
+  );
+}
+
+/* Bottom blue ramp — kept short and concentrated near the seam so the
+   video shows in true color through most of the hero. Only the last
+   ~25% paints the Signal Blue Ink that meets the next section. */
+.hero__overlay--bottom {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 38%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 22, 77, 0)    0%,
+    rgba(0, 22, 77, 0.08) 35%,
+    rgba(0, 22, 77, 0.35) 65%,
+    rgba(0, 22, 77, 0.85) 88%,
+    var(--signal-blue-ink) 100%
+  );
+}
+
+.hero__content {
+  position: relative;
+  z-index: 2;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: clamp(40px, 6vw, 88px);
+}
+
+/* Pills sit just above the headline */
+.hero__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: clamp(20px, 2.4vw, 32px);
+}
+.hero__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: rgba(10, 13, 28, 0.74);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: var(--white);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  white-space: nowrap;
+}
+/* Strong variant — the date/location pill. Larger, brighter, with a
+   clear date-and-place reading via an internal divider. */
+.hero__pill--strong {
+  padding: 12px 20px 12px 18px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(0, 22, 77, 0.10);
+  color: var(--signal-blue-deep);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  box-shadow: 0 12px 32px -16px rgba(0, 22, 77, 0.55);
+  gap: 12px;
+}
+.hero__pill--strong .hero__pill-dot {
+  background: var(--signal-orange);
+  box-shadow: 0 0 0 4px rgba(255, 147, 50, 0.22);
+}
+.hero__pill-mark {
+  width: 18px;
+  height: 10px;
+  color: var(--signal-orange);
+  display: inline-flex;
+}
+.hero__pill-mark svg { width: 100%; height: 100%; }
+.hero__pill-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--signal-orange);
+  box-shadow: 0 0 0 4px rgba(255, 147, 50, 0.18);
+  flex-shrink: 0;
+}
+.hero__pill-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+.hero__pill-date,
+.hero__pill-place {
+  display: inline-block;
+  white-space: nowrap;
+}
+.hero__pill-place {
+  font-weight: 500;
+  color: rgba(0, 22, 77, 0.72);
+}
+.hero__pill-sep {
+  width: 1px;
+  height: 14px;
+  background: rgba(0, 22, 77, 0.18);
+}
+
+/* Headline — match Digidop ratio/size: ~4 lines, large, semibold,
+   tight line-height, white. Brand rule says H1 is uppercase, but the
+   sentence here reads as one continuous line of body-style copy, so
+   we set it mixed-case to mirror the Digidop voice while keeping
+   Montserrat at brand-weights. */
+.hero__title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: clamp(40px, 6.4vw, 92px);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  color: var(--white);
+  margin: 0;
+  max-width: 17ch;
+  text-wrap: balance;
+}
+
+@media (max-width: 720px) {
+  .hero { min-height: 600px; height: 90vh; }
+  .hero__title {
+    font-size: clamp(34px, 8.5vw, 56px);
+    max-width: 100%;
+  }
+  .hero__pills { gap: 8px; }
+  .hero__pill { font-size: 12px; padding: 8px 13px; }
+}
+
+
+/* ============================================================== */
+/*  LOGO STRIP                                                     */
+/*  Sits directly after hero on the same Signal Blue Ink base so   */
+/*  the seam stays invisible. Logos are evenly distributed across  */
+/*  the full inner width, muted/desaturated.                       */
+/* ============================================================== */
+.logos {
+  background: var(--signal-blue-ink);
+  padding: clamp(56px, 7vw, 96px) 0;
+}
+.logos__inner {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 4rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(20px, 4vw, 64px);
+  flex-wrap: wrap;
+}
+.logos__item {
+  height: 28px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.48;
+  transition: opacity 200ms ease;
+}
+.logos__item:hover { opacity: 0.86; }
+
+@media (max-width: 720px) {
+  .logos__inner { justify-content: center; gap: 28px 40px; }
+  .logos__item { height: 22px; }
+}
+
+
+/* ============================================================== */
+/*  ABOUT — "Since our first summit in 2021..."                    */
+/*  Compact, editorial — matches the Digidop reference proportions */
+/* ============================================================== */
+.about {
+  background: var(--signal-blue-ink);
+  padding: clamp(64px, 8vw, 120px) 0 clamp(96px, 11vw, 160px);
+}
+.about__inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 4rem);
+}
+
+/* Header row — pill sits inline at the start of the heading.
+   Heading wraps to ~2 lines like the reference (not 4). */
+.about__header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: clamp(14px, 1.6vw, 22px);
+  margin-bottom: clamp(48px, 6vw, 80px);
+}
+.about__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(10, 13, 28, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: var(--white);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  /* Lift slightly to sit on the heading's first line */
+  margin-top: 6px;
+}
+.about__pill-mark {
+  width: 14px;
+  height: 8px;
+  color: var(--signal-orange);
+  display: inline-flex;
+}
+.about__pill-mark svg { width: 100%; height: 100%; }
+
+.about__heading {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(26px, 3.4vw, 46px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  max-width: 38ch;
+  text-wrap: balance;
+}
+
+/* Body row — photo on left, copy on right.
+   Explicit column widths keep the layout small and inset, not full-width. */
+.about__body {
+  display: grid;
+  grid-template-columns: minmax(0, 360px) minmax(0, 440px);
+  gap: clamp(40px, 6vw, 120px);
+  align-items: start;
+  justify-content: start;
+}
+.about__media { position: relative; }
+.about__photo {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  border-radius: 4px;
+}
+.about__copy {
+  padding-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.about__para {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.74);
+  max-width: 44ch;
+}
+.about__more {
+  margin-top: clamp(20px, 2.4vw, 32px);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: 0.01em;
+  align-self: flex-start;
+  transition: color 200ms ease, gap 200ms ease;
+}
+.about__more:hover { color: var(--signal-orange); gap: 14px; }
+.about__more-arrow {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  transition: transform 250ms ease;
+}
+.about__more:hover .about__more-arrow { transform: translateY(2px); }
+
+@media (max-width: 880px) {
+  .about__header {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .about__pill { margin-top: 0; align-self: flex-start; }
+  .about__body {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .about__media { max-width: 360px; }
+}
+
+
+/* ============================================================== */
+/*  RIBBON TRANSITION (bottom of about section)                    */
+/*  V1's signature orange ribbon — used here as the curved seam    */
+/*  between the dark Signal Blue Ink section above and the         */
+/*  grey #F2F4F8 section below. The SVG's "ribbon-bg-below" path   */
+/*  paints grey from the lower contour downward so the next        */
+/*  section meets it with no visible join.                         */
+/* ============================================================== */
+.about__transition {
+  /* Dock the ribbon to the bottom edge of the about section so its
+     grey "below the curve" fill meets the next grey section flush. */
+  margin-top: clamp(56px, 8vw, 96px);
+  margin-bottom: calc(-1 * clamp(96px, 11vw, 160px)); /* cancel about's bottom padding */
+  width: 100%;
+  line-height: 0;
+  /* overflow visible so the halo bloom can extend past the SVG box —
+     same trick V1 uses on .hero__ribbon. */
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+.about__transition .ribbon-svg {
+  display: block;
+  width: 100%;
+  /* Mirrors V1: chunky, visible ribbon height that scales with viewport.
+     V1 uses clamp(180px, 23vw, 310px) below 960px and
+     clamp(230px, 26vw, 360px) at ≥960px — matched 1:1 here. */
+  height: clamp(180px, 23vw, 310px);
+  overflow: visible;
+}
+@media (min-width: 960px) {
+  .about__transition .ribbon-svg {
+    height: clamp(230px, 26vw, 360px);
+  }
+}
+/* Ribbon layer hook — kept generic so the glow halo paints above the
+   SVG box without being clipped. */
+.about__transition .ribbon-layer { will-change: transform, opacity; }
+
+/* ============================================================== */
+/*  AGENDA — 3-day session breakdown                                */
+/*  Editorial tabular layout. Strict brand palette, breathing       */
+/*  spacing rhythm, hierarchy via scale + weight contrast.          */
+/* ============================================================== */
+.agenda {
+  background: #F2F4F8;
+  color: var(--signal-blue-deep);
+  /* Slightly more breathing top so the section enters more confidently
+     after the ribbon transition. Bottom kept generous as a closing pause. */
+  padding: clamp(96px, 11vw, 180px) 0 clamp(112px, 13vw, 200px);
+  position: relative;
+  z-index: 1;
+}
+.agenda__inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 3rem);
+}
+
+/* Section heading — large, refined.
+   One italic word for personality (matches Signal's invite-section voice).
+   Tighter line-height tightens the silhouette of the two-line block. */
+.agenda__head {
+  text-align: center;
+  margin-bottom: clamp(80px, 10vw, 152px);
+}
+.agenda__heading {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(34px, 4.8vw, 68px);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+  color: var(--signal-blue-deep);
+  max-width: 32ch;
+  margin-inline: auto;
+}
+.agenda__heading em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--signal-orange-deep);
+}
+
+.agenda__list {
+  width: 100%;
+}
+
+/* ----- SCROLL-PINNED STAGE -----
+   The stage is tall (one viewport per day). Inside, .agenda__pin
+   sticky-positions at 0 and the three .agenda__frame children
+   overlap, so scrolling drives the cross-fade between days. */
+.agenda__stage {
+  position: relative;
+  /* 3 days × 100vh provides scroll distance for the cross-fade
+     choreography. */
+  height: 300vh;
+}
+.agenda__pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: grid;
+}
+.agenda__frame {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: clamp(48px, 6vw, 88px) 0 clamp(32px, 4vw, 56px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity;
+}
+.agenda__frame.is-current {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ----- DAY HEAD inside the frame -----
+   Centered chapter mark. Date eyebrow above the Day numeral. */
+.agenda__day-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  padding: 0 0 clamp(40px, 5vw, 72px);
+  margin: 0;
+  /* The frame fades in/out as a whole; the head doesn't need its own
+     entrance animation. */
+}
+.agenda__day-num {
+  margin: 0;
+  font-size: clamp(36px, 4.4vw, 60px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--signal-blue-deep);
+  font-variant-numeric: lining-nums;
+}
+.agenda__day-date {
+  margin: 0;
+  font-size: clamp(11px, 0.85vw, 12.5px);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--signal-orange-deep);
+}
+
+/* ----- SESSION ROW -----
+   3-col grid [time | tag+title | description].
+   Hidden by default; JS toggles .is-revealed based on scroll progress
+   inside the active day frame. Each row enters with a fade + slide
+   from below and exits in reverse stagger as the next day takes over. */
+.agenda__row {
+  display: grid;
+  grid-template-columns: 116px minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: clamp(28px, 3.6vw, 60px);
+  padding: clamp(22px, 2.4vw, 32px) clamp(14px, 1.8vw, 24px);
+  margin: 0 calc(-1 * clamp(14px, 1.8vw, 24px));
+  border-top: 1px solid rgba(0, 22, 77, 0.07);
+  align-items: start;
+  border-radius: 12px;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 520ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 280ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.agenda__row.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* First row of each frame has no top hairline. */
+.agenda__list > .agenda__row:first-child { border-top-color: transparent; }
+
+/* Hover interaction — preserved from the prior pass. */
+.agenda__list:hover .agenda__row.is-revealed:not(:hover) { opacity: 0.42; }
+.agenda__row.is-revealed:hover {
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 22, 77, 0.08),
+    0 14px 32px -22px rgba(0, 22, 77, 0.18);
+  border-top-color: transparent;
+}
+.agenda__row.is-revealed:hover + .agenda__row { border-top-color: transparent; }
+
+/* Reduced-motion fallback: drop the sticky stage entirely, show
+   everything as a regular stacked list with no animation. */
+@media (prefers-reduced-motion: reduce) {
+  .agenda__stage { height: auto; }
+  .agenda__pin { position: static; height: auto; display: block; }
+  .agenda__frame {
+    position: static;
+    opacity: 1;
+    pointer-events: auto;
+    padding-bottom: clamp(40px, 6vw, 80px);
+  }
+  .agenda__row {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Left column — time. Tabular nums + slashed zero keep the column
+   optically aligned. */
+.agenda__time {
+  margin: 0;
+  padding-top: 8px;
+  font-size: clamp(15px, 1.2vw, 17px);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: rgba(0, 22, 77, 0.55);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* Middle column — category tag + session title */
+.agenda__main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.agenda__tag {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--signal-orange-deep);
+}
+.agenda__title {
+  margin: 0;
+  font-size: clamp(20px, 2vw, 27px);
+  font-weight: 500;
+  line-height: 1.18;
+  letter-spacing: -0.022em;
+  color: var(--signal-blue-deep);
+  text-wrap: balance;
+}
+
+/* Right column — descriptive sub-copy. Slightly more leading
+   for readability; opacity nudged up so the copy is comfortable
+   to scan without competing with the title. */
+.agenda__desc {
+  margin: 0;
+  padding-top: 8px;
+  font-size: clamp(14px, 1.02vw, 15.5px);
+  line-height: 1.62;
+  color: rgba(0, 22, 77, 0.66);
+  max-width: 42ch;
+}
+
+@media (max-width: 880px) {
+  .agenda__day-head {
+    padding: 48px 14px 24px;
+    margin: 0 -14px;
+  }
+  .agenda__day-num { font-size: 26px; }
+  .agenda__day-date { font-size: 12px; }
+  .agenda__row {
+    grid-template-columns: 90px 1fr;
+    gap: 12px 20px;
+    padding: 24px 14px;
+    margin: 0 -14px;
+  }
+  .agenda__time { font-size: 16px; }
+  .agenda__title { font-size: 20px; }
+  .agenda__desc {
+    grid-column: 1 / -1;
+    padding-top: 8px;
+    max-width: none;
+  }
+}
+
+
+/* ============================================================== */
+/*  GLIMPSES — masonry photo grid (after the agenda).              */
+/*  Dark base, varied tile sizes (tall / wide / square),           */
+/*  one branded "Summit · 2025" badge tile in the mix.             */
+/* ============================================================== */
+.glimpses {
+  background: var(--signal-blue-ink);
+  padding: clamp(96px, 11vw, 180px) 0 clamp(96px, 12vw, 180px);
+}
+.glimpses__inner {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 4rem);
+}
+.glimpses__head {
+  text-align: center;
+  margin-bottom: clamp(56px, 7vw, 96px);
+}
+.glimpses__heading {
+  margin: 0 auto;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(34px, 4.6vw, 64px);
+  line-height: 1.04;
+  letter-spacing: -0.028em;
+  color: var(--white);
+  max-width: 22ch;
+}
+.glimpses__heading em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--signal-orange);
+}
+
+.glimpses__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: clamp(220px, 22vw, 320px);
+  gap: clamp(10px, 1vw, 16px);
+}
+.glimpses__tile {
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+}
+.glimpses__tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.glimpses__tile:hover img { transform: scale(1.04); }
+
+.glimpses__tile--tall { grid-row: span 2; }
+.glimpses__tile--wide { grid-row: span 1; }
+.glimpses__tile--sq   { grid-row: span 1; }
+
+/* Badge tile — a dark surface with the Signal mark and "Summit · 2025"
+   text. Sits among the photos to brand the grid. */
+.glimpses__tile--badge {
+  background: linear-gradient(
+    135deg,
+    var(--signal-blue) 0%,
+    var(--signal-blue-deep) 55%,
+    #000A33 100%
+  );
+  display: flex;
+  align-items: flex-end;
+  padding: clamp(18px, 1.6vw, 24px);
+}
+.glimpses__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+.glimpses__badge-mark {
+  width: 16px;
+  height: 9px;
+  color: var(--signal-orange);
+  display: inline-flex;
+}
+.glimpses__badge-mark svg { width: 100%; height: 100%; }
+
+@media (max-width: 880px) {
+  .glimpses__grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 180px;
+  }
+  .glimpses__tile--wide { grid-column: span 2; }
+  .glimpses__tile--tall { grid-row: span 2; }
+}
+
+
+/* ============================================================== */
+/*  FINAL CTA — closing register prompt above the footer            */
+/*  Two-column on desktop: heading + button on the left,            */
+/*  three meta blocks stacked on the right.                         */
+/* ============================================================== */
+.cta {
+  position: relative;
+  background: var(--signal-blue-ink);
+  padding: clamp(96px, 11vw, 160px) 0 clamp(96px, 11vw, 160px);
+  overflow: hidden;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.cta::before {
+  /* Warm halo top-right, brand signature accent */
+  content: "";
+  position: absolute;
+  inset: -20% -10% auto auto;
+  width: 70%;
+  height: 80%;
+  background: radial-gradient(
+    ellipse at 75% 25%,
+    rgba(255, 147, 50, 0.16),
+    transparent 55%
+  );
+  pointer-events: none;
+}
+.cta__inner {
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 3rem);
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: clamp(48px, 6vw, 96px);
+  align-items: center;
+}
+.cta__copy { max-width: 560px; }
+.cta__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 clamp(20px, 2.4vw, 28px);
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--white);
+}
+.cta__mark {
+  width: 16px;
+  height: 9px;
+  color: var(--signal-orange);
+  display: inline-flex;
+}
+.cta__mark svg { width: 100%; height: 100%; }
+.cta__heading {
+  margin: 0 0 clamp(16px, 1.8vw, 24px);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(36px, 5vw, 72px);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+  color: var(--white);
+  max-width: 12ch;
+}
+.cta__heading em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--signal-orange);
+}
+.cta__lede {
+  margin: 0 0 clamp(28px, 3vw, 40px);
+  font-size: clamp(15px, 1.2vw, 17px);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 48ch;
+}
+.cta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 28px;
+  background: var(--signal-orange);
+  color: var(--signal-blue-deep);
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 999px;
+  transition: background 220ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cta__btn:hover {
+  background: var(--signal-orange-hot);
+  transform: translateY(-1px);
+}
+.cta__btn-arrow {
+  width: 14px;
+  height: 14px;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cta__btn:hover .cta__btn-arrow { transform: translateX(3px); }
+
+.cta__meta {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 2.6vw, 32px);
+  padding-left: clamp(0px, 3vw, 48px);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+.cta__meta-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cta__meta-label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--signal-orange-deep);
+}
+.cta__meta-value {
+  margin: 0;
+  font-size: clamp(17px, 1.5vw, 21px);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--white);
+}
+.cta__meta-sub {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+@media (max-width: 880px) {
+  .cta__inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .cta__meta {
+    padding-left: 0;
+    border-left: none;
+    padding-top: 32px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
+
+/* ============================================================== */
+/*  FOOTER                                                          */
+/*  Logo + tagline + brand badge | sitemap | contact                */
+/* ============================================================== */
+.footer {
+  background: #000A33;
+  padding: clamp(72px, 9vw, 120px) 0 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.footer__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 3rem);
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: clamp(40px, 5vw, 72px);
+  align-items: start;
+}
+.footer__brand { max-width: 320px; }
+.footer__logo {
+  height: 26px;
+  width: auto;
+  filter: brightness(0) invert(1);
+  margin-bottom: 18px;
+}
+.footer__tagline {
+  margin: 0 0 24px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.62);
+}
+.footer__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+.footer__badge-mark {
+  width: 16px;
+  height: 9px;
+  color: var(--signal-orange);
+  display: inline-flex;
+}
+.footer__badge-mark svg { width: 100%; height: 100%; }
+
+.footer__nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+.footer__col { display: flex; flex-direction: column; gap: 12px; }
+.footer__col-head {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.40);
+}
+.footer__link {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.82);
+  transition: color 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.footer__link:hover { color: var(--signal-orange); }
+
+.footer__contact-head {
+  margin: 0 0 14px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.40);
+}
+.footer__contact-line {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.82);
+}
+.footer__contact-line--muted {
+  color: rgba(255, 255, 255, 0.50);
+  margin-top: 10px;
+}
+
+.footer__bottom {
+  max-width: 1280px;
+  margin: clamp(48px, 6vw, 72px) auto 0;
+  padding: 22px clamp(1.5rem, 4vw, 3rem) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.footer__legal {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.46);
+  letter-spacing: 0.01em;
+}
+.footer__legal--muted { color: rgba(255, 255, 255, 0.32); }
+
+@media (max-width: 880px) {
+  .footer__inner { grid-template-columns: 1fr; }
+  .footer__nav { grid-template-columns: 1fr 1fr; max-width: 320px; }
+}
+
+
+/* ============================================================== */
+/*  SUB-PAGES — Agenda / Travel & Hotel / FAQs / Register          */
+/*  Shared layout primitives for the secondary pages.              */
+/*  Dark base, generous editorial spacing, brand accents.          */
+/* ============================================================== */
+
+/* When a page is a sub-page, the nav is solid (not over a video) */
+.nav--solid {
+  position: sticky;
+  background: rgba(0, 22, 77, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Page hero — simple, no video. Title + lede on dark blue. */
+.page-hero {
+  background: var(--signal-blue-ink);
+  padding: calc(var(--nav-h) + clamp(72px, 9vw, 140px)) 0 clamp(56px, 7vw, 96px);
+  position: relative;
+  overflow: hidden;
+}
+.page-hero::before {
+  /* Subtle warm halo at top-right, brand signature */
+  content: "";
+  position: absolute;
+  inset: 0 -10% auto auto;
+  width: 60%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at 80% 20%,
+    rgba(255, 147, 50, 0.14),
+    transparent 55%
+  );
+  pointer-events: none;
+}
+.page-hero__inner {
+  position: relative;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 3rem);
+}
+.page-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 clamp(20px, 2.4vw, 28px);
+  padding: 8px 14px;
+  background: rgba(10, 13, 28, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--white);
+}
+.page-hero__mark {
+  width: 16px;
+  height: 9px;
+  color: var(--signal-orange);
+  display: inline-flex;
+}
+.page-hero__mark svg { width: 100%; height: 100%; }
+
+.page-hero__title {
+  margin: 0 0 clamp(20px, 2.4vw, 32px);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(40px, 5.8vw, 88px);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+  color: var(--white);
+  max-width: 18ch;
+}
+.page-hero__title em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--signal-orange);
+}
+.page-hero__lede {
+  margin: 0;
+  font-size: clamp(16px, 1.3vw, 19px);
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 58ch;
+}
+
+/* Body / content blocks for sub-pages */
+.page-body {
+  background: var(--signal-blue-ink);
+  padding: clamp(40px, 6vw, 80px) 0 clamp(96px, 12vw, 180px);
+}
+.page-body__inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 clamp(1.5rem, 4vw, 3rem);
+}
+
+/* Reusable card on dark surface */
+.card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: clamp(24px, 3vw, 40px);
+}
+
+/* Two-column info block (Travel page) */
+.info-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: clamp(24px, 3vw, 48px);
+  padding: clamp(28px, 3vw, 40px) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  align-items: start;
+}
+.info-row:first-of-type { border-top: none; }
+.info-row__label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--signal-orange-deep);
+  margin: 6px 0 0;
+}
+.info-row__body { min-width: 0; }
+.info-row__title {
+  margin: 0 0 8px;
+  font-size: clamp(22px, 2.4vw, 30px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.018em;
+  color: var(--white);
+}
+.info-row__sub {
+  margin: 0 0 14px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.55;
+}
+.info-row__body p {
+  margin: 0 0 12px;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 60ch;
+}
+.info-row__body p:last-child { margin-bottom: 0; }
+.info-row__body ul {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.info-row__body li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.78);
+}
+.info-row__body li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 12px;
+  height: 1px;
+  background: var(--signal-orange);
+}
+
+/* Generic prose container */
+.prose p {
+  margin: 0 0 16px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 64ch;
+}
+.prose p:last-child { margin-bottom: 0; }
+.prose ul {
+  margin: 16px 0 24px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.prose ul li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.82);
+}
+.prose ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 12px;
+  height: 1px;
+  background: var(--signal-orange);
+}
+.prose__note {
+  display: block;
+  margin-top: 20px;
+  padding: 16px 18px;
+  background: rgba(255, 147, 50, 0.06);
+  border: 1px solid rgba(255, 147, 50, 0.20);
+  border-radius: 6px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+/* FAQ list */
+.faqs {
+  display: flex;
+  flex-direction: column;
+}
+.faq {
+  padding: clamp(28px, 3vw, 40px) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: clamp(24px, 3vw, 56px);
+  align-items: start;
+}
+.faq:first-of-type { border-top: none; }
+.faq__q {
+  margin: 0;
+  font-size: clamp(18px, 1.8vw, 24px);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.018em;
+  color: var(--white);
+}
+.faq__a {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.74);
+  max-width: 60ch;
+}
+
+/* Big register CTA */
+.register-cta {
+  margin-top: clamp(28px, 3.5vw, 44px);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 28px;
+  background: var(--signal-orange);
+  color: var(--signal-blue-deep);
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 999px;
+  transition: background 200ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.register-cta:hover {
+  background: var(--signal-orange-hot);
+  transform: translateY(-1px);
+}
+.register-cta__arrow {
+  width: 14px;
+  height: 14px;
+  transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.register-cta:hover .register-cta__arrow { transform: translateX(3px); }
+
+/* Pricing block (Register page) */
+.pricing {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: clamp(28px, 3vw, 40px);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  margin-bottom: clamp(32px, 4vw, 48px);
+}
+.pricing__label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--signal-orange-deep);
+}
+.pricing__value {
+  margin: 0;
+  font-size: clamp(28px, 3.4vw, 40px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--white);
+}
+
+@media (max-width: 720px) {
+  .info-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .faq {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+
+/* ============================================================== */
+/*  VERSION TOGGLE                                                 */
+/* ============================================================== */
+.version-toggle {
+  position: fixed;
+  right: clamp(1rem, 2vw, 1.5rem);
+  bottom: clamp(1rem, 2vw, 1.5rem);
+  z-index: 200;
+  display: inline-flex;
+  padding: 4px;
+  background: var(--white);
+  border: 1px solid rgba(0, 50, 160, 0.18);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px -10px rgba(0, 20, 80, 0.35);
+}
+.version-toggle__btn {
+  min-width: 44px;
+  height: 36px;
+  padding: 0 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--signal-blue-deep);
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 200ms ease, color 200ms ease;
+}
+.version-toggle__btn:hover { background: rgba(0, 50, 160, 0.06); }
+.version-toggle__btn.is-active {
+  background: var(--signal-orange);
+  color: var(--white);
+}
+.version-toggle__btn.is-active:hover { background: var(--signal-orange-hot); }
+@media (prefers-reduced-motion: reduce) {
+  .version-toggle__btn { transition: none; }
+}
