@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="refresh" content="0; url=/?v=v3" />
+  <link rel="canonical" href="/" />
+  <title>Redirecting…</title>
+  <script>
+    // V3 used to live at /v3/. Now it's at /. This page exists so any
+    // bookmarked / cached link to /v3/* still lands on the new root.
+    var dest = '/' + (location.pathname.replace(/^\/v3\/?/, '') || '') + (location.search || '?v=v3') + (location.hash || '');
+    location.replace(dest);
+  </script>
+  <style>
+    body { margin: 0; padding: 64px 24px; background: #020C2E; color: rgba(255,255,255,0.7); font: 14px/1.5 'Montserrat', system-ui, sans-serif; text-align: center; }
+    a { color: #FF9332; text-decoration: none; }
+  </style>
+</head>
+<body>
+  Redirecting to the new home of V3. <a href="/?v=v3">Go now</a>.
+</body>
+</html>
