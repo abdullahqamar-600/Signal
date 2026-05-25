@@ -917,22 +917,30 @@ main { display: block; }
 .reel__stage.is-dragging .reel__card { transition: none; }
 
 /* Track — single flex row. The 50vw padding on each side lets the
-   first and last card snap to the stage center. */
+   first and last card snap to the stage center. The track exposes a
+   --velocity (0..1) that the cards read for their scroll-driven tilt;
+   perspective gives the rotateY a true 3D depth read. */
 .reel__track {
+  --velocity: 0;
   display: inline-flex;
   align-items: center;
   gap: clamp(20px, 2.4vw, 44px);
   padding-inline: max(48px, calc(50vw - clamp(140px, 18vw, 280px)));
   height: clamp(360px, 44vw, 560px);
+  perspective: 1500px;
+  perspective-origin: 50% 50%;
 }
 
 /* Card — fixed height; width derives from aspect ratio modifier.
-   Each card has a --proximity (0..1) the JS sets — 1 when the card
-   is dead-center, 0 when it's at the edge of the stage. CSS uses
-   that to ease scale + saturation, so the focused card draws the eye
-   while the others recede. */
+   Each card carries two JS-driven variables:
+     --proximity   (0..1, 1 = dead center)
+     --signed-dist (-1..+1, sign + distance)
+   Combined with --velocity on the track, the transform composes a
+   resting state (flat, scaled by proximity) AND a scroll-driven
+   tilt/skew that grows with how hard the user is scrubbing. */
 .reel__card {
   --proximity: 0;
+  --signed-dist: 0;
   flex: 0 0 auto;
   height: clamp(360px, 44vw, 560px);
   margin: 0;
@@ -943,16 +951,25 @@ main { display: block; }
   scroll-snap-stop: always;
   user-select: none;
   -webkit-user-drag: none;
+  transform-style: preserve-3d;
   transform-origin: center center;
-  transform: scale(calc(0.92 + var(--proximity) * 0.10));
+  transform:
+    rotateY(calc(var(--signed-dist) * var(--velocity) * 14deg))
+    skewY(calc(var(--signed-dist) * var(--velocity) * -2.2deg))
+    scale(calc(0.92 + var(--proximity) * 0.10));
   filter: saturate(calc(0.7 + var(--proximity) * 0.35));
   box-shadow:
     0 calc(20px + var(--proximity) * 28px) calc(60px + var(--proximity) * 40px) calc(-28px) rgba(2, 12, 46, calc(0.25 + var(--proximity) * 0.18)),
     0 8px 22px -10px rgba(2, 12, 46, 0.18);
+  /* No transition on `transform` — the JS-driven CSS variables update
+     every frame at 60fps and the browser's scroll-snap is doing the
+     actual scroll easing. Adding a CSS transition on top would lag
+     the tilt behind the scroll position. We keep a short transition
+     on filter + shadow for color smoothness only. */
   transition:
-    transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
-    filter 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 180ms cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
 }
 /* Two aspect-ratio variants drive the editorial alternation. */
 .reel__card--portrait  { aspect-ratio: 3 / 4; }
@@ -963,6 +980,12 @@ main { display: block; }
   height: 100%;
   object-fit: cover;
   pointer-events: none;
+  /* Subtle parallax — image slides opposite to the card's offset, so
+     content reads as if behind the card surface. Magnitude scales
+     with proximity so off-center cards aren't dramatically warped. */
+  transform: translate3d(calc(var(--signed-dist) * -2.5%), 0, 0);
+  transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
 }
 
 /* Responsive — touch users scroll natively, no JS lerp needed. */

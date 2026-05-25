@@ -17,27 +17,58 @@
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- Per-card proximity (centered card lights up) ---------- */
+  /* ---------- Per-card geometry + global velocity ----------
+     Every frame we publish three CSS vars:
+       --proximity    (0..1, 1 = card is dead-center)        on .reel__card
+       --signed-dist  (-1..+1, sign + distance from center)  on .reel__card
+       --velocity     (0..1, smoothed |Δ scrollLeft| / cap)  on .reel__track
+     CSS reads these to drive the scale/saturate proximity treatment
+     AND a velocity-coupled tilt + skew that brings the strip to life
+     during a scrub. Cards stay flat at rest; the bend grows with
+     how hard the user is moving the strip. */
   let rafScheduled = false;
-  function paintProximity() {
+  let prevScrollLeft = stage.scrollLeft;
+  let velSmoothed = 0;
+  const VEL_SMOOTH = 0.18;
+  const VEL_CAP = 28;   // px/frame mapped to --velocity = 1
+  function paintFrame() {
     rafScheduled = false;
     const sR = stage.getBoundingClientRect();
     const center = sR.left + sR.width / 2;
+    const halfW = sR.width / 2 || 1;
+
+    // Smooth the per-frame scroll velocity so the morph doesn't snap on
+    // every wheel tick.
+    const inst = Math.abs(stage.scrollLeft - prevScrollLeft);
+    prevScrollLeft = stage.scrollLeft;
+    velSmoothed += (inst - velSmoothed) * VEL_SMOOTH;
+    if (velSmoothed < 0.3) velSmoothed = 0;          // dead zone
+    const v = Math.min(1, velSmoothed / VEL_CAP);
+    track.style.setProperty('--velocity', v.toFixed(3));
+
     for (const c of cards) {
       const r = c.getBoundingClientRect();
       const cardCenter = r.left + r.width / 2;
-      const dist = Math.abs(cardCenter - center) / (sR.width / 2);
-      const proximity = Math.max(0, 1 - dist);
+      const signed = (cardCenter - center) / halfW;  // -∞..+∞, but mostly -2..+2
+      const clamped = Math.max(-1.5, Math.min(1.5, signed));
+      const proximity = Math.max(0, 1 - Math.abs(signed));
       c.style.setProperty('--proximity', proximity.toFixed(3));
+      c.style.setProperty('--signed-dist', clamped.toFixed(3));
     }
   }
   function schedulePaint() {
     if (rafScheduled) return;
     rafScheduled = true;
-    requestAnimationFrame(paintProximity);
+    requestAnimationFrame(paintFrame);
   }
   stage.addEventListener('scroll', schedulePaint, { passive: true });
   window.addEventListener('resize', schedulePaint);
+  // Keep the paint loop ticking while the user is actively scrubbing so
+  // velocity decays smoothly even between scroll events.
+  function tickWhileMoving() {
+    schedulePaint();
+    if (velSmoothed > 0.02) requestAnimationFrame(tickWhileMoving);
+  }
 
   /* ---------- Smooth wheel scroll on hover ---------- */
   let scrollTarget = stage.scrollLeft;
@@ -113,10 +144,10 @@
     const target = stage.scrollLeft + (r.left + r.width / 2) - (sR.left + sR.width / 2);
     stage.scrollLeft = Math.max(0, target);
     scrollTarget = stage.scrollLeft;
-    paintProximity();
+    paintFrame();
   }
   // Wait for images to lay out, then center + paint.
   if (document.readyState === 'complete') initialCenter();
   else window.addEventListener('load', initialCenter, { once: true });
-  paintProximity();
+  paintFrame();
 })();
