@@ -719,201 +719,147 @@ main { display: block; }
 .summit-details__transition .ribbon-layer { will-change: transform, opacity; }
 
 /* ============================================================== */
-/*  AGENDA — 3-day session breakdown                                */
-/*  Left rail of days + scroll-progress bar; right side is a sticky */
-/*  stage that cross-fades each day in turn. A frosted-glass veil   */
-/*  sits at the bottom of the viewport, hinting at the next day.    */
+/*  AGENDA — "What's in it for you" table                           */
+/*  Heading + lede above a bordered ledger. Each row = one day:     */
+/*  big day/date label centered in the left cell, sessions list in  */
+/*  the right (white) cell. Only the label cell carries the blue    */
+/*  tint, and the tints deepen down the rows — the arc of the week. */
 /* ============================================================== */
 .agenda {
-  background: #F2F4F8;
+  background: var(--white);
   color: var(--signal-blue-deep);
-  padding: clamp(72px, 8vw, 120px) 0 clamp(64px, 7vw, 96px);
+  padding: clamp(80px, 9vw, 140px) 0 clamp(80px, 9vw, 140px);
   position: relative;
   z-index: 1;
 }
 .agenda__inner {
-  max-width: 1200px;
+  max-width: 1640px;
   margin: 0 auto;
   padding: 0 clamp(1.5rem, 4vw, 3rem);
 }
 
-/* ----- HEADING ----- Left-aligned, two-line cap, dark inverted pill. */
+/* ----- HEADING + LEDE ----- */
 .agenda__head {
-  text-align: left;
-  margin-bottom: clamp(48px, 5.5vw, 80px);
-  max-width: 720px;
+  margin: 0 0 clamp(40px, 4vw, 64px);
+  max-width: 760px;
 }
-.agenda__heading-dates {
-  display: block;
-  color: rgba(0, 22, 77, 0.5);
-  font-weight: 500;
-  letter-spacing: -0.018em;
-}
-.agenda__pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 16px 8px 12px;
-  background: rgba(0, 31, 102, 0.92);
-  color: #fff;
-  border-radius: 999px;
-  font-size: 11.5px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  margin-bottom: 18px;
-}
-.agenda__pill-mark {
-  display: inline-flex;
-  width: 18px;
-  height: auto;
-  color: var(--signal-orange);
-}
-.agenda__pill-mark svg { width: 100%; height: auto; display: block; }
 .agenda__heading {
-  margin: 0;
+  margin: 0 0 clamp(16px, 1.6vw, 22px);
   font-family: var(--font-sans);
-  font-weight: 500;
-  /* Peers with .summit-details__heading and .reel__heading. The two
-     spans inside each get their own line via display: block — no
-     text-wrap: balance, which was forcing the first sentence to break
-     into two ragged lines for "visual balance." */
-  font-size: clamp(28px, 3.4vw, 48px);
-  line-height: 1.06;
+  font-weight: 600;
+  font-size: clamp(36px, 3.82vw, 76px);
+  line-height: 1.13;
   letter-spacing: -0.024em;
   color: var(--signal-blue-deep);
 }
-.agenda__heading-line { display: block; }
+.agenda__lede {
+  margin: 0;
+  font-size: clamp(15px, 1vw, 19px);
+  line-height: 1.55;
+  color: var(--signal-blue-deep);
+  max-width: 56ch;
+}
 
-/* ----- THREE-CARD GRID -----
-   Three day-cards side by side, top-aligned. Equal widths give the
-   layout its visual balance; the inter-card gap carries the structure
-   instead of any visible card chrome. */
-.agenda__days-grid {
+/* ----- TABLE ----- A bordered ledger of three rows. Hairline grid
+   lines in soft blue; only label cells carry the deepening tint. */
+.agenda__table {
+  border: 1px solid #E5F1FF;
+}
+
+.agenda__row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(28px, 3.4vw, 56px);
-  align-items: start;
+  grid-template-columns: 622fr 940fr;
+  align-items: stretch;
+  border-top: 1px solid #E5F1FF;
 }
+.agenda__row:first-of-type { border-top: 0; }
+.agenda__row[data-day="1"] .agenda__cell--label { background: #F4F9FF; }
+.agenda__row[data-day="2"] .agenda__cell--label { background: #E8F1FF; }
+.agenda__row[data-day="3"] .agenda__cell--label { background: #CEE2FF; }
 
-.agenda__day-card {
+/* ----- LEFT CELL ----- Day label, centered vertically and
+   horizontally in its cell. The dominant typographic moment. */
+.agenda__cell--label {
   display: flex;
-  flex-direction: column;
-  gap: clamp(20px, 2.4vw, 32px);
-  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(32px, 4vw, 64px);
+  border-right: 1px solid #E5F1FF;
+  text-align: center;
+  min-height: clamp(160px, 11.5vw, 222px);
 }
-
-/* Card header: eyebrow, date, one-line summary. Tight proximity. */
-.agenda__day-card-head {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.agenda__day-card-label {
+.agenda__day-title {
   margin: 0;
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--signal-orange-deep);
-}
-.agenda__day-card-date {
-  margin: 0;
-  font-size: clamp(20px, 1.9vw, 26px);
-  font-weight: 600;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: clamp(26px, 2.5vw, 48px);
   line-height: 1.15;
   letter-spacing: -0.018em;
   color: var(--signal-blue-deep);
-}
-.agenda__day-card-summary {
-  margin: 4px 0 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: rgba(0, 22, 77, 0.6);
-  max-width: 32ch;
+  white-space: nowrap;
 }
 
-/* Session list within a card. Each row stacks vertically: time,
-   title, description. Inter-row gap creates the rhythm; no rules. */
-.agenda__list {
+/* ----- RIGHT CELL ----- Stacked time + title rows. Tabular times
+   on the left, titles on the right; no descriptions, no tags. */
+.agenda__cell--sessions {
   list-style: none;
-  padding: 0;
-  width: 100%;
+  margin: 0;
+  padding: clamp(20px, 2.4vw, 32px) clamp(28px, 3.2vw, 48px);
   display: flex;
   flex-direction: column;
-  gap: clamp(20px, 2.4vw, 28px);
+  gap: clamp(10px, 1.2vw, 16px);
 }
-.agenda__row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 0;
-  border: 0;
-  list-style: none;
+.agenda__session {
+  display: grid;
+  grid-template-columns: clamp(80px, 8vw, 100px) 1fr;
+  column-gap: clamp(20px, 2.4vw, 36px);
+  align-items: baseline;
 }
 .agenda__time {
   margin: 0;
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(0, 22, 77, 0.5);
+  font-size: clamp(14px, 1.05vw, 15px);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: rgba(0, 22, 77, 0.6);
   font-variant-numeric: tabular-nums slashed-zero;
 }
 .agenda__title {
   margin: 0;
-  font-size: 17px;
+  font-size: clamp(15px, 1.15vw, 17px);
   font-weight: 500;
-  line-height: 1.25;
-  letter-spacing: -0.018em;
+  line-height: 1.35;
+  letter-spacing: -0.012em;
   color: var(--signal-blue-deep);
   text-wrap: balance;
 }
-.agenda__desc {
-  margin: 2px 0 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: rgba(0, 22, 77, 0.6);
-  max-width: 36ch;
-}
 
 /* ===== RESPONSIVE ===== */
-@media (max-width: 960px) {
-  .agenda__days-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(28px, 4vw, 48px);
-  }
-  .agenda__day-card:last-child {
-    grid-column: 1 / -1;
-    max-width: 50%;
-  }
-}
-@media (max-width: 640px) {
-  .agenda__head { max-width: none; }
-  .agenda__days-grid {
+@media (max-width: 720px) {
+  .agenda__row {
     grid-template-columns: 1fr;
-    gap: clamp(40px, 7vw, 56px);
   }
-  .agenda__day-card:last-child {
-    max-width: none;
+  .agenda__cell--label {
+    border-right: 0;
+    border-bottom: 1px solid rgba(0, 22, 77, 0.12);
+    padding: clamp(24px, 5vw, 36px);
   }
-  .agenda__day-card-summary,
-  .agenda__desc {
-    max-width: none;
+  .agenda__cell--sessions {
+    padding: clamp(20px, 5vw, 32px);
   }
 }
 
 
 /* ============================================================== */
-/*  REEL — horizontal scroll-on-hover slider after the agenda.     */
-/*  White ground, 14 cards on a track. As the track scrolls under  */
-/*  a fixed focus zone, cards tilt in perspective and scale, so    */
-/*  the eye lands on whichever card is closest to center. Driven   */
-/*  by a lerped JS scroll target — every transform is composed     */
-/*  from CSS variables (--scroll, --dist) that the loop updates.   */
+/*  REEL — horizontal photo carousel.                              */
+/*  Pure CSS scroll-snap layout. Cards alternate portrait vs        */
+/*  landscape for an editorial rhythm. The focused (centered) card  */
+/*  scales up and saturates; off-center cards relax to a quieter    */
+/*  scale + slight desaturation. JS owns wheel/drag input and       */
+/*  drives a per-card --proximity (0..1) the CSS reads from.        */
 /* ============================================================== */
 .reel {
   background: var(--white);
-  padding: clamp(96px, 11vw, 180px) 0 clamp(96px, 12vw, 180px);
+  padding: clamp(80px, 9vw, 140px) 0 clamp(80px, 9vw, 140px);
   overflow: hidden;
 }
 .reel__inner {
@@ -923,235 +869,125 @@ main { display: block; }
 }
 .reel__head {
   text-align: center;
-  margin-bottom: clamp(48px, 6vw, 80px);
+  margin-bottom: clamp(36px, 4vw, 60px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(14px, 1.6vw, 22px);
+  gap: clamp(12px, 1.4vw, 18px);
 }
 .reel__heading {
   margin: 0;
   font-family: var(--font-sans);
   font-weight: 500;
-  /* One-line treatment. Smaller than the other section H2s; reads as
-     a caption to the reel rather than competing with the photos. */
   font-size: clamp(20px, 1.9vw, 26px);
-  line-height: 1.1;
+  line-height: 1.2;
   letter-spacing: -0.018em;
   color: var(--signal-blue-deep);
-  max-width: none;
-  white-space: nowrap;
   text-wrap: balance;
-}
-@media (max-width: 760px) {
-  .reel__heading { white-space: normal; font-size: clamp(18px, 4.4vw, 26px); }
 }
 .reel__heading em {
   font-style: italic;
   font-weight: 500;
   color: var(--signal-orange-deep);
 }
-.reel__hint {
-  margin: 0;
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(0, 22, 77, 0.42);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.reel__hint-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background: rgba(0, 22, 77, 0.06);
-  color: var(--signal-blue-deep);
-  font-size: 14px;
-  line-height: 1;
-}
 
-/* Stage — full-width strip. When the WebGL refit is active, all
-   visible pixels come from the .reel__canvas overlay. The DOM track
-   stays in place for layout / a11y but is hidden visually. The
-   default cursor is suppressed once .reel__stage--webgl is on;
-   .reel__cursor (the floating pill) takes over visually. */
+/* Stage — horizontal scroll container. Scroll-snap handles the
+   magnetic land. The inline padding makes the first and last card
+   able to settle at the visual center of the stage. */
 .reel__stage {
   position: relative;
   width: 100%;
-  height: clamp(320px, 44vh, 480px);
-  overflow: hidden;
-  cursor: ew-resize;
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;             /* Firefox */
+  -ms-overflow-style: none;
+  cursor: grab;
   outline: none;
   -webkit-tap-highlight-color: transparent;
-  touch-action: pan-y;
+  padding-block: clamp(20px, 2.4vw, 36px); /* room for the focus-card lift */
 }
-.reel__stage--webgl { cursor: none; }
-@media (hover: none) { .reel__stage--webgl { cursor: auto; } }
+.reel__stage::-webkit-scrollbar { display: none; }
 .reel__stage:focus-visible {
   outline: 2px solid var(--signal-orange);
   outline-offset: 8px;
 }
+.reel__stage.is-dragging { cursor: grabbing; }
+.reel__stage.is-dragging .reel__card { transition: none; }
 
-/* WebGL canvas — overlays the stage 1:1. Added by reel.js. */
-.reel__canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  pointer-events: none;
-}
-
-/* Cursor companion — floats inside the stage, follows the pointer.
-   Visible only while a pointer is over the stage; scales up + flips
-   to orange while dragging. JS owns the translate3d() positioning. */
-.reel__cursor {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 56px;
-  height: 56px;
-  border-radius: 999px;
-  background: rgba(2, 12, 46, 0.92);
-  color: var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  opacity: 0;
-  scale: 0.6;
-  transition:
-    opacity 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    scale 180ms cubic-bezier(0.22, 1, 0.36, 1),
-    background 200ms cubic-bezier(0.22, 1, 0.36, 1);
-  z-index: 6;
-  will-change: transform, opacity, scale;
-}
-.reel__cursor svg { width: 22px; height: 22px; display: block; }
-.reel__cursor.is-visible { opacity: 1; scale: 1; }
-.reel__cursor.is-dragging { scale: 1.18; background: var(--signal-orange); }
-@media (hover: none) { .reel__cursor { display: none; } }
-
-/* Track — keeps a CSS layout for the reduced-motion / mobile fallback.
-   The 3-up math is preserved so the JS measurement (which reads
-   getComputedStyle on .reel__track) still resolves the same card width. */
+/* Track — single flex row. The 50vw padding on each side lets the
+   first and last card snap to the stage center. */
 .reel__track {
-  --reel-gap: clamp(16px, 1.8vw, 32px);
-  position: absolute;
-  inset: 0;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: var(--reel-gap);
-  padding-inline: var(--reel-gap);
+  gap: clamp(20px, 2.4vw, 44px);
+  padding-inline: max(48px, calc(50vw - clamp(140px, 18vw, 280px)));
+  height: clamp(360px, 44vw, 560px);
 }
 
-/* Card — flat rectangles, no per-card 3D transforms. The shader owns
-   the bend now. The CSS still defines the slot size so reel.js can
-   compute layout symmetrically with whatever the browser thinks. */
+/* Card — fixed height; width derives from aspect ratio modifier.
+   Each card has a --proximity (0..1) the JS sets — 1 when the card
+   is dead-center, 0 when it's at the edge of the stage. CSS uses
+   that to ease scale + saturation, so the focused card draws the eye
+   while the others recede. */
 .reel__card {
-  /* Each card is ~40% of the stage. Two cards land fully in view; the
-     third peeks at the edge, signalling the strip continues. */
-  --card-w: 40%;
-  flex: 0 0 var(--card-w);
-  aspect-ratio: 4 / 3;
+  --proximity: 0;
+  flex: 0 0 auto;
+  height: clamp(360px, 44vw, 560px);
   margin: 0;
   position: relative;
   overflow: hidden;
   background: #0c0e1a;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  user-select: none;
+  -webkit-user-drag: none;
+  transform-origin: center center;
+  transform: scale(calc(0.92 + var(--proximity) * 0.10));
+  filter: saturate(calc(0.7 + var(--proximity) * 0.35));
   box-shadow:
-    0 32px 80px -28px rgba(2, 12, 46, 0.32),
+    0 calc(20px + var(--proximity) * 28px) calc(60px + var(--proximity) * 40px) calc(-28px) rgba(2, 12, 46, calc(0.25 + var(--proximity) * 0.18)),
     0 8px 22px -10px rgba(2, 12, 46, 0.18);
+  transition:
+    transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 360ms cubic-bezier(0.22, 1, 0.36, 1);
 }
+/* Two aspect-ratio variants drive the editorial alternation. */
+.reel__card--portrait  { aspect-ratio: 3 / 4; }
+.reel__card--landscape { aspect-ratio: 16 / 10; }
 .reel__card img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  -webkit-user-drag: none;
-  user-select: none;
-}
-
-/* When the WebGL refit is active, the DOM track is hidden — the
-   canvas paints everything. Cards stay in the DOM for SR/SEO. */
-.reel__stage--webgl .reel__track {
-  opacity: 0;
-  visibility: hidden;
   pointer-events: none;
 }
 
-/* Branded badge card — dark Signal-blue surface with the chevron
-   mark and "Summit · 2025" caption sitting bottom-left. */
-.reel__card--badge {
-  background: linear-gradient(
-    135deg,
-    var(--signal-blue) 0%,
-    var(--signal-blue-deep) 55%,
-    #000A33 100%
-  );
-  display: flex;
-  align-items: flex-end;
-  padding: clamp(20px, 1.8vw, 28px);
-}
-.reel__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
-  background: rgba(0, 0, 0, 0.32);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 999px;
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--white);
-}
-.reel__badge-mark {
-  width: 16px;
-  height: 9px;
-  color: var(--signal-orange);
-  display: inline-flex;
-}
-.reel__badge-mark svg { width: 100%; height: 100%; }
-
-/* Reduced motion — cards stay flat at rest anyway; this just keeps
-   them flat when the user starts scrolling (the JS skips the morph
-   loop under prefers-reduced-motion). */
-@media (prefers-reduced-motion: reduce) {
-  .reel__card { transform: none; }
-}
-
-/* Responsive — tablet shows two cards instead of three. Below 640px
-   the stage scrolls natively (no JS lerp) so touch users can flick. */
+/* Responsive — touch users scroll natively, no JS lerp needed. */
 @media (max-width: 880px) {
-  .reel__card { --card-w: 60%; }
-  .reel__stage { height: clamp(280px, 50vh, 420px); }
+  .reel__track { height: clamp(320px, 60vw, 480px); }
+  .reel__card  { height: clamp(320px, 60vw, 480px); }
 }
 @media (max-width: 640px) {
-  .reel__stage {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-  }
   .reel__track {
-    position: relative;
-    inset: auto;
-    transform: none !important;
-    padding-inline: clamp(16px, 6vw, 32px);
+    height: clamp(280px, 70vw, 420px);
+    padding-inline: clamp(16px, 5vw, 32px);
+    gap: 14px;
   }
+  .reel__card { height: clamp(280px, 70vw, 420px); }
+}
+
+/* Reduced motion — drop the proximity lift entirely. */
+@media (prefers-reduced-motion: reduce) {
   .reel__card {
-    transform: none !important;
-    opacity: 1 !important;
-    filter: none !important;
-    scroll-snap-align: center;
+    transform: none;
+    filter: none;
+    transition: none;
   }
 }
+
 
 
 /* ============================================================== */
